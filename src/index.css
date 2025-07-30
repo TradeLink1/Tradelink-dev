@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@theme{
+  --breakpoint-tablet:768px;
+  --breakpoint-mobile: 500px;
+}
+body{
+   font-family: "Raleway", sans-serif;
+   background-color: #fef6e1;
+}
