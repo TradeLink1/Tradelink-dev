@@ -14,14 +14,14 @@ const Sidebar = ({ handleToggle }: any) => {
 
   return (
     <div
-      className="fixed   left-0 w-full rounded-b-4xl bg-[#ffffff] h-[70vh] backdrop-blur-md  flex items-center justify-center shadow-md  z-30 max-mobile:h-[430px] max-width-[1280px]  "
+      className="fixed   left-0 w-full  pb-10  h-[85vh]  flex items-center justify-center  z-30 max-mobile:h-[550px] bg-amber-50/94 backdrop-blur-lg border-4 border-white/50  rounded-b-3xl p-6 shadow-lg   "
       style={{
         backdropFilter: "saturate(180%) blur(7px)",
-        WebkitBackdropFilter: "saturate(180%) blur(8px)",
+        WebkitBackdropFilter: "saturate(180%) blur(4px)",
         boxShadow: "0 4px 16px 0 rgba(0,0,0,0.07)",
       }}
     >
-      <section className="flex flex-col gap-7 text-[#333333] font-semibold text-center text-[16px] max-mobile:gap-3">
+      <section className="flex flex-col gap-7  text-[#333333] font-semibold text-center text-[16px] max-mobile:gap-3">
         <div
           onClick={toggleDropdown}
           className="cursor-pointer flex items-center gap-1.5 hover:text-[#f89216] font-semibold border-b pb-2 border-[#f89216]"
