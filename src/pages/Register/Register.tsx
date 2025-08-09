@@ -37,14 +37,11 @@ const Register = () => {
   const password = watch("password", "");
 
   const onSubmit = (data: UserData) => {
-    // This function will only be called if the form is valid.
-    console.log("Form Data Submitted:", data);
-    // On successful submission, navigate to the home page
     navigate("/");
   };
 
   return (
-    <div className="bg-[#FEF6E1] min-h-screen flex items-center justify-center py-10 font-sans">
+    <div className="bg-[#FEF6E1] min-h-screen flex items-center justify-center py-18 font-sans">
       <div className="max-w-[500px] w-full mx-auto p-4">
         <Link to="/">
           <div className="flex items-center max-w-fit align-center justify-center text-gray-700 hover:bg-[#F89216] hover:text-white p-2 rounded-md transition-colors mb-4">
@@ -53,7 +50,7 @@ const Register = () => {
           </div>
         </Link>
 
-        <div className="bg-[#FFFFFF] w-full mx-auto my-10 p-5 min-h-fit rounded-lg shadow-md border border-gray-200">
+        <div className="bg-[#FFFFFF] w-full mx-auto  p-5 min-h-fit rounded-lg shadow-md border border-gray-200">
           <h1 className="font-bold text-2xl flex items-center justify-center text-gray-800">
             Join TradeLink
           </h1>
@@ -293,10 +290,7 @@ const Register = () => {
             </p>
             <p className="text-gray-600 mt-2">
               Want to sell instead?{" "}
-              <Link
-                to="/seller-signup"
-                className="text-[#F89216] hover:underline"
-              >
+              <Link to="/sellwithus" className="text-[#F89216] hover:underline">
                 Join as Seller
               </Link>
             </p>
