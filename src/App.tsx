@@ -5,7 +5,7 @@ import Home from "./pages/Homepage/Home";
 // import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
-import Contact from "./pages/Contact/Contact";
+import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Product from "./pages/Categories/Product";
