@@ -11,6 +11,13 @@ import Register from "./pages/Register/Register";
 import Product from "./pages/Categories/Product";
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
+import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
+import Overview from "./pages/sellersDashboard/Overview";
+import MyListings from "./pages/sellersDashboard/MyListings";
+import Messages from "./pages/sellersDashboard/Messages";
+import UploadProduct from "./pages/sellersDashboard/UploadProduct";
+import Settings from "./pages/sellersDashboard/Settings";
+
 
 const App = () => {
   return (
@@ -28,8 +35,24 @@ const App = () => {
           <Route path="/Contact" element={<Contact />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
+
+         <Route path="/dashboard" element={< DashboardLayout/>} >
+         <Route index element={<Overview/>}/>
+         <Route  path="Upload"  element={<UploadProduct/>} />
+         <Route path="listings" element={<MyListings/>}/>
+         <Route path="messages" element={<Messages/>}/>
+         <Route path="settings" element={<Settings/>}/>
+        </Route> 
         </Routes>
         <Footer />
+         {/* <Route path="/dashboard" element={< DashboardLayout/>} >
+         <Route index element={<Overview/>}/>
+         <Route  path="Upload"  element={<UploadProduct/>} />
+         <Route path="listings" element={<MyListings/>}/>
+         <Route path="messages" element={<Messages/>}/>
+         <Route path="settings" element={<Settings/>}/>
+        </Route>
+         </Routes> */}
       </BrowserRouter>
     </SearchProvider>
   );
