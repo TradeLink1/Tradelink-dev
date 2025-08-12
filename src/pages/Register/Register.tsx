@@ -51,7 +51,7 @@ const Register = () => {
         </Link>
 
         <div className="bg-[#FFFFFF] w-full mx-auto  p-5 min-h-fit rounded-lg shadow-md border border-gray-200">
-          <h1 className="font-bold text-2xl flex items-center justify-center text-gray-800">
+          <h1 className="font-bold text-2xl flex items-center justify-center text-[#F89216]">
             Join TradeLink
           </h1>
           <p className="flex items-center justify-center text-gray-600 mb-6 text-center">
@@ -271,10 +271,10 @@ const Register = () => {
                 {errors.terms.message}
               </p>
             )}
-            <div className="w-full">
+            <div className="w-full  flex justify-center">
               <button
                 type="submit"
-                className="w-full bg-[#F89216] text-white font-bold py-2 px-4 rounded-md hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                className="w-full bg-[#F89216] text-white font-bold py-2 px-30 rounded-xl hover:bg-[#30AC57] transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
                 Create Account
               </button>
