@@ -41,7 +41,7 @@ const Register = () => {
   };
 
   return (
-    <div className="bg-[#FEF6E1] min-h-screen flex items-center max-w-[1200px] justify-center py-18 font-sans">
+    <div className="bg-[#FEF6E1] min-h-screen flex items-center  justify-center py-18 font-sans">
       <div className="max-w-[500px] w-full mx-auto p-4">
         <Link to="/">
           <div className="flex items-center max-w-fit align-center justify-center text-gray-700 hover:bg-[#F89216] hover:text-white p-2 rounded-md transition-colors mb-4">
