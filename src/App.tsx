@@ -11,7 +11,6 @@ import Register from "./pages/Register/Register";
 import Product from "./pages/Categories/Product";
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
-
 const App = () => {
   return (
     <SearchProvider>
