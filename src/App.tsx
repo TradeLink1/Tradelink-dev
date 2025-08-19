@@ -17,7 +17,6 @@ import MyListings from "./pages/sellersDashboard/MyListings";
 import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
 import Settings from "./pages/sellersDashboard/Settings";
-// import ProtectRoute from "./components/routes/ProtectRoute";
 
 
 const App = () => {
@@ -37,16 +36,23 @@ const App = () => {
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
 
-         <Route path="/dashboard" element={< DashboardLayout/>} >
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Overview />} />
+            <Route path="Upload" element={<UploadProduct />} />
+            <Route path="listings" element={<MyListings />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        </Routes>
+        <Footer />
+         {/* <Route path="/dashboard" element={< DashboardLayout/>} >
          <Route index element={<Overview/>}/>
          <Route  path="Upload"  element={<UploadProduct/>} />
          <Route path="listings" element={<MyListings/>}/>
          <Route path="messages" element={<Messages/>}/>
          <Route path="settings" element={<Settings/>}/>
-        </Route> 
-        </Routes>
-        <Footer />
-        
+        </Route>
+         </Routes> */}
       </BrowserRouter>
     </SearchProvider>
   );
