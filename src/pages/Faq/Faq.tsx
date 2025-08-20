@@ -177,6 +177,7 @@ const categoryTitles = {
 function FAQpage() {
   const [activeCategory, setActiveCategory] = useState<string>("General");
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
@@ -195,96 +196,124 @@ function FAQpage() {
 
   const isExpanded = (categoryKey: string, index: number) =>
     expandedItems.has(`${categoryKey}-${index}`);
-  const [searchTerm, setSearchTerm] = useState("");
+  const filteredFaqs = searchTerm
+    ? Object.entries(FaqData).flatMap(([categoryKey, items]) =>
+        items
+          .filter((item) =>
+            item.question.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .map((item, index) => ({
+            ...item,
+            categoryKey,
+            index,
+          }))
+      )
+    : FaqData[activeCategory]?.map((item, index) => ({
+        ...item,
+        categoryKey: activeCategory,
+        index,
+      }));
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
+    <div className="max-w-[1200px] mt-30 mx-auto px-4 py-12">
+      <div className="text-center mb-12 relative">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Frequently Asked Questions
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
           Find answers to common questions about TradeLink marketplace
         </p>
-        <div>
-          <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
+        <div className="relative max-w-md mx-auto mt-6">
+          <FiSearch className="absolute left-3 top-2.5 text-black" />
           <input
             type="text"
             placeholder="Search questions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className=" pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f89216]"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f89216]"
           />
         </div>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1">
-          <nav className="space-y-2 sticky top-8">
-            {Object.keys(FaqData).map((categoryKey) => {
-              const Icon =
-                categoryIcons[categoryKey as keyof typeof categoryIcons];
-              const isActive = activeCategory === categoryKey;
+        {!searchTerm && (
+          <div className="lg:col-span-1">
+            <nav className="space-y-2 sticky top-8">
+              {Object.keys(FaqData).map((categoryKey) => {
+                const Icon =
+                  categoryIcons[categoryKey as keyof typeof categoryIcons];
+                const isActive = activeCategory === categoryKey;
 
-              return (
-                <button
-                  key={categoryKey}
-                  onClick={() => setActiveCategory(categoryKey)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#f89216] text-white shadow-md"
-                      : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-sm">
-                    {categoryTitles[categoryKey as keyof typeof categoryTitles]}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="lg:col-span-3">
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              {categoryTitles[activeCategory as keyof typeof categoryTitles]}
-            </h2>
-
-            {FaqData[activeCategory]?.map((item, index) => {
-              const expanded = isExpanded(activeCategory, index);
-              return (
-                <div
-                  key={index}
-                  className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-                >
+                return (
                   <button
-                    onClick={() => toggleItem(activeCategory, index)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <span className="font-medium text-gray-900 pr-4">
-                      {item.question}
-                    </span>
-                    {expanded ? (
-                      <FiChevronUp className="w-5 h-5" />
-                    ) : (
-                      <FiChevronDown className="w-5 h-5" />
-                    )}
-                  </button>
-
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      expanded ? "max-h-96" : "max-h-0"
+                    key={categoryKey}
+                    onClick={() => setActiveCategory(categoryKey)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-[#f89216] text-white shadow-md"
+                        : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    <div className="px-6 pb-4 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
-                      {item.answer}
+                    <Icon className="w-5 h-5" />
+                    <span className="text-sm">
+                      {
+                        categoryTitles[
+                          categoryKey as keyof typeof categoryTitles
+                        ]
+                      }
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        )}
+        <div className={searchTerm ? "lg:col-span-4" : "lg:col-span-3"}>
+          <div className="space-y-4">
+            {!searchTerm && (
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                {categoryTitles[activeCategory as keyof typeof categoryTitles]}
+              </h2>
+            )}
+
+            {filteredFaqs.length > 0 ? (
+              filteredFaqs.map((item) => {
+                const expanded = isExpanded(item.categoryKey, item.index);
+
+                return (
+                  <div
+                    key={`${item.categoryKey}-${item.index}`}
+                    className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggleItem(item.categoryKey, item.index)}
+                      className="w-full px-6 py-4 text-left flex items-center justify-end hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <span className="font-medium text-gray-900 pr-10">
+                        {item.question}
+                      </span>
+                      {expanded ? (
+                        <FiChevronUp className="w-5 h-5" />
+                      ) : (
+                        <FiChevronDown className="w-5 h-5" />
+                      )}
+                    </button>
+
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        expanded ? "max-h-96" : "max-h-0"
+                      }`}
+                    >
+                      <div className="px-6 pb-4 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
+                        {item.answer}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="text-gray-500">No results found.</p>
+            )}
           </div>
         </div>
       </div>
@@ -301,7 +330,7 @@ function FAQpage() {
         </p>
         <button
           onClick={handleNavigate}
-          className={`bg-[#f89216] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#fef6e1] hover:text-black  transition-colors duration-200`}
+          className={`bg-[#f89216] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#30ac57] hover:text-black  transition-colors duration-200`}
         >
           Contact Support
         </button>
