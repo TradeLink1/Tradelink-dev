@@ -14,24 +14,26 @@ import { SearchProvider } from "./context/SearchContext";
 
 const App = () => {
   return (
-    <SearchProvider>
-      <BrowserRouter>
-        <Header />
+    <div className="max-w-[1900px] mx-auto">
+      <SearchProvider>
+        <BrowserRouter>
+          <Header />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/Categories" element={<Categories />} /> */}
-          <Route path="/Categories/Products" element={<Product />} />
-          <Route path="/Categories/Services" element={<Services />} />
-          <Route path="/SellWithUs" element={<SellWithUs />} />
-          <Route path="/Faq" element={<Faq />} />
-          <Route path="/Contact" element={<Contact />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </SearchProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {/* <Route path="/Categories" element={<Categories />} /> */}
+            <Route path="/Categories/Products" element={<Product />} />
+            <Route path="/Categories/Services" element={<Services />} />
+            <Route path="/SellWithUs" element={<SellWithUs />} />
+            <Route path="/Faq" element={<Faq />} />
+            <Route path="/Contact" element={<Contact />} />
+            <Route path="/Login" element={<Login />} />
+            <Route path="/Register" element={<Register />} />
+          </Routes>
+          <Footer />
+        </BrowserRouter>
+      </SearchProvider>
+    </div>
   );
 };
 

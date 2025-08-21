@@ -30,7 +30,7 @@ const WhyChooseUs = () => {
             Why Choose TradeLink?
           </h1>
         </div>
-        <div className=" rounded-4xl  flex max-w-[1280px]  mx-auto items-center justify-center">
+        <div className=" rounded-4xl  flex max-w-[1200px]  mx-auto items-center justify-center">
           <div className="flex flex-wrap justify-center gap-12 max-w-[1280px] mx-auto px-4">
             {cardData.map((card, index) => (
               <div

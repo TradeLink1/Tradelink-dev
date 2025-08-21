@@ -54,7 +54,7 @@ const Header = () => {
   return (
     <>
       <div
-        className={`bg-white w-full backdrop-blur-md fixed z-50 top-0 left-0 right-0 border-b-1 border-[#d6d6d6] transition-transform duration-300 ${
+        className={`bg-[#ffffff]  w-full mx-auto backdrop-blur-md fixed z-50 top-0 left-0 right-0 border-b-1 border-[#d6d6d6] transition-transform duration-300 ${
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
         style={{
@@ -63,7 +63,7 @@ const Header = () => {
           WebkitBackdropFilter: "saturate(180%) blur(8px)",
         }}
       >
-        <div className="px-20 py-5 flex justify-between items-center max-w-[1280px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
+        <div className="px-20 py-5 flex justify-between items-center max-w-[1200px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
           <section className="flex gap-18 items-center  ">
             <div>
               <Link to="/">
@@ -136,7 +136,7 @@ const Header = () => {
               />
             </Link>
           </section>
-          <section className="lg:hidden cursor-pointer max-[1020px]:hidden max-[800px]:flex ">
+          <section className="lg:hidden cursor-pointer max-[910px]:hidden max-[900px]:flex ">
             {toggle ? (
               <FiX size={30} color="#f89316" onClick={handleToggle} />
             ) : (

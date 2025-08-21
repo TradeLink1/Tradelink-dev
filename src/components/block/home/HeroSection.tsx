@@ -102,7 +102,7 @@ const HeroSection = () => {
   }, [currentSlideIndex]);
 
   return (
-    <section className="relative max-w-[1280px]  mx-auto mt-45 rounded-[100px] h-[700px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[370px] max-mobile:h-[310px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
+    <section className="relative max-w-[1200px]  mx-auto mt-45 rounded-[100px] h-[700px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[750px] max-mobile:w-[370px] max-mobile:h-[310px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
       {slides.map((slide, index) => {
         if (index === currentSlideIndex) {
           return (
@@ -139,7 +139,7 @@ const HeroSection = () => {
       <div className="relative z-20 flex flex-col justify-center items-center h-full text-white text-center px-4 max-tablet:px-6 max-mobile:px-7">
         <h1
           key={currentSlideIndex}
-          className="text-[60px] max-w-[800px] leading-16  font-bold mb-8 opacity-0 transition-opacity duration-600 ease-in-out animate-slide-up max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[40px]"
+          className="text-[60px] max-w-[800px] leading-16  font-bold mb-8 opacity-0 transition-opacity duration-600 ease-in-out animate-slide-up max-tablet:text-[43px] max-tablet:w-[500px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[38px] max-[510px]:w-[380px]"
         >
           {slides[currentSlideIndex].title}
         </h1>

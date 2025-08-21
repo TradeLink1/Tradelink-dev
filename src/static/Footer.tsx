@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <section className="bg-[#333333] text-[#fef6e1] pt-10 pb-10">
-      <div className="flex  justify-center gap-30 max-w-[1280px] mx-auto max-tablet:flex-col max-tablet:ml-10 max-tablet:gap-10  ">
+      <div className="flex  justify-center gap-30 max-w-[1080px] mx-auto max-tablet:flex-col max-tablet:ml-10 max-tablet:gap-10  ">
         <div className="">
           <img className="w-[110px] mb-4" src="/footer logo.png" alt="" />
           <p className="max-w-[300px] text-[14px]">
@@ -89,7 +89,7 @@ const Footer = () => {
           </h4>
         </div>
       </div>
-      <hr className="mt-10 flex justify-center text-[#fef6e1] max-w-[1280px] mx-auto" />
+      <hr className="mt-10 flex justify-center text-[#fef6e1] max-w-[1080px] mx-auto" />
       <div className="mt-10 mb-5 flex flex-col items-center max-w-[1280px] mx-auto">
         <p className="text-[14px]">© 2025 TradeLink. All rights reserved.</p>
       </div>

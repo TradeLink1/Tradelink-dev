@@ -87,7 +87,7 @@ const Category = () => {
     "right"
   );
 
-  // ⚙️ This runs when the component is mounted and keeps updating the scroll position
+  //  This runs when the component is mounted and keeps updating the scroll position
   useEffect(() => {
     const box = scrollBoxRef.current;
     if (!box) return;
@@ -119,7 +119,7 @@ const Category = () => {
   return (
     <section className="bg-[#f89216] pt-22 pb-24 mt-30" id="categories">
       {/* Header text */}
-      <div className="flex flex-col justify-center text-center max-w-[1280px] mx-auto px-4">
+      <div className="flex flex-col justify-center text-center max-w-[1200px] mx-auto px-4">
         <h1 className="text-[42px] max-[510px]:text-[35px] text-[#ffffff] font-bold max-mobile:text-[25px]">
           Categories
         </h1>
@@ -131,10 +131,10 @@ const Category = () => {
 
       {/* Scrollable categories row */}
       <div
-        ref={scrollBoxRef} // This makes the div scrollable via JavaScript
+        ref={scrollBoxRef}
         onMouseEnter={() => setMouseIsHovering(true)} // Stop scrolling when mouse is on it
         onMouseLeave={() => setMouseIsHovering(false)} // Resume scrolling when mouse leaves
-        className="mt-10 max-w-[1280px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth"
+        className="mt-10 max-w-[1080px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth"
       >
         {sellerCategories.map((item, index) => (
           <div
@@ -164,7 +164,7 @@ const Category = () => {
           <h1 className="text-[#fef6e1] max-[510px]:text-[35px] max-[510px]:max-w-[350px] max-[510px]:mx-auto text-[42px] mb-2 font-bold max-mobile:text-[25px] max-tablet:leading-12 max-mobile:leading-9 max-mobile:mb-3.5">
             Connect with Local Sellers{" "}
           </h1>
-          <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[900px] leading-6 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px]">
+          <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[900px] leading-6 mx-auto text-[#333333] max-mobile:text-[17px] max-[510px]:w-[400px] max-mobile:max-w-[350px]">
             Discover amazing products and services from trusted local businesses
             in your community. Support local commerce while finding exactly what
             you need.

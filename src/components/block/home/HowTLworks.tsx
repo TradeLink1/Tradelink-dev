@@ -26,7 +26,7 @@ const cardData = [
 const HowTLworks = () => {
   return (
     <section className="pt-25 pb-25 ">
-      <div className="flex max-w-[1280px] mx-auto items-center justify-center mb-10 text-center">
+      <div className="flex max-w-[1200px] mx-auto items-center justify-center mb-10 text-center">
         <h1 className="text-[42px] text-[#333333] font-bold max-[510px]:text-[35px] max-mobile:text-[25px]">
           How TradeLinks Works
         </h1>

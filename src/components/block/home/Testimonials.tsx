@@ -52,12 +52,12 @@ const Testimonials = () => {
     <div>
       <section id="tessection" className="pt-20 pb-25 bg-[#f89216]">
         <div>
-          <div className="flex max-w-[1280px] mx-auto flex-col items-center justify-center text-center ">
+          <div className="flex max-w-[1200px] mx-auto flex-col items-center justify-center text-center ">
             <h1 className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-bold max-mobile:text-[25px]">
               What Our Users Say
             </h1>
 
-            <p className="text-[23px] mb-7 max-tablet:text-[20px] font-medium max-w-[600px] leading-8 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-mobile:leading-6">
+            <p className="text-[23px] mb-7 max-tablet:text-[20px] font-medium max-w-[600px] leading-8 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-[510px]:w-[400px] max-mobile:leading-6">
               Hear from our community of local sellers and buyers who are
               transforming their businesses with TradeLink.
             </p>
