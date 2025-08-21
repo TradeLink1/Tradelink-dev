@@ -339,3 +339,9 @@ function FAQpage() {
   );
 }
 export default FAQpage;
+
+    <div></div>
+  )
+}
+
+export default Faq
