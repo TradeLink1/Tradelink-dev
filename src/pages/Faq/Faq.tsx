@@ -173,8 +173,7 @@ const categoryTitles = {
   Payment_And_Transactions: "Payment & Transactions",
   Technical_Support: "Technical Support",
 };
-
-function FAQpage() {
+function Faq() {
   const [activeCategory, setActiveCategory] = useState<string>("General");
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -338,10 +337,4 @@ function FAQpage() {
     </div>
   );
 }
-export default FAQpage;
-
-    <div></div>
-  )
-}
-
-export default Faq
+export default Faq;
