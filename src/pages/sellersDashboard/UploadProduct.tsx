@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import  KycPopup from "./kycPopup";
+
 const UploadProduct = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,6 +14,12 @@ const UploadProduct = () => {
   });
 
   const [errors, setErrors] = useState<any>({});
+  const [isVerified, setIsVerified] =useState(false)
+
+  if (!isVerified) {
+    return <KycPopup onVerify={() => setIsVerified(true)} />;
+  }
+  
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target;
@@ -62,7 +70,8 @@ const UploadProduct = () => {
       <h2 className="text-2xl font-bold text-[#f89216] mb-6 text-center">
         Upload Product / Service
       </h2>
-
+      
+    
       <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded space-y-4">
         
         
