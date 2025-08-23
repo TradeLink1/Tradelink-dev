@@ -23,10 +23,28 @@ const Settings = () => {
     });
   };
 
-  const handleSubmit = (e: any) => {
+  // ✅ Save only profile + store info
+  const handleSaveProfileStore = (e: any) => {
     e.preventDefault();
-    console.log("Settings Saved:", formData);
-    alert("Settings saved successfully (dummy). Backend will handle real save.");
+    const { name, email, phone, address, logo, description, businessCategory, notifications } = formData;
+    const profileStoreData = { name, email, phone, address, logo, description, businessCategory, notifications };
+
+    console.log("Profile + Store Settings Saved:", profileStoreData);
+    alert("Profile and Store settings saved successfully (dummy).");
+  };
+
+  // ✅ Handle password change separately
+  const handleChangePassword = (e: any) => {
+    e.preventDefault();
+    const { currentPassword, newPassword, confirmPassword } = formData;
+
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match!");
+      return;
+    }
+
+    console.log("Password Change Request:", { currentPassword, newPassword });
+    alert("Password changed successfully (dummy).");
   };
 
   const handleDeactivate = () => {
@@ -47,7 +65,6 @@ const Settings = () => {
       <div className="bg-white p-6 shadow-md rounded mb-6">
         <h3 className="text-lg font-semibold mb-4 text-[#30ac57]">Store Preview</h3>
         <div className="flex items-center gap-4">
-          {/* Logo Preview */}
           <div className="w-20 h-20 border rounded flex items-center justify-center overflow-hidden">
             {formData.logo ? (
               <img
@@ -59,8 +76,6 @@ const Settings = () => {
               <span className="text-gray-400 text-sm">No Logo</span>
             )}
           </div>
-
-          {/* Store Info */}
           <div>
             <p className="font-bold text-lg text-[#f89216]">
               {formData.name || "Business Name"}
@@ -77,25 +92,18 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Settings Form */}
+      {/* Profile + Store Settings Form */}
       <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 shadow-md rounded space-y-6"
+        onSubmit={handleSaveProfileStore}
+        className="bg-white p-6 shadow-md rounded space-y-6 mb-6"
       >
         {/* Profile Info */}
         <section>
-          <h3 className="text-lg font-semibold mb-4 text-[#30ac57]">
-            Profile Information
-          </h3>
+          <h3 className="text-lg font-semibold mb-4 text-[#30ac57]">Profile Information</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block font-medium">Name / Business Name</label>
-              <input
-                type="text"
-                name="name"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
+              <input type="text" name="name" className="border p-2 w-full rounded" onChange={handleChange} />
             </div>
             <div>
               <label className="block font-medium">Email</label>
@@ -103,29 +111,17 @@ const Settings = () => {
                 type="email"
                 name="email"
                 value={formData.email}
-                // disabled
-                // readOnly
                 onChange={handleChange}
                 className="border p-2 w-full rounded "
               />
             </div>
             <div>
               <label className="block font-medium">Phone</label>
-              <input
-                type="text"
-                name="phone"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
+              <input type="text" name="phone" className="border p-2 w-full rounded" onChange={handleChange} />
             </div>
             <div>
               <label className="block font-medium">Address</label>
-              <input
-                type="text"
-                name="address"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
+              <input type="text" name="address" className="border p-2 w-full rounded" onChange={handleChange} />
             </div>
           </div>
         </section>
@@ -136,75 +132,23 @@ const Settings = () => {
           <div className="space-y-4">
             <div>
               <label className="block font-medium">Store Logo</label>
-              <input
-                type="file"
-                name="logo"
-                accept="image/*"
-                onChange={handleChange}
-              />
+              <input type="file" name="logo" accept="image/*" onChange={handleChange} />
             </div>
             <div>
               <label className="block font-medium">Description</label>
-              <textarea
-                name="description"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              ></textarea>
+              <textarea name="description" className="border p-2 w-full rounded" onChange={handleChange}></textarea>
             </div>
             <div>
               <label className="block font-medium">Business Category</label>
-              <select
-                name="businessCategory"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              >
+              <select name="businessCategory" className="border p-2 w-full rounded" onChange={handleChange}>
                 <option value="">-- Select --</option>
                 <option value="products">Products</option>
                 <option value="services">Services</option>
                 <option value="both">Both</option>
               </select>
             </div>
-          </div>
-        </section>
-
-        {/* Account Settings */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4 text-[#30ac57]">Account Settings</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block font-medium">Current Password</label>
-              <input
-                type="password"
-                name="currentPassword"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label className="block font-medium">New Password</label>
-              <input
-                type="password"
-                name="newPassword"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                className="border p-2 w-full rounded"
-                onChange={handleChange}
-              />
-            </div>
             <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="notifications"
-                checked={formData.notifications}
-                onChange={handleChange}
-              />
+              <input type="checkbox" name="notifications" checked={formData.notifications} onChange={handleChange} />
               <label className="font-medium">Enable Notifications</label>
             </div>
           </div>
@@ -216,6 +160,38 @@ const Settings = () => {
           className="bg-[#30ac57] hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
         >
           Save Settings
+        </button>
+      </form>
+
+      {/* Account Settings Form */}
+      <form
+        onSubmit={handleChangePassword}
+        className="bg-white p-6 shadow-md rounded space-y-6"
+      >
+        <section>
+          <h3 className="text-lg font-semibold mb-4 text-[#30ac57]">Account Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block font-medium">Current Password</label>
+              <input type="password" name="currentPassword" className="border p-2 w-full rounded" onChange={handleChange} />
+            </div>
+            <div>
+              <label className="block font-medium">New Password</label>
+              <input type="password" name="newPassword" className="border p-2 w-full rounded" onChange={handleChange} />
+            </div>
+            <div>
+              <label className="block font-medium">Confirm Password</label>
+              <input type="password" name="confirmPassword" className="border p-2 w-full rounded" onChange={handleChange} />
+            </div>
+          </div>
+        </section>
+
+        {/* Change Password Button */}
+        <button
+          type="submit"
+          className="bg-[#30ac57] hover:bg-[#333333] text-white px-4 py-2 rounded cursor-pointer"
+        >
+          Change Password
         </button>
       </form>
 

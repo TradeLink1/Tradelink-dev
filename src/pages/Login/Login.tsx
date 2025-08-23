@@ -35,7 +35,6 @@ const Login: React.FC = () => {
             {" "}
             Sign in to your TradeLink account{" "}
           </p>
-
           <div className="flex justify-between bg-[#FEF6E1] border border-[#FEF6E1] rounded-[10px] mb-6 p-1">
             <button
               onClick={() => handleRoleChange("buyer")}

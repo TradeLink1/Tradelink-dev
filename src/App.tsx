@@ -11,6 +11,7 @@ import Home from "./pages/Homepage/Home";
 // import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
+
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -23,23 +24,6 @@ import MyListings from "./pages/sellersDashboard/MyListings";
 import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
 import Settings from "./pages/sellersDashboard/Settings";
-
-const Layout = () => {
-  const location = useLocation();
-
-  // Define pages where Header/Footer should be hidden
-  const hideHeaderFooter = ["/login", "/register"].includes(
-    location.pathname.toLowerCase()
-  );
-
-  return (
-    <>
-      {!hideHeaderFooter && <Header />}
-      <Outlet /> {/* This is where nested routes will render */}
-      {!hideHeaderFooter && <Footer />}
-    </>
-  );
-};
 
 const App = () => {
   return (
@@ -59,19 +43,25 @@ const App = () => {
               <Route path="/Login" element={<Login />} />
               <Route path="/Register" element={<Register />} />
 
-              {/* Nested dashboard routes */}
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<Overview />} />
-                <Route path="upload" element={<UploadProduct />} />
-                <Route path="listings" element={<MyListings />} />
-                <Route path="messages" element={<Messages />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </SearchProvider>
-    </div>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Overview />} />
+            <Route path="Upload" element={<UploadProduct />} />
+            <Route path="listings" element={<MyListings />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        </Routes>
+        <Footer />
+        {/* <Route path="/dashboard" element={< DashboardLayout/>} >
+         <Route index element={<Overview/>}/>
+         <Route  path="Upload"  element={<UploadProduct/>} />
+         <Route path="listings" element={<MyListings/>}/>
+         <Route path="messages" element={<Messages/>}/>
+         <Route path="settings" element={<Settings/>}/>
+        </Route>
+         </Routes> */}
+      </BrowserRouter>
+    </SearchProvider>
   );
 };
 
