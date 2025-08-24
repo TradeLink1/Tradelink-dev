@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
-// Importing all category images
 import cat1 from "../../../assets/images/categories-images/cat1.png";
 import cat2 from "../../../assets/images/categories-images/cat2.png";
 import cat3 from "../../../assets/images/categories-images/cat3.png";
@@ -12,8 +12,10 @@ import cat8 from "../../../assets/images/categories-images/cat8.png";
 import cat9 from "../../../assets/images/categories-images/cat9.png";
 
 import Button from "../../reusable/Button";
-import { PiArrowBendDownRightBold } from "react-icons/pi";
-import { PiArrowBendDownLeftBold } from "react-icons/pi";
+import {
+  PiArrowBendDownRightBold,
+  PiArrowBendDownLeftBold,
+} from "react-icons/pi";
 import { Link } from "react-router-dom";
 
 // All the seller categories with title, image, and description
@@ -76,35 +78,26 @@ const sellerCategories = [
 
 //  main component //
 const Category = () => {
-  //  This is a reference to the scrollable box (the container with the category cards)
   const scrollBoxRef = useRef<HTMLDivElement | null>(null);
-
-  //  This keeps track of whether your mouse is currently hovering on the scroll box
   const [mouseIsHovering, setMouseIsHovering] = useState(false);
-
-  // ↔ This tells us the current direction the box should scroll (either 'left' or 'right')
   const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
     "right"
   );
 
-  //  This runs when the component is mounted and keeps updating the scroll position
+  // Auto-scroll effect
   useEffect(() => {
     const box = scrollBoxRef.current;
     if (!box) return;
 
-    // Start a timer that moves the scroll position every 20ms
     const scrollTimer = setInterval(() => {
-      // If the mouse is NOT hovering, keep scrolling
       if (!mouseIsHovering) {
         if (scrollDirection === "right") {
-          box.scrollLeft += 1; // Move right
-          // If we reach the end, switch to left
+          box.scrollLeft += 1;
           if (box.scrollLeft + box.clientWidth >= box.scrollWidth) {
             setScrollDirection("left");
           }
         } else {
-          box.scrollLeft -= 1; // Move left
-          // If we reach the start, switch to right
+          box.scrollLeft -= 1;
           if (box.scrollLeft <= 0) {
             setScrollDirection("right");
           }
@@ -112,34 +105,57 @@ const Category = () => {
       }
     }, 20);
 
-    // Cleanup the timer when component unmounts or scrollDirection changes
     return () => clearInterval(scrollTimer);
   }, [mouseIsHovering, scrollDirection]);
 
   return (
-    <section className="bg-[#f89216] pt-22 pb-24 mt-30" id="categories">
+    <motion.section
+      className="bg-[#f89216] pt-22 pb-24 mt-30"
+      id="categories"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      viewport={{ once: true }}
+    >
       {/* Header text */}
       <div className="flex flex-col justify-center text-center max-w-[1200px] mx-auto px-4">
-        <h1 className="text-[42px] max-[510px]:text-[35px] text-[#ffffff] font-bold max-mobile:text-[25px]">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-[42px] max-[510px]:text-[35px] text-[#ffffff] font-bold max-mobile:text-[25px]"
+        >
           Categories
-        </h1>
-        <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[600px] leading-8 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-mobile:leading-6">
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="text-[23px] max-tablet:text-[20px] font-medium max-w-[600px] leading-8 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-mobile:leading-6"
+        >
           "Meet the people behind the services — TradeLink connects you to real
           sellers in your area."
-        </p>
+        </motion.p>
       </div>
 
       {/* Scrollable categories row */}
       <div
         ref={scrollBoxRef}
-        onMouseEnter={() => setMouseIsHovering(true)} // Stop scrolling when mouse is on it
-        onMouseLeave={() => setMouseIsHovering(false)} // Resume scrolling when mouse leaves
-        className="mt-10 max-w-[1080px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth"
+        onMouseEnter={() => setMouseIsHovering(true)}
+        onMouseLeave={() => setMouseIsHovering(false)}
+        className="mt-10 max-w-[1200px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth"
       >
         {sellerCategories.map((item, index) => (
-          <div
+          <motion.div
             key={index}
             className="w-max mb-13 flex-shrink-0 bg-[#30ac57] hover:border-1 hover:border-[#5e5e5e] px-6 py-5 rounded-3xl transform transition-transform duration-300 hover:scale-105"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.15 }}
+            viewport={{ once: true }}
           >
             <h1 className="mb-3 font-semibold text-[20px] max-mobile:text-[18px] text-[#fef6e1]">
               {item.title}
@@ -154,17 +170,23 @@ const Category = () => {
             <p className="text-[14px] max-w-[300px] max-mobile:text-[12px] bg-[#ffffff] border-1 border-[#f89216] p-3 rounded-2xl text-[#333333] mt-3 leading-4">
               {item.description}
             </p>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Bottom section with buttons */}
-      <div className="text-center mt-13 max-w-[1280px] mx-auto px-4">
+      <motion.div
+        className="text-center mt-13 max-w-[1280px] mx-auto px-4"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, delay: 0.3 }}
+        viewport={{ once: true }}
+      >
         <div>
           <h1 className="text-[#fef6e1] max-[510px]:text-[35px] max-[510px]:max-w-[350px] max-[510px]:mx-auto text-[42px] mb-2 font-bold max-mobile:text-[25px] max-tablet:leading-12 max-mobile:leading-9 max-mobile:mb-3.5">
             Connect with Local Sellers{" "}
           </h1>
-          <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[900px] leading-6 mx-auto text-[#333333] max-mobile:text-[17px] max-[510px]:w-[400px] max-mobile:max-w-[350px]">
+          <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[900px] leading-6 mx-auto text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px]">
             Discover amazing products and services from trusted local businesses
             in your community. Support local commerce while finding exactly what
             you need.
@@ -204,8 +226,8 @@ const Category = () => {
             color="#333333"
           />
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 };
 

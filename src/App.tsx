@@ -25,13 +25,29 @@ import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
 import Settings from "./pages/sellersDashboard/Settings";
 
+const Layout = () => {
+  const location = useLocation();
+
+  //  hide header and footer in some pages //
+  const hideHeaderFooter = ["/login", "/register"].includes(
+    location.pathname.toLowerCase()
+  );
+
+  return (
+    <>
+      {!hideHeaderFooter && <Header />}
+      <Outlet /> {/* This is where nested routes will render */}
+      {!hideHeaderFooter && <Footer />}
+    </>
+  );
+};
+
 const App = () => {
   return (
-    <div className="max-w-[1900px] mx-auto">
+    <div className=" mx-auto">
       <SearchProvider>
         <BrowserRouter>
           <Routes>
-            {/* Wrap all routes inside Layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               {/* <Route path="/Categories" element={<Categories />} /> */}
@@ -43,25 +59,19 @@ const App = () => {
               <Route path="/Login" element={<Login />} />
               <Route path="/Register" element={<Register />} />
 
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Overview />} />
-            <Route path="Upload" element={<UploadProduct />} />
-            <Route path="listings" element={<MyListings />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Routes>
-        <Footer />
-        {/* <Route path="/dashboard" element={< DashboardLayout/>} >
-         <Route index element={<Overview/>}/>
-         <Route  path="Upload"  element={<UploadProduct/>} />
-         <Route path="listings" element={<MyListings/>}/>
-         <Route path="messages" element={<Messages/>}/>
-         <Route path="settings" element={<Settings/>}/>
-        </Route>
-         </Routes> */}
-      </BrowserRouter>
-    </SearchProvider>
+              {/* Nested dashboard routes */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<Overview />} />
+                <Route path="upload" element={<UploadProduct />} />
+                <Route path="listings" element={<MyListings />} />
+                <Route path="messages" element={<Messages />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </SearchProvider>
+    </div>
   );
 };
 
