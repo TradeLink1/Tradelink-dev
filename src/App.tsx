@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  Outlet,
+} from "react-router-dom";
 import Header from "./static/Header";
 import Footer from "./static/Footer";
 import Home from "./pages/Homepage/Home";
@@ -17,13 +23,6 @@ import MyListings from "./pages/sellersDashboard/MyListings";
 import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
 import Settings from "./pages/sellersDashboard/Settings";
-// import ProtectRoute from "./components/routes/ProtectRoute";
-import AdminLayout from "./pages/adminDashboard/AdminLayout";
-import AdminOverview from "./pages/adminDashboard/AdminOverview";
-import AdminKyc from "./pages/adminDashboard/AdminKyc";
-import AdminSellers from "./pages/adminDashboard/AdminSellers";
-import AdminReports from "./pages/adminDashboard/AdminReports";
-
 
 const App = () => {
    
@@ -32,8 +31,6 @@ const App = () => {
     <SearchProvider>
       <BrowserRouter>
         <Header />
-
-
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -53,21 +50,16 @@ const App = () => {
             <Route path="messages" element={<Messages />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-        {/* <Footer /> */}
-  
-
-        
-        
-        
-        <Route path="/admin" element={<AdminLayout/>}>
-        <Route index element={<AdminOverview/>} />
-        <Route path="kyc" element={<AdminKyc/>} />
-        <Route path="sellers" element={<AdminSellers/>} />
-        <Route path="reports" element={<AdminReports/>} />
-        
+        </Routes>
+        <Footer />
+        {/* <Route path="/dashboard" element={< DashboardLayout/>} >
+         <Route index element={<Overview/>}/>
+         <Route  path="Upload"  element={<UploadProduct/>} />
+         <Route path="listings" element={<MyListings/>}/>
+         <Route path="messages" element={<Messages/>}/>
+         <Route path="settings" element={<Settings/>}/>
         </Route>
-      </Routes>
-      <Footer/>
+         </Routes> */}
       </BrowserRouter>
     </SearchProvider>
   );

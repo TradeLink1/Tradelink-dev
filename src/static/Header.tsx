@@ -1,7 +1,7 @@
 import Button from "../components/reusable/Button";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { RxHamburgerMenu } from "react-icons/rx";
+import { CgMenuRight } from "react-icons/cg";
 import { FiX } from "react-icons/fi";
 import { TbChevronDown } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
@@ -63,12 +63,12 @@ const Header = () => {
           WebkitBackdropFilter: "saturate(180%) blur(8px)",
         }}
       >
-        <div className="px-20 py-5 flex justify-between items-center max-w-[1280px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
+        <div className="px-20 py-5 flex justify-between items-center max-w-[1250px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
           <section className="flex gap-18 items-center  ">
             <div>
               <Link to="/">
                 <img
-                  className="w-[150px] max-mobile:w-[130px]"
+                  className="max-w-[120px]  max-mobile:w-[130px]"
                   src="/header.png"
                   alt="logo"
                 />
@@ -84,7 +84,7 @@ const Header = () => {
                   Categories <TbChevronDown size={20} />
                 </nav>
                 {showDropdown && (
-                  <div className="absolute top-full left-0 bg-[#30ac57] shadow-lg w-34 flex flex-col p-3 justify-center items-center z-50 rounded-md text-white font-semibold gap-2 hover:text-[] ">
+                  <div className="absolute top-full left-0 bg-[#30ac57] shadow-lg w-34 flex flex-col p-3 justify-center items-center z-50 rounded-md text-white font-semibold gap-2">
                     <Link
                       className="hover:text-[#f89216] flex items-center gap-1"
                       to="/Categories/Products"
@@ -117,8 +117,9 @@ const Header = () => {
               </Link>
             </div>
           </section>
+
           <section className="flex gap-3 items-center text-[#333333] font-medium text-[15px] max-tablet:hidden">
-            <Link to="/Login">
+            <a href="/Login" target="_blank" rel="noopener noreferrer">
               <Button
                 name="Login"
                 border="2px solid "
@@ -126,25 +127,22 @@ const Header = () => {
                 hoverBgColor="#30ac57"
                 hoverTextColor="white"
               />
-            </Link>
-            <Link to="/Register">
+            </a>
+            <a href="/Register" target="_blank" rel="noopener noreferrer">
               <Button
                 name="Register"
                 bgColor="#f89216"
                 hoverBgColor="#333333"
                 hoverTextColor="white"
               />
-            </Link>
+            </a>
           </section>
-          <section className="lg:hidden cursor-pointer max-[1020px]:hidden max-[800px]:flex ">
+
+          <section className="lg:hidden cursor-pointer max-[1030px]:hidden max-[900px]:flex ">
             {toggle ? (
               <FiX size={30} color="#f89316" onClick={handleToggle} />
             ) : (
-              <RxHamburgerMenu
-                size={30}
-                color="#333333"
-                onClick={handleToggle}
-              />
+              <CgMenuRight size={30} color="#333333" onClick={handleToggle} />
             )}
           </section>
         </div>

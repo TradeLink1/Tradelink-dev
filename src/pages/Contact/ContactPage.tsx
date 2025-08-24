@@ -1,4 +1,4 @@
-import { FiMessageCircle, FiPhone } from "react-icons/fi";
+import { FiPhone } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import Button from "../../components/reusable/Button";
 import ContactCard from "../Contact/ContactCard";
@@ -13,15 +13,16 @@ import React from "react";
 const ContactPage: React.FC = () => {
   return (
     <main>
-      <section className="flex flex-col items-center justify-center space-y-3 pt-28 pb-12 bg-[#FDEED0]">
-        <FiMessageCircle size={60} color="#F89216" />
-        <h2 className="text-2xl text-[#333333] font-bold">Contact Us</h2>
-        <p className="text-[#555555] text-center max-w-[700px]">
+      <section className="flex flex-col items-center justify-center space-y-3 pt-28 pb-12 ">
+        <div className="flex gap-1 items-center px-4 py-2 rounded-full bg-[#f89216]">
+          <h2 className="text-[18px] text-white font-semibold ">Contact Us</h2>
+        </div>
+        <p className="text-[#333333] text-[42px] leading-12 font-bold text-center max-w-[700px]">
           We're here to help. Get in touch with our support team.
         </p>
       </section>
 
-      <section className="mx-auto max-w-[1000px] p-6">
+      <section className="mx-auto max-w-[1200px] p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-4 shadow-md rounded-lg">
             <ContactCard
@@ -157,7 +158,7 @@ const ContactPage: React.FC = () => {
         </div>
 
         <div className="mt-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className=" p-6 mb-15 rounded-lg ">
             <ContactForm />
           </div>
         </div>
