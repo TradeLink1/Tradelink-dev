@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SellWithUs = () => {
   const navigate = useNavigate();
@@ -22,11 +23,13 @@ const SellWithUs = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleChange = (e: any) => {
-    const { name, value, files } = e.target;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, files } = e.target as HTMLInputElement;
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: files && files.length > 0 ? files[0] : value,
     });
   };
 
@@ -45,15 +48,17 @@ const SellWithUs = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
       console.log("Seller Registration Data:", formData);
       alert("Seller registered successfully!");
 
+      // Auto-login
       localStorage.setItem("isSellerLoggedIn", "true");
       localStorage.setItem("sellerEmail", formData.email);
 
+      // Redirect straight to dashboard
       navigate("/dashboard");
     }
   };
@@ -61,9 +66,9 @@ const SellWithUs = () => {
   return (
     <div className="bg-[#fbf2e7] min-h-screen pt-25">
       {/* HERO SECTION */}
-      <section className="bg-[#fb2e7] text- py-16 text-center">
+      <section className="text-center py-16">
         <h1 className="text-4xl font-bold mb-4">
-          Start Selling on <span className="text-[#f89216]"> TradeLink </span>
+          Start Selling on <span className="text-[#f89216]">TradeLink</span>
         </h1>
         <p className="mb-6 text-lg text-[#333333]">
           Join thousands of sellers connecting with more customers daily.
@@ -75,29 +80,24 @@ const SellWithUs = () => {
         </a>
       </section>
 
-      {/* BENEFITS SECTION */}
+      {/* BENEFITS / CARDS SECTION */}
       <section className="py-12 px-6 grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        <div className="bg-[#f89216] shadow-lg p-6 rounded">
-          <h3 className="font-bold text-lg mb-2 text-white">
-            Reach More Customers
-          </h3>
-          <p className="text-white">
-            Expand your business reach by showcasing your products and services
-            online.
+        <div className="bg-[#f89216] shadow-lg p-6 rounded text-white">
+          <h3 className="font-bold text-lg mb-2">Reach More Customers</h3>
+          <p>
+            Expand your business reach by showcasing your products and services online.
           </p>
         </div>
-        <div className="bg-[#f89216] shadow-lg  text-white p-6 rounded">
+        <div className="bg-[#f89216] shadow-lg p-6 rounded text-white">
           <h3 className="font-bold text-lg mb-2">Easy to Manage</h3>
           <p>
-            Manage listings, track messages, and update products easily in your
-            dashboard.
+            Manage listings, track messages, and update products easily in your dashboard.
           </p>
         </div>
-        <div className="bg-[#f89216] text-white shadow-lg p-6 rounded ">
+        <div className="bg-[#f89216] shadow-lg p-6 rounded text-white">
           <h3 className="font-bold text-lg mb-2">Build Your Brand</h3>
           <p>
-            Showcase your business professionally and stand out from
-            competitors.
+            Showcase your business professionally and stand out from competitors.
           </p>
         </div>
       </section>
@@ -113,34 +113,26 @@ const SellWithUs = () => {
         >
           {/* Business Name */}
           <div>
-            <label className="block font-medium text-[#333333] ">
-              Business Name
-            </label>
+            <label className="block font-medium text-[#333333]">Business Name</label>
             <input
               type="text"
               name="businessName"
-              className="border-2 border-gray-400  p-2 w-full rounded outline-0"
+              className="border-2 border-gray-400 p-2 w-full rounded outline-0"
               onChange={handleChange}
             />
-            {errors.businessName && (
-              <p className="text-red-500">{errors.businessName}</p>
-            )}
+            {errors.businessName && <p className="text-red-500">{errors.businessName}</p>}
           </div>
 
           {/* Owner Name */}
           <div>
-            <label className="block font-medium text-[#333333]">
-              Seller's Name
-            </label>
+            <label className="block font-medium text-[#333333]">Seller's Name</label>
             <input
               type="text"
               name="ownerName"
               className="border-2 border-gray-400 p-2 w-full rounded outline-0"
               onChange={handleChange}
             />
-            {errors.ownerName && (
-              <p className="text-red-500">{errors.ownerName}</p>
-            )}
+            {errors.ownerName && <p className="text-red-500">{errors.ownerName}</p>}
           </div>
 
           {/* Email */}
@@ -169,9 +161,7 @@ const SellWithUs = () => {
 
           {/* Business Level */}
           <div>
-            <label className="block font-medium text-[#333333]">
-              Business Level
-            </label>
+            <label className="block font-medium text-[#333333]">Business Level</label>
             <select
               name="businessLevel"
               className="border-2 border-gray-400 p-2 w-full rounded outline-0"
@@ -182,9 +172,7 @@ const SellWithUs = () => {
               <option value="small">Small Business</option>
               <option value="enterprise">Large Enterprise</option>
             </select>
-            {errors.businessLevel && (
-              <p className="text-red-500">{errors.businessLevel}</p>
-            )}
+            {errors.businessLevel && <p className="text-red-500">{errors.businessLevel}</p>}
           </div>
 
           {/* Category */}
@@ -199,16 +187,12 @@ const SellWithUs = () => {
               <option value="products">Products</option>
               <option value="services">Services</option>
             </select>
-            {errors.category && (
-              <p className="text-red-500">{errors.category}</p>
-            )}
+            {errors.category && <p className="text-red-500">{errors.category}</p>}
           </div>
 
           {/* Address */}
           <div className="md:col-span-2">
-            <label className="block font-medium text-[#333333]">
-              Business Address
-            </label>
+            <label className="block font-medium text-[#333333]">Business Address</label>
             <input
               type="text"
               name="address"
@@ -219,9 +203,7 @@ const SellWithUs = () => {
 
           {/* Description */}
           <div className="md:col-span-2">
-            <label className="block font-medium text-[#333333]">
-              Business Description
-            </label>
+            <label className="block font-medium text-[#333333]">Business Description</label>
             <textarea
               name="description"
               className="border-2 border-gray-400 p-2 w-full rounded outline-0"
@@ -231,9 +213,7 @@ const SellWithUs = () => {
 
           {/* Upload Sample */}
           <div className="md:col-span-2">
-            <label className="block font-medium text-[#333333]">
-              Upload Sample (Optional)
-            </label>
+            <label className="block font-medium text-[#333333]">Upload Sample (Optional)</label>
             <input
               type="file"
               name="sampleImage"
@@ -246,35 +226,47 @@ const SellWithUs = () => {
           {/* Password */}
           <div>
             <label className="block font-medium text-[#333333]">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="border-2 border-gray-400 p-2 w-full rounded outline-0"
-              onChange={handleChange}
-            />
-            {errors.password && (
-              <p className="text-red-500">{errors.password}</p>
-            )}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="border-2 border-gray-400 p-2 w-full rounded pr-10 outline-0"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {errors.password && <p className="text-red-500">{errors.password}</p>}
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label className="block font-medium text-[#333333]">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              className="border-2 border-gray-400 p-2 w-full rounded outline-0"
-              onChange={handleChange}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500">{errors.confirmPassword}</p>
-            )}
+            <label className="block font-medium text-[#333333]">Confirm Password</label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                className="border-2 border-gray-400 p-2 w-full rounded pr-10 outline-0"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-500"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword}</p>}
           </div>
 
-          {/* Submit */}
-          <div className="md:col-span-2 text-center">
+          {/* Submit Button */}
+          <div className="md:col-span-2 text-center mt-4">
             <button
               type="submit"
               className="bg-[#30ac57] text-white px-6 py-3 rounded font-semibold hover:bg-green-600"
