@@ -20,7 +20,6 @@ interface UserData {
   terms: boolean;
 }
 
-// The main registration component
 const Register = () => {
   const navigate = useNavigate();
 
@@ -36,15 +35,20 @@ const Register = () => {
 
   const password = watch("password", "");
 
+  // Use the form data to avoid unused variable warning
   const onSubmit = (data: UserData) => {
+    // Example usage: log data or send to backend API
+    console.log("Form submitted:", data);
+
+    // Navigate after submission
     navigate("/");
   };
 
   const handleGoBack = () => {
     if (window.history.length > 1) {
-      navigate(-1); // go back if possible
+      navigate(-1);
     } else {
-      navigate("/"); // else go to home
+      navigate("/");
     }
   };
 
@@ -88,61 +92,37 @@ const Register = () => {
             {/* First and Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                   First Name
                 </label>
                 <input
                   id="firstName"
                   type="text"
                   placeholder="John"
-                  className={`mt-1 block w-full pl-3 pr-3 py-3 border ${
-                    errors.firstName ? "border-red-500" : "border-gray-300"
-                  } rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
-                  {...register("firstName", {
-                    required: "First name is required",
-                  })}
+                  className={`mt-1 block w-full pl-3 pr-3 py-3 border ${errors.firstName ? "border-red-500" : "border-gray-300"} rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
+                  {...register("firstName", { required: "First name is required" })}
                 />
-                {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.firstName.message}
-                  </p>
-                )}
+                {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
               </div>
+
               <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                   Last Name
                 </label>
                 <input
                   id="lastName"
                   type="text"
                   placeholder="Doe"
-                  className={`mt-1 block w-full pl-3 pr-3 py-3 border ${
-                    errors.lastName ? "border-red-500" : "border-gray-300"
-                  } rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
-                  {...register("lastName", {
-                    required: "Last name is required",
-                  })}
+                  className={`mt-1 block w-full pl-3 pr-3 py-3 border ${errors.lastName ? "border-red-500" : "border-gray-300"} rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
+                  {...register("lastName", { required: "Last name is required" })}
                 />
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lastName.message}
-                  </p>
-                )}
+                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
               </div>
             </div>
 
-            {/* Email Address */}
+            {/* Email */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <div className="relative">
@@ -150,35 +130,20 @@ const Register = () => {
                   id="email"
                   type="email"
                   placeholder="john.doe@example.com"
-                  className={`block w-full pl-10 pr-3 py-3 border ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  } rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
+                  className={`block w-full pl-10 pr-3 py-3 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
                   {...register("email", {
                     required: "Email is required",
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Invalid email address",
-                    },
+                    pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" },
                   })}
                 />
-                <HiOutlineMail
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={16}
-                />
+                <HiOutlineMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.email.message}
-                </p>
-              )}
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -186,46 +151,23 @@ const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
-                  className={`block w-full pl-10 pr-10 py-3 border ${
-                    errors.password ? "border-red-500" : "border-gray-300"
-                  } rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
+                  className={`block w-full pl-10 pr-10 py-3 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
                   {...register("password", {
                     required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Must be at least 8 characters long",
-                    },
+                    minLength: { value: 8, message: "Must be at least 8 characters long" },
                   })}
                 />
-                <IoLockClosed
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={16}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer p-1"
-                >
-                  {showPassword ? (
-                    <IoEyeOffOutline size={16} />
-                  ) : (
-                    <IoEyeOutline size={16} />
-                  )}
+                <IoLockClosed className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer p-1">
+                  {showPassword ? <IoEyeOffOutline size={16} /> : <IoEyeOutline size={16} />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.password.message}
-                </p>
-              )}
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <div className="relative">
@@ -233,76 +175,36 @@ const Register = () => {
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
-                  className={`block w-full pl-10 pr-10 py-3 border ${
-                    errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
+                  className={`block w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-full focus:outline-none focus:ring-orange-500 focus:border-orange-500`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
+                    validate: (value) => value === password || "Passwords do not match",
                   })}
                 />
-                <IoLockClosed
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={16}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer p-1"
-                >
-                  {showConfirmPassword ? (
-                    <IoEyeOffOutline size={16} />
-                  ) : (
-                    <IoEyeOutline size={16} />
-                  )}
+                <IoLockClosed className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer p-1">
+                  {showConfirmPassword ? <IoEyeOffOutline size={16} /> : <IoEyeOutline size={16} />}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
             </div>
 
-            {/* Terms of Service Checkbox */}
+            {/* Terms */}
             <div className="flex items-start">
               <input
                 id="terms"
                 type="checkbox"
                 className="mt-1 h-4 w-4 text-[#F89216] focus:ring-[#F89216] border-gray-300 rounded"
                 aria-invalid={errors.terms ? "true" : "false"}
-                {...register("terms", {
-                  required: "You must agree to the terms and privacy policy",
-                })}
+                {...register("terms", { required: "You must agree to the terms and privacy policy" })}
               />
-              <label
-                htmlFor="terms"
-                className="ml-2 block text-sm text-gray-900 leading-tight"
-              >
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900 leading-tight">
                 I agree to the{" "}
-                <a
-                  href="/terms-of-service"
-                  className="text-[#F89216] hover:underline"
-                >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="/privacy-policy"
-                  className="text-[#F89216] hover:underline"
-                >
-                  Privacy Policy
-                </a>
+                <a href="/terms-of-service" className="text-[#F89216] hover:underline">Terms of Service</a> and{" "}
+                <a href="/privacy-policy" className="text-[#F89216] hover:underline">Privacy Policy</a>
               </label>
             </div>
-            {errors.terms && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.terms.message}
-              </p>
-            )}
+            {errors.terms && <p className="text-red-500 text-xs mt-1">{errors.terms.message}</p>}
 
             {/* Submit Button */}
             <div className="w-max mx-auto flex justify-center">
@@ -319,16 +221,10 @@ const Register = () => {
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Already have an account?{" "}
-              <Link to="/login" className="text-[#F89216] hover:underline">
-                Sign in
-              </Link>
+              Already have an account? <Link to="/login" className="text-[#F89216] hover:underline">Sign in</Link>
             </p>
             <p className="text-gray-600 mt-2">
-              Want to sell instead?{" "}
-              <Link to="/sellwithus" className="text-[#F89216] hover:underline">
-                Join as Seller
-              </Link>
+              Want to sell instead? <Link to="/sellwithus" className="text-[#F89216] hover:underline">Join as Seller</Link>
             </p>
           </div>
         </motion.div>

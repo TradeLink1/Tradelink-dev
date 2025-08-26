@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosPeople } from "react-icons/io";
 import { MdManageAccounts } from "react-icons/md";
 import { TbBulb } from "react-icons/tb";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 // BENEFITS DATA
@@ -76,7 +77,11 @@ const SellWithUs = () => {
       console.log("Seller Registration Data:", formData);
       alert("Seller registered successfully!");
 
-      navigate("/login");
+      // Optional: simulate login for protected route
+      localStorage.setItem("sellerLoggedIn", "true");
+
+      // Navigate directly to seller dashboard
+      navigate("/dashboard");
     }
   };
 
@@ -242,19 +247,36 @@ const SellWithUs = () => {
 
             {/* Passwords */}
             {[
-              { name: "password", label: "Password" },
-              { name: "confirmPassword", label: "Confirm Password" },
-            ].map(({ name, label }) => (
-              <div key={name}>
+              {
+                name: "password",
+                label: "Password",
+                show: showPassword,
+                setShow: setShowPassword,
+              },
+              {
+                name: "confirmPassword",
+                label: "Confirm Password",
+                show: showConfirmPassword,
+                setShow: setShowConfirmPassword,
+              },
+            ].map(({ name, label, show, setShow }) => (
+              <div key={name} className="relative">
                 <label className="block font-medium mb-2 text-[#333333]">
                   {label}
                 </label>
                 <input
-                  type="password"
+                  type={show ? "text" : "password"}
                   name={name}
                   className="border-2 border-gray-300 focus:border-[#30ac57] focus:ring-4 focus:ring-[#30ac57]/30 p-3 w-full rounded-full outline-none transition-all duration-200"
                   onChange={handleChange}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShow(!show)}
+                  className="absolute right-4 top-15 transform -translate-y-1/2 text-gray-500"
+                >
+                  {show ? <FaEyeSlash /> : <FaEye />}
+                </button>
                 {errors[name] && <p className="text-red-500">{errors[name]}</p>}
               </div>
             ))}
