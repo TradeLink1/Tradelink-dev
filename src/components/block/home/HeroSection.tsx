@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import hero1 from "../../../assets/images/hero-images/hero1.jpeg";
 import hero2 from "../../../assets/images/hero-images/hero2.jpg";
@@ -15,6 +16,7 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
+import { FiSearch } from "react-icons/fi";
 
 const slides = [
   {
@@ -45,10 +47,7 @@ const slides = [
     image: hero7,
     title: `“Find the service you need — from the people who live right around you.”`,
   },
-  {
-    image: hero8,
-    title: `“Real people. Real businesses. Real connections.”`,
-  },
+  { image: hero8, title: `“Real people. Real businesses. Real connections.”` },
   {
     image: hero9,
     title: `“Discover, connect, and support the hands behind the hustle.”`,
@@ -64,23 +63,11 @@ const HeroSection = () => {
   const { query, setQuery } = useSearch();
 
   const goToNextSlide = () => {
-    if (currentSlideIndex === slides.length - 1) {
-      // If we're at the last slide, go back to the first
-      setCurrentSlideIndex(0);
-    } else {
-      // Otherwise, move to the next slide
-      setCurrentSlideIndex(currentSlideIndex + 1);
-    }
+    setCurrentSlideIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
   const goToPreviousSlide = () => {
-    if (currentSlideIndex === 0) {
-      // If we're at the first slide, go to the last
-      setCurrentSlideIndex(slides.length - 1);
-    } else {
-      // Otherwise, move to the previous slide
-      setCurrentSlideIndex(currentSlideIndex - 1);
-    }
+    setCurrentSlideIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   const triggerSearch = () => {
@@ -96,116 +83,101 @@ const HeroSection = () => {
       goToNextSlide();
     }, 5000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [currentSlideIndex]);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <section className="relative max-w-[1280px]  mx-auto mt-45 rounded-[100px] h-[700px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[370px] max-mobile:h-[310px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
-      {slides.map((slide, index) => {
-        if (index === currentSlideIndex) {
-          return (
-            <div
-              key={index}
-              className="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100 z-0"
-            >
-              <img
-                src={slide.image}
-                alt={`Slide ${index}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div
-              key={index}
-              className="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0"
-            >
-              <img
-                src={slide.image}
-                alt={`Slide ${index}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          );
-        }
-      })}
-
-      {/* black overlay */}
-      <div className="absolute inset-0 bg-black/55 z-10" />
-
-      <div className="relative z-20 flex flex-col justify-center items-center h-full text-white text-center px-4 max-tablet:px-6 max-mobile:px-7">
-        <h1
+    <section className="relative max-w-[1200px] mx-auto mt-45 rounded-[100px] h-[700px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[370px] max-mobile:h-[310px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
+      <AnimatePresence mode="wait">
+        <motion.div
           key={currentSlideIndex}
-          className="text-[60px] max-w-[800px] leading-16  font-bold mb-8 opacity-0 transition-opacity duration-600 ease-in-out animate-slide-up max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[40px]"
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        >
+          <img
+            src={slides[currentSlideIndex].image}
+            alt={`Slide ${currentSlideIndex}`}
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* overlay */}
+      <div className="absolute inset-0 bg-[#010c1aa7] z-10" />
+
+      {/* Text + Search */}
+      <div className="relative z-20 flex flex-col justify-center items-center h-full text-white text-center px-4">
+        <motion.h1
+          key={currentSlideIndex}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -40 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-[60px] max-w-[800px] leading-16 font-bold mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
         >
           {slides[currentSlideIndex].title}
-        </h1>
+        </motion.h1>
 
-        <div className="flex justify-between gap-3 max-[510px]:text-[14px]">
-          <div className="rounded-l-full flex items-center bg-white overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="flex justify-between gap-3 max-[510px]:text-[14px]"
+        >
+          <div className="rounded-l-full relative flex items-center bg-white overflow-hidden">
+            <FiSearch className="absolute left-5 top-5 text-gray-500 max-mobile:top-3 max-mobile:left-7 max-mobile:text-[10px] max-[510px]:top-4" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  triggerSearch();
-                }
-              }}
+              onKeyDown={(e) => e.key === "Enter" && triggerSearch()}
               placeholder="Search for sellers, artisans..."
-              className="px-45 py-4 text-black outline-none max-tablet:px-10 max-tablet:py-2 max-mobile:max-w-[150px] max-mobile:h-[10px] max-mobile:text-[8px]"
+              className="px-45 py-4 text-left text-[#424242] outline-none max-tablet:px-10 max-tablet:py-2 max-mobile:max-w-[150px] max-mobile:h-[10px] max-mobile:text-[8px]"
             />
           </div>
           <div>
             <button
               onClick={triggerSearch}
-              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#f89216] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px]"
+              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#333333] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px] max-[510px]:text-[10px]"
             >
               Search
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Navigation Arrows */}
       <button
         onClick={goToPreviousSlide}
-        className="absolute left-5 max-mobile:left-2 top-1/2 transform -translate-y-1/2 text-[#f89216] hover:text-[#30ac57] text-5xl z-30 max-tablet:text-4xl max-mobile:text-3xl"
+        className="absolute left-5 max-mobile:left-2 top-1/2 transform -translate-y-1/2 text-[#f89216] hover:text-[#30ac57] text-5xl z-30 max-mobile:text-4xl max-[510px]:text-[40px] max-[510px]:left-3"
       >
         <IoIosArrowDropleftCircle />
       </button>
-
       <button
         onClick={goToNextSlide}
-        className="absolute right-5 max-mobile:right-2 top-1/2  transform -translate-y-1/2 text-[#f89216] hover:text-[#30ac57] text-5xl z-30 max-tablet:text-4xl max-mobile:text-3xl"
+        className="absolute right-5 max-mobile:right-2 top-1/2 transform -translate-y-1/2 text-[#f89216] hover:text-[#30ac57] text-5xl z-30 max-mobile:text-4xl max-[510px]:text-[40px] max-[510px]:right-3"
       >
         <IoIosArrowDroprightCircle />
       </button>
 
       {/* Bottom Dots */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-3 z-[10] max-tablet:bottom-13 max-mobile:bottom-6 max-[510px]:bottom-7">
-        {slides.map((_, index) => {
-          if (index === currentSlideIndex) {
-            return (
-              <button
-                key={index}
-                onClick={() => setCurrentSlideIndex(index)}
-                className="py-1.5 px-1.5 rounded-full cursor-pointer transition-all duration-300 bg-[#F89216] scale-125 max-tablet:px-1 max-tablet:py-1"
-              />
-            );
-          } else {
-            return (
-              <button
-                key={index}
-                onClick={() => setCurrentSlideIndex(index)}
-                className="py-1.5 px-1.5 rounded-full cursor-pointer transition-all duration-300 bg-white/40 max-tablet:px-1 max-tablet:py-1"
-              />
-            );
-          }
-        })}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-3 z-[10] max-tablet:bottom-14 max-mobile:bottom-8 max-[510px]:bottom-9">
+        {slides.map((_, index) => (
+          <motion.button
+            key={index}
+            onClick={() => setCurrentSlideIndex(index)}
+            className={`py-1.5 px-1.5 rounded-full cursor-pointer transition-all duration-300 max-mobile:py-1 max-mobile:px-1 max-[510px]:px-1 max-[510px]:py-1 ${
+              index === currentSlideIndex
+                ? "bg-[#F89216] scale-125"
+                : "bg-white/40"
+            }`}
+            whileHover={{ scale: 1.3 }}
+            whileTap={{ scale: 0.9 }}
+          />
+        ))}
       </div>
     </section>
   );

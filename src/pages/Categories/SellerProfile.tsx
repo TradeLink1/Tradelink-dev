@@ -1,6 +1,6 @@
-// src/pages/Categories/SellerProfile.tsx
-import { useState, useEffect } from "react";
+import { /*useEffect, useState*/ } from "react";
 import { useParams, Link } from "react-router-dom";
+import { categories as localCategories } from "../../data/categorieData";
 
 interface Seller {
   id: string;
@@ -18,22 +18,32 @@ interface Category {
 
 export default function SellerProfile() {
   const { categoryId, sellerId } = useParams();
-  const [seller, setSeller] = useState<Seller | null>(null);
+
+  // --- OFFLINE VERSION (default) ---
+  const category = localCategories.find((c) => c.id === categoryId);
+  const seller = category?.sellers.find((s) => s.id === sellerId);
+
+  // --- API VERSION (commented out for now) ---
+  /*
   const [category, setCategory] = useState<Category | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
 
   useEffect(() => {
-    fetch(`https://my-json-server.typicode.com/your-username/tradelink/categories/${categoryId}`)
+    fetch(`https://my-json-server.typicode.com/<your-username>/<repo>/categories?id=${categoryId}`)
       .then((res) => res.json())
       .then((data) => {
-        setCategory(data);
-        const foundSeller = data.sellers.find((s: Seller) => s.id === sellerId);
-        setSeller(foundSeller || null);
+        if (data.length > 0) {
+          setCategory(data[0]);
+          const foundSeller = data[0].sellers.find((s: Seller) => s.id === sellerId);
+          setSeller(foundSeller || null);
+        }
       })
       .catch((err) => console.error(err));
   }, [categoryId, sellerId]);
+  */
 
-  if (!seller || !category) {
-    return <div className="p-6">Loading seller...</div>;
+  if (!category || !seller) {
+    return <div className="p-6">Seller not found</div>;
   }
 
   return (

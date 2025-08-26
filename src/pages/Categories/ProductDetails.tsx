@@ -1,6 +1,6 @@
-// src/pages/Categories/ProductDetails.tsx
-import { useState, useEffect } from "react";
+import { useState/*, useEffect*/ } from "react";
 import { useParams, Link } from "react-router-dom";
+import { categories as localCategories } from "../../data/categorieData";
 
 interface Seller {
   id: string;
@@ -18,24 +18,30 @@ interface Category {
 
 export default function ProductDetails() {
   const { categoryId } = useParams();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
+  // --- OFFLINE VERSION (default) ---
+  const category = localCategories.find((c) => c.id === categoryId);
+
+  // --- API VERSION (commented out for now) ---
+  /*
+  const [category, setCategory] = useState<Category | null>(null);
   useEffect(() => {
-    fetch(`https://my-json-server.typicode.com/your-username/tradelink/categories/${categoryId}`)
+    fetch(`https://my-json-server.typicode.com/<your-username>/<repo>/categories?id=${categoryId}`)
       .then((res) => res.json())
-      .then((data) => setCategory(data))
+      .then((data) => setCategory(data[0]))
       .catch((err) => console.error(err));
   }, [categoryId]);
+  */
 
-  const filteredSellers =
-    category?.sellers.filter((seller) =>
-      seller.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (!category) {
-    return <div className="p-6">Loading category...</div>;
+    return <div className="p-6">Category not found</div>;
   }
+
+  const filteredSellers = category.sellers.filter((seller) =>
+    seller.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="p-6 bg-yellow-50 min-h-screen">

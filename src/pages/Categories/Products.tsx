@@ -1,6 +1,6 @@
-// src/pages/Categories/Products.tsx
-import { useState, useEffect } from "react";
+import { useState/*, useEffect*/ } from "react";
 import { Link } from "react-router-dom";
+import { categories as localCategories } from "../../data/categorieData";
 
 interface Seller {
   id: string;
@@ -17,15 +17,21 @@ interface Category {
 }
 
 export default function Products() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  // --- OFFLINE VERSION (default) ---
+  const [categories] = useState<Category[]>(localCategories);
 
+  // --- API VERSION (commented out for now) ---
+  /*
+  const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
-    fetch("https://my-json-server.typicode.com/ojele45/tradelink-api/categories")
+    fetch("https://my-json-server.typicode.com/<your-username>/<repo>/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
   }, []);
+  */
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredCategories = categories.filter((category) =>
     category.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -34,6 +40,7 @@ export default function Products() {
   return (
     <div className="p-6 bg-yellow-50 min-h-screen">
       <h1 className="text-3xl font-bold text-center mb-4">Product Categories</h1>
+
       <div className="flex justify-center mb-6">
         <input
           type="text"
