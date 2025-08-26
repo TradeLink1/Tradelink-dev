@@ -8,7 +8,10 @@ import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/Contact";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import Product from "./pages/Categories/Product";
+// NEW imports for category flow
+import Products from "./pages/Categories/Products";          // Categories list page
+import ProductDetails from "./pages/Categories/ProductDetails"; // Sellers in category
+import SellerProfile from "./pages/Categories/SellerProfile";   // Single seller profile
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
 
@@ -21,7 +24,10 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           {/* <Route path="/Categories" element={<Categories />} /> */}
-          <Route path="/Categories/Products" element={<Product />} />
+          {/* Categories flow */}
+          <Route path="/Categories/Products" element={<Products />} />
+          <Route path="/Categories/Products/:categoryId" element={<ProductDetails />} />
+          <Route path="/Categories/Products/:categoryId/seller/:sellerId" element={<SellerProfile />} />
           <Route path="/Categories/Services" element={<Services />} />
           <Route path="/SellWithUs" element={<SellWithUs />} />
           <Route path="/Faq" element={<Faq />} />
