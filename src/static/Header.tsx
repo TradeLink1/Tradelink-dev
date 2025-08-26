@@ -63,7 +63,7 @@ const Header = () => {
           WebkitBackdropFilter: "saturate(180%) blur(8px)",
         }}
       >
-        <div className="px-20 py-5 flex justify-between items-center max-w-[1250px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
+        <div className="px-20 py-5 flex justify-between items-center max-w-[1200px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
           <section className="flex gap-18 items-center  ">
             <div>
               <Link to="/">
