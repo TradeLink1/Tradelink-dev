@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Search, MapPin, Briefcase, Clock, X } from "lucide-react";
-import Button from "../../reusable/Button";
+import Button from "../../components/reusable/Button";
 
 const ServiceProviders: React.FC = () => {
   const [query, setQuery] = useState("");
