@@ -164,43 +164,56 @@ const ServiceProviders: React.FC = () => {
       </div>
 
       {/* Providers grid (8 on xl) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
-        {filtered.map((p, idx) => (
-          <div
-            key={idx}
-            className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
-            onClick={() => {
-              const isLoggedIn = !!localStorage.getItem("authToken");
-              if (!isLoggedIn) {
-                navigate("/login"); // redirect if not logged in
-                return;
-              }
-              setSelectedProvider(p);
-            }}
-          >
-            <div className="relative">
-              <img
-                src={p.image}
-                alt={p.name}
-                className="h-28 w-full object-cover rounded mb-3"
-              />
-              {p.verified && (
-                <span className="absolute top-2 right-2 bg-green-500 text-white text-[12px] px-1.5 py-0.5 rounded">
-                  Verified
-                </span>
-              )}
-            </div>
-            <h3 className="font-medium text-xs sm:text-sm">{p.name}</h3>
-            <p className="text-[10px] sm:text-xs text-gray-500">
-              {p.category} • {p.location}
-            </p>
-            <p className="text-[20px] text-yellow-600">⭐ {p.rating}</p>
-            <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
-              View Profile
-            </Button>
-          </div>
-        ))}
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
+  {filtered.map((p, idx) => (
+    <div
+      key={idx}
+      className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
+      onClick={() => {
+        const isLoggedIn = !!localStorage.getItem("authToken");
+        if (!isLoggedIn) {
+          navigate("/login"); // redirect if not logged in
+          return;
+        }
+        setSelectedProvider(p);
+      }}
+    >
+      <div className="relative">
+        <img
+          src={p.image}
+          alt={p.name}
+          className="h-28 w-full object-cover rounded mb-3"
+        />
+        {p.verified && (
+          <span className="absolute top-2 right-2 bg-green-500 text-white text-[12px] px-1.5 py-0.5 rounded">
+            Verified
+          </span>
+        )}
       </div>
+
+      {/* Service (category) first */}
+      <h3 className="font-semibold text-lg sm:text-sm text-orange-600">
+        {p.category}
+      </h3>
+
+      {/* Provider name under service */}
+      <p className="font-medium text-[11px] sm:text-xs text-gray-800">
+        {p.name}
+      </p>
+
+      {/* Location */}
+      <p className="text-[10px] sm:text-xs text-gray-500">{p.location}</p>
+
+      {/* Rating */}
+      <p className="text-[20px] text-yellow-600">⭐ {p.rating}</p>
+
+      <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
+        View Profile
+      </Button>
+    </div>
+  ))}
+</div>
+
 
       {/* Details Modal */}
       {selectedProvider && (
