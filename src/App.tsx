@@ -33,7 +33,7 @@ import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/routes/ProtectRoute";
+// import ProtectedRoute from "./components/routes/ProtectRoute";
 
 
 const Layout = () => {
@@ -65,7 +65,7 @@ const App = () => {
           {/* <Route path="/Categories" element={<Categories />} /> */}
           <Route path="/Categories/Products" element={<Products />} />
           <Route path="/Categories/Products/:categoryId" element={<ProductDetails />} />
-          <Route path="/Categories/Products/:categoryId/seller/:sellerId" element={ <ProtectedRoute><SellerProfile /></ProtectedRoute>} />
+          <Route path="/Categories/Products/:categoryId/seller/:sellerId" element={ <SellerProfile />} />
           <Route path="/Categories/Services" element={<Services />} />
           <Route path="/SellWithUs" element={<SellWithUs />} />
           <Route path="/Faq" element={<Faq />} />

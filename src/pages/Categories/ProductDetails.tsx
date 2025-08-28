@@ -1,6 +1,6 @@
 import { useState/*, useEffect*/ } from "react";
 import { useParams, Link } from "react-router-dom";
-import { categories as localCategories } from "../../data/categorieData";
+import { categories as localCategories } from "../../data/categories";
 
 interface Seller {
   id: string;
