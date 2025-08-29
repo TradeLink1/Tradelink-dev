@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import api from "../../api/axios";
+import { set } from "react-hook-form";
 
 
 
@@ -32,28 +34,27 @@ const Overview = () => {
 
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
+  const [sellerName, setSellerName] =useState("Loading...")
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         
-        setStats({
-          totalProducts: 12,
-          pendingOrders: 3,
-          totalSales: 45000,
-          messages: 5,
+       const profileRes =await api.get('/seller/profile');
+       const seller =profileRes.data
+       
+       setSellerName(seller.name || "Your Shop")
+
+         setStats({
+          totalProducts: seller.totalProducts || 0,
+          pendingOrders: seller.pendingOrders || 0,
+          totalSales: seller.totalSales || 0,
+          messages: seller.messages || 0,
         });
+        setRecentOrders(seller.recentOrders || []);
+        setRecentMessages(seller.recentMessages || [])
 
-        setRecentOrders([
-          { id: 1, customer: "John Doe", product: "Gas Cooker", status: "Pending" },
-          { id: 2, customer: "Jane Smith", product: "Blender", status: "Completed" },
-          { id: 3, customer: "Paul Adams", product: "Yam Tubers", status: "Pending" },
-        ]);
 
-        setRecentMessages([
-          { id: 1, sender: "John Doe", message: "Is the gas cooker still available?" },
-          { id: 2, sender: "Mary Obi", message: "Can you deliver to Lagos Island?" },
-        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -66,7 +67,7 @@ const Overview = () => {
     <div className="w-full min-h-screen bg-[#fbf2e7] p-6 max-w-[1280px]">
 
       <h1 className="text-2xl font-bold mb-4 text-[#f89216]">
-        Welcome back, <span className="text-[]">Rose’s Kitchen!</span>
+        Welcome back, <span className="text-[]">{sellerName}</span>
       </h1>
 
     

@@ -5,6 +5,8 @@ import { MdManageAccounts } from "react-icons/md";
 import { TbBulb } from "react-icons/tb";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
+import api from "../../api/axios"; // 👈 your axios instance
 
 // BENEFITS DATA
 const benefits = [
@@ -40,11 +42,13 @@ const SellWithUs = () => {
     sampleImage: null as File | null,
     password: "",
     confirmPassword: "",
+    
   });
 
   const [errors, setErrors] = useState<any>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target;
@@ -73,17 +77,75 @@ const SellWithUs = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: any) => {
+  // 📌 Registration + Email Verification
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log("Seller Registration Data:", formData);
-      alert("Seller registered successfully!");
+    if (!validateForm()) return;
 
-      // Optional: simulate login for protected route
-      localStorage.setItem("sellerLoggedIn", "true");
+    try {
+      setLoading(true);
+      
+      const payload = {
+      name: formData.ownerName, 
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone,
+      storeName: formData.businessName,
+      businessLevel: formData.businessLevel,
+      category: formData.category,
+      address: formData.address,
+      description: formData.description,
+      sampleImage: formData.sampleImage,
+      role:"seller"
+    };
 
-      // Navigate directly to seller dashboard
-      navigate("/dashboard");
+
+      await api.post("/api/v1/auth/register", payload);
+
+      Swal.fire({
+        icon: "success",
+        title: "Registration Successful 🎉",
+        text: "Please check your email to verify your account.",
+        confirmButtonColor: "#30ac57",
+      });
+
+      // Don’t log them in yet → wait for verification
+      navigate("/login");
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: error?.response?.data?.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 📌 Resend Verification Email
+  const handleResendVerification = async () => {
+    if (!formData.email) {
+      return Swal.fire("Error", "Please enter your email first", "error");
+    }
+    try {
+      await api.post("/api/v1/auth/resend-verification", {
+        email: formData.email,
+      });
+
+      
+      Swal.fire(
+        "Email Sent 📧",
+        "Verification link has been resent to your email.",
+        "success"
+      );
+
+    navigate("/login")
+    } catch (error: any) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Failed to resend email",
+        "error"
+      );
     }
   };
 
@@ -107,7 +169,7 @@ const SellWithUs = () => {
             <motion.button
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-[#30ac57] text-[#ffffff] px-7 py-3 cursor-pointer rounded-[10px] font-semibold hover:text-white hover:bg-[#333333] hover:rounded-full transition-all 0.2s ease-in-out transform 0.2s ease"
+              className="bg-[#30ac57] text-[#ffffff] px-7 py-3 cursor-pointer rounded-[10px] font-semibold hover:text-white hover:bg-[#333333] hover:rounded-full transition-all"
             >
               Start Selling Now
             </motion.button>
@@ -289,10 +351,23 @@ const SellWithUs = () => {
                 type="submit"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#f89216] mt-6 text-[#ffffff] px-7 py-3 cursor-pointer rounded-[10px] font-semibold hover:text-white hover:bg-[#30ac57] hover:rounded-full transition-all 0.2s ease-in-out transform 0.2s ease"
+                disabled={loading}
+                className="bg-[#f89216] mt-6 text-[#ffffff] px-7 py-3 cursor-pointer rounded-[10px] font-semibold hover:text-white hover:bg-[#30ac57] hover:rounded-full transition-all disabled:opacity-50"
               >
-                Register as Seller
+                {loading ? "Registering..." : "Register as Seller"}
               </motion.button>
+
+              {/* Resend Email */}
+              <p className="mt-4 text-gray-600">
+                Didn’t get the email?{" "}
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  className="text-[#30ac57] font-semibold hover:underline"
+                >
+                  Resend Verification
+                </button>
+              </p>
             </div>
           </form>
         </motion.section>

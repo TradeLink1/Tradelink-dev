@@ -15,10 +15,7 @@ import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-// NEW imports for category flow
-import Products from "./pages/Categories/Products";          // Categories list page
-import ProductDetails from "./pages/Categories/ProductDetails"; // Sellers in category
-import SellerProfile from "./pages/Categories/SellerProfile";   // Single seller profile
+import Product from "./pages/Categories/Products";
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
 import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
@@ -32,9 +29,9 @@ import AdminOverview from "./pages/adminDashboard/AdminOverview";
 import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
+import ProtectRoute from "./components/routes/ProtectRoute";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/routes/ProtectRoute";
-
+import VerifyEmail from "./pages/Register/VerifyEmail";
 
 const Layout = () => {
   const location = useLocation();
@@ -55,28 +52,46 @@ const Layout = () => {
 
 const App = () => {
   return (
-    <SearchProvider>
-        <AuthProvider>
-      <BrowserRouter>
-        <Header />
+    <div className=" mx-auto">
+      <AuthProvider>
+      <SearchProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              {/* <Route path="/Categories" element={<Categories />} /> */}
+              <Route path="/Categories/Products" element={<Product />} />
+              <Route path="/Categories/Services" element={<Services />} />
+              <Route path="/SellWithUs" element={<SellWithUs />} />
+              <Route path="/Faq" element={<Faq />} />
+              <Route path="/Contact" element={<Contact />} />
+              <Route path="/Login" element={<Login />} />
+              <Route path="/Register" element={<Register />} />
+              <Route path="/VerifyEmail/:token" element={<Register/>} />
+            </Route>
+              {/* Nested dashboard routes */}
+              <Route path="/dashboard" element={<DashboardLayout/>} >
+                <Route index element={<Overview />} />
+                <Route path="upload" element={<UploadProduct />} />
+                <Route path="listings" element={<MyListings />} />
+                <Route path="messages" element={<Messages />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+          
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/Categories" element={<Categories />} /> */}
-          <Route path="/Categories/Products" element={<Products />} />
-          <Route path="/Categories/Products/:categoryId" element={<ProductDetails />} />
-          <Route path="/Categories/Products/:categoryId/seller/:sellerId" element={ <ProtectedRoute><SellerProfile /></ProtectedRoute>} />
-          <Route path="/Categories/Services" element={<Services />} />
-          <Route path="/SellWithUs" element={<SellWithUs />} />
-          <Route path="/Faq" element={<Faq />} />
-          <Route path="/Contact" element={<Contact />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
+            <Route path ="/admin" element={<AdminLayout/>}>
+            <Route index element ={<AdminOverview/>}/>
+            <Route path="sellers" element={<AdminSellers/>}/>
+            <Route path ="reports" element={<AdminSellersReport/>}/>
+            <Route path="kyc" element={<AdminKyc/>} />
+            
+
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </SearchProvider>
       </AuthProvider>
-    </SearchProvider>
+    </div>
   );
 };
 
