@@ -2,19 +2,19 @@ import { useState /*, useEffect*/ } from "react";
 import { useParams, Link } from "react-router-dom";
 import { categories as localCategories } from "../../data/categories";
 
-interface Seller {
-  id: string;
-  name: string;
-  products: string[];
-  image: string;
-}
+// interface Seller {
+//   id: string;
+//   name: string;
+//   products: string[];
+//   image: string;
+// }
 
-interface Category {
-  id: string;
-  title: string;
-  image: string;
-  sellers: Seller[];
-}
+// interface Category {
+//   id: string;
+//   title: string;
+//   image: string;
+//   sellers: Seller[];
+// }
 
 export default function ProductDetails() {
   const { categoryId } = useParams();

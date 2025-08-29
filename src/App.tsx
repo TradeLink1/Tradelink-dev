@@ -67,10 +67,10 @@ const App = () => {
               <Route path="/Contact" element={<Contact />} />
               <Route path="/Login" element={<Login />} />
               <Route path="/Register" element={<Register />} />
-              <Route path="/VerifyEmail/:token" element={<Register/>} />
+              <Route path="/VerifyEmail/:token" element={<VerifyEmail/>} />
             </Route>
               {/* Nested dashboard routes */}
-              <Route path="/dashboard" element={<DashboardLayout/>} >
+              <Route path="/dashboard" element={<ProtectRoute><DashboardLayout/></ProtectRoute>} >
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
                 <Route path="listings" element={<MyListings />} />

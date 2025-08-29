@@ -69,7 +69,7 @@ const Login: React.FC = () => {
         role, // ✅ send selected role to backend
       });
 
-      const { token, role: backendRole, emailVerified } = res.data;
+      const { token, role: backendRole,  } = res.data;
 
       // ✅ Role mismatch check
       if (backendRole !== role) {
