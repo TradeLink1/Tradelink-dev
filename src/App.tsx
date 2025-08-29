@@ -15,8 +15,13 @@ import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import Product from "./pages/Categories/Product";
+
+// NEW imports for category flow
+import Products from "./pages/Categories/Products"; // Categories list page
+import ProductDetails from "./pages/Categories/ProductDetails"; // Sellers in category
+import SellerProfile from "./pages/Categories/SellerProfile"; // Single seller profile
 import Services from "./pages/Categories/Services";
+
 import { SearchProvider } from "./context/SearchContext";
 
 import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
@@ -31,7 +36,10 @@ import AdminOverview from "./pages/adminDashboard/AdminOverview";
 import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
+
 import ScrollToTop from "./settings/ScrollToTop";
+import { AuthProvider } from "./context/AuthContext";
+// import ProtectedRoute from "./components/routes/ProtectRoute";
 
 // ------------------ Layout ------------------
 const Layout = () => {
@@ -63,48 +71,56 @@ const NotFound = () => (
 // ------------------ App ------------------
 const App = () => {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <SearchProvider>
-        <Routes>
-          {/* Layout wrapper */}
-          <Route element={<Layout />}>
-            {/* Home */}
-            <Route path="/" element={<Home />} />
+    <div className="mx-auto">
+      <AuthProvider>
+        <SearchProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                {/* <Route path="/Categories" element={<Categories />} /> */}
+                <Route path="/Categories/Products" element={<Products />} />
+                <Route
+                  path="/Categories/Products/:id"
+                  element={<ProductDetails />}
+                />
+                <Route
+                  path="/Categories/Seller/:id"
+                  element={<SellerProfile />}
+                />
+                <Route path="/Categories/Services" element={<Services />} />
+                <Route path="/SellWithUs" element={<SellWithUs />} />
+                <Route path="/Faq" element={<Faq />} />
+                <Route path="/Contact" element={<Contact />} />
+                <Route path="/Login" element={<Login />} />
+                <Route path="/Register" element={<Register />} />
 
-            {/* Public Pages */}
-            {/* <Route path="Categories" element={<Categories />} /> */}
-            <Route path="Categories/Products" element={<Product />} />
-            <Route path="Categories/Services" element={<Services />} />
-            <Route path="SellWithUs" element={<SellWithUs />} />
-            <Route path="Faq" element={<Faq />} />
-            <Route path="Contact" element={<Contact />} />
-            <Route path="Login" element={<Login />} />
-            <Route path="Register" element={<Register />} />
+                {/* Nested dashboard routes */}
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Overview />} />
+                  <Route path="upload" element={<UploadProduct />} />
+                  <Route path="listings" element={<MyListings />} />
+                  <Route path="messages" element={<Messages />} />
+                  <Route path="settings" element={<Settings />} />
+                </Route>
+              </Route>
 
-            {/* Seller Dashboard */}
-            <Route path="dashboard" element={<DashboardLayout />}>
-              <Route index element={<Overview />} />
-              <Route path="upload" element={<UploadProduct />} />
-              <Route path="listings" element={<MyListings />} />
-              <Route path="messages" element={<Messages />} />
-              <Route path="settings" element={<Settings />} />
-            </Route>
+              {/* Admin routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+                <Route path="sellers" element={<AdminSellers />} />
+                <Route path="reports" element={<AdminSellersReport />} />
+                <Route path="kyc" element={<AdminKyc />} />
+              </Route>
 
-            {/* Admin Dashboard */}
-            <Route path="admin" element={<AdminLayout />}>
-              <Route index element={<AdminOverview />} />
-              <Route path="sellers" element={<AdminSellers />} />
-              <Route path="reports" element={<AdminSellersReport />} />
-              <Route path="kyc" element={<AdminKyc />} />
-            </Route>
-
-            {/* 404 Fallback */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </SearchProvider>
-    </BrowserRouter>
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </SearchProvider>
+      </AuthProvider>
+    </div>
   );
 };
 
