@@ -70,7 +70,7 @@ const App = () => {
               <Route path="/VerifyEmail/:token" element={<VerifyEmail/>} />
             </Route>
               {/* Nested dashboard routes */}
-              <Route path="/dashboard" element={<ProtectRoute><DashboardLayout/></ProtectRoute>} >
+              <Route path="/dashboard" element={<ProtectRoute allowedRole="seller"><DashboardLayout/></ProtectRoute>} >
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
                 <Route path="listings" element={<MyListings />} />
