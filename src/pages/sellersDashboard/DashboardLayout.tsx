@@ -1,6 +1,14 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FiMenu } from "react-icons/fi";
+import {
+  FiMenu,
+  FiHome,
+  FiUpload,
+  FiList,
+  FiMessageSquare,
+  FiSettings,
+  FiLogOut,
+} from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 
 const DashboardLayout = () => {
@@ -16,22 +24,47 @@ const DashboardLayout = () => {
     navigate("/");
   };
 
+  const navItems = [
+    { name: "Overview", path: "/dashboard", icon: <FiHome size={18} /> },
+    {
+      name: "Upload Products",
+      path: "/dashboard/upload",
+      icon: <FiUpload size={18} />,
+    },
+    {
+      name: "My Listings",
+      path: "/dashboard/listings",
+      icon: <FiList size={18} />,
+    },
+    {
+      name: "Messages",
+      path: "/dashboard/messages",
+      icon: <FiMessageSquare size={18} />,
+    },
+    {
+      name: "Settings",
+      path: "/dashboard/settings",
+      icon: <FiSettings size={18} />,
+    },
+  ];
+
   return (
-    <div className="flex mx-auto pt-[80px] relative max-w-[1200px]">
+    <div className="flex h-screen w-full overflow-hidden relative">
+      {/* Sidebar */}
       <aside
         className={`
-          bg-[#333333] border-r p-5 shadow-lg 
-          md:sticky md:top-[80px] md:h-[calc(100vh-80px)]
-          w-64 transition-transform duration-300 ease-in-out
-          md:translate-x-0 max-tablet:h-full 
+          bg-[#1e1e1e]  p-10
+          w-70 transition-transform duration-300 ease-in-out
+          md:translate-x-0 h-full
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           fixed md:relative left-0 z-40
-          top-[80px] h-auto md:h-[calc(100vh-80px)]
         `}
       >
-        <div className="flex items-center justify-between border-b-2 border-[#d6d6d6] mb-7 pb-5 pt-6">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b-2 border-[#d6d6d6] mb-7 pb-5">
           <h2 className="text-xl pl-3 font-bold text-[#f89216]">
-            Seller Dashboard
+            Seller{" "}
+            <span className="font-medium text-[#ffffff]"> Dashboard</span>
           </h2>
           <button
             className="md:hidden p-1 rounded-md cursor-pointer bg-[#f89216]"
@@ -41,50 +74,48 @@ const DashboardLayout = () => {
           </button>
         </div>
 
-        <nav className="flex flex-col gap-4 text-[#333333] font-semibold pl-3">
-          <NavLink to="/dashboard" end onClick={closeSidebar}>
-            <div className="hover:text-[#f89216] text-[#333333] bg-white p-2 shadow-lg rounded-2xl text-center">
-              Overview
-            </div>
-          </NavLink>
-          <NavLink to="/dashboard/upload" onClick={closeSidebar}>
-            <div className="hover:text-[#f89216] text-[#333333] bg-white p-2 rounded-2xl shadow-lg text-center">
-              Upload Products
-            </div>
-          </NavLink>
-          <NavLink to="/dashboard/listings" onClick={closeSidebar}>
-            <div className="hover:text-[#f89216] text-[#333333] bg-white p-2 shadow-lg rounded-2xl text-center">
-              My Listings
-            </div>
-          </NavLink>
-          <NavLink to="/dashboard/messages" onClick={closeSidebar}>
-            <div className="hover:text-[#f89216] text-[#333333] bg-white p-2 shadow-lg rounded-2xl text-center">
-              Messages
-            </div>
-          </NavLink>
-          <NavLink to="/dashboard/settings" onClick={closeSidebar}>
-            <div className="hover:text-[#f89216] text-[#333333] bg-white p-2 shadow-lg rounded-2xl text-center">
-              Settings
-            </div>
-          </NavLink>
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2 font-medium">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              end={item.path === "/dashboard"}
+              onClick={closeSidebar}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-full transition-colors duration-200 ${
+                  isActive
+                    ? "bg-[#f89216] text-white shadow-md"
+                    : "text-[#ffffff] hover:bg-[#e9e7e7] hover:text-[#333333]"
+                }`
+              }
+            >
+              {item.icon}
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
         </nav>
 
-        <div className="pt-10 flex justify-center">
+        {/* Logout */}
+        <div className="pt-15 flex ">
           <button
             type="button"
             onClick={handleLogout}
-            className="border-2 rounded-4xl border-[#f89216] px-7 py-2 mt-10 text-[18px] text-[#333333] font-semibold cursor-pointer hover:border-[#f89216] hover:bg-[#30ac57] hover:text-white"
+            className="flex items-center   gap-2  text-white  px-6 py-2 rounded-[50px] text-[16px] border-1 border-[#f89216] font-semibold  hover:bg-[#f89216] hover:text-white transition-all duration-200"
           >
+            <FiLogOut size={18} />
             Log Out
           </button>
         </div>
       </aside>
 
-      <main className="flex-1 p-4">
-        <div className="md:hidden pt-4">
+      {/* Main Content */}
+      <main className="flex-1  h-full overflow-y-auto">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden p-4">
           {!isOpen && (
             <button
-              className="p-2 rounded-md shadow-md mb-4 bg-[#f89216] cursor-pointer"
+              className="p-2 rounded-md shadow-md bg-[#f89216] cursor-pointer"
               onClick={toggleSidebar}
             >
               <FiMenu size={24} color="white" />
@@ -92,7 +123,9 @@ const DashboardLayout = () => {
           )}
         </div>
 
-        <Outlet />
+        <div className="p-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

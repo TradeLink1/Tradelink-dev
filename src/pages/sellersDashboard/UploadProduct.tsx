@@ -1,11 +1,14 @@
 import { useState } from "react";
-
-import  KycPopup from "./kycPopup";
+import { motion } from "framer-motion";
+import KycPopup from "./kycPopup";
 
 const UploadProduct = () => {
+  const [uploadType, setUploadType] = useState<"product" | "service">(
+    "product"
+  );
+
   const [formData, setFormData] = useState({
     name: "",
-    categoryType: "product",
     category: "",
     price: "",
     stock: "",
@@ -14,12 +17,11 @@ const UploadProduct = () => {
   });
 
   const [errors, setErrors] = useState<any>({});
-  const [isVerified, setIsVerified] =useState(false)
+  const [isVerified, setIsVerified] = useState(false);
 
   if (!isVerified) {
     return <KycPopup onVerify={() => setIsVerified(true)} />;
   }
-  
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target;
@@ -32,172 +34,215 @@ const UploadProduct = () => {
   const validateForm = () => {
     let newErrors: any = {};
 
-    if (!formData.name.trim()) newErrors.name = "Product/Service name is required";
-    if (!formData.categoryType) newErrors.categoryType = "Category type is required";
+    if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.price || isNaN(Number(formData.price)))
       newErrors.price = "Price must be a valid number";
-    if (!formData.stock || isNaN(Number(formData.stock)))
+
+    if (
+      uploadType === "product" &&
+      (!formData.stock || isNaN(Number(formData.stock)))
+    ) {
       newErrors.stock = "Stock must be a valid number";
+    }
+
     if (!formData.image) newErrors.image = "Please upload an image";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-
     if (validateForm()) {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
-      formDataToSend.append("categoryType", formData.categoryType);
+      formDataToSend.append("uploadType", uploadType);
       formDataToSend.append("category", formData.category);
       formDataToSend.append("price", formData.price);
-      formDataToSend.append("stock", formData.stock);
+      if (uploadType === "product") {
+        formDataToSend.append("stock", formData.stock);
+      }
       formDataToSend.append("description", formData.description);
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
 
-      console.log("Prepared product data:", Object.fromEntries(formDataToSend));
-      alert("Product uploaded successfully! (Not sent to backend yet)");
+      console.log(
+        "Prepared product/service data:",
+        Object.fromEntries(formDataToSend)
+      );
+      alert(
+        `${
+          uploadType === "product" ? "Product" : "Service"
+        } uploaded successfully!`
+      );
     }
   };
 
   return (
-    <div className="p-6 bg-[#fbf2e7] min-h-screen max-w-[1200px]">
-      <h2 className="text-2xl font-bold text-[#f89216] mb-6 text-center">
-        Upload Product / Service
-      </h2>
-      
-    
-      <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded space-y-4">
-        
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full bg-white rounded-[30px] shadow-lg p-8">
+        {/* Header */}
+        <h2 className="text-[30px] leading-8 font-bold text-center text-[#f89216] max-mobile:text-[25px] mb-8">
+          Upload {uploadType === "product" ? "Product" : "Service"}
+        </h2>
+
+        {/* Toggle Switch */}
+        <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1">
+          <motion.div
+            layout
+            className="absolute top-1 bottom-1 w-1/2 bg-[#f89216] rounded-full"
+            initial={false}
+            animate={{
+              x: uploadType === "product" ? 0 : "100%",
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          />
+          {/* Buttons */}
+          <button
+            onClick={() => setUploadType("product")}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "product" ? "text-white" : "text-gray-600"
+            }`}
+          >
+            Product
+          </button>
+          <button
+            onClick={() => setUploadType("service")}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "service" ? "text-white" : "text-gray-600"
+            }`}
+          >
+            Service
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
           <div>
-            <label className="block font-semibold text-[#333333] text-center">Product/Service Name</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              {uploadType === "product" ? "Product Name" : "Service Name"}
+            </label>
             <input
               type="text"
               name="name"
-              className="border-2 border-gray-400 p-2 w-full rounded mt-2 outline-0"
+              className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.name && <p className="text-red-500">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
+          {/* Price */}
           <div>
-            <label className="block font-semibold text-[#333333] text-center">Product / Service Price</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Price
+            </label>
             <input
               type="number"
               name="price"
-              className="border-2 border-gray-400 mt-2 p-2 w-full rounded outline-0"
+              className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.price && <p className="text-red-500">{errors.price}</p>}
-          </div>
-        </div>
-
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-semibold text-[#333333] text-center">Category Type</label>
-            <select
-              name="categoryType"
-              className="border-2 border-gray-400 mt-2 p-2 w-full rounded text-[#333333] font-semibold text-lg outline-0"
-              style={{
-                scrollbarColor: "#f89216 white ", 
-              }}
-              onChange={handleChange}
-            >
-              <option value="product">Product</option>
-              <option value="service">Service</option>
-            </select>
-            {errors.categoryType && <p className="text-red-500">{errors.categoryType}</p>}
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
 
+          {/* Category */}
           <div>
-            <label className="block font-semibold text-[#333333] text-center">Category</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
-              className="border-2 border-gray-400 mt-2 p-2 w-full rounded text-[#333333] font-semibold text-lg outline-0"
-              style={{
-                scrollbarColor: "#333333 white ",
-              
-              }}
+              className="w-full border border-gray-300 rounded-full p-3 bg-white focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             >
               <option value="">-- Select Category --</option>
-              {formData.categoryType === "product" ? (
+              {uploadType === "product" ? (
                 <>
-                  <option value="grocery">Groceries & Essential Items</option>
-                  <option value="local">Local Perishable Items</option>
-                  <option value="fashion">Fashion & Clothings</option>
-                  <option value="home">Home & Kitchen Items</option>
-                  <option value="building">Building & Hardwares</option>
-                  <option value="electronics">Electronic & Gadgets</option>
-                  <option value="autoparts">Auto Parts</option>
-
+                  <option value="grocery">Groceries & Essentials</option>
+                  <option value="fashion">Fashion & Clothing</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="home">Home & Kitchen</option>
                 </>
               ) : (
                 <>
                   <option value="hair">Hair Stylist</option>
-                  <option value="fashion">Fashion Designer</option>
-                  <option value="caterer">Caterer</option>
-                  <option value="plumbing">Plumber</option>
-                  <option value="mechanic">Mechanic</option>
+                  <option value="plumber">Plumber</option>
                   <option value="photographer">Photographer</option>
-                  <option value="electrician">Electrician</option>
+                  <option value="mechanic">Mechanic</option>
                 </>
               )}
             </select>
-            {errors.category && <p className="text-red-500">{errors.category}</p>}
-          </div>
-        </div>
-
-      
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-semibold text-[#333333] text-center">Stock Quantity</label>
-            <input
-              type="number"
-              name="stock"
-              className="border-2 border-gray-400 mt-2 p-2 w-full rounded outline-0"
-              onChange={handleChange}
-
-            />
-            {errors.stock && <p className="text-red-500">{errors.stock}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+            )}
           </div>
 
+          {/* Stock only if product */}
+          {uploadType === "product" && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Stock Quantity
+              </label>
+              <input
+                type="number"
+                name="stock"
+                className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
+                onChange={handleChange}
+              />
+              {errors.stock && (
+                <p className="text-red-500 text-sm mt-1">{errors.stock}</p>
+              )}
+            </div>
+          )}
+
+          {/* Image */}
           <div>
-            <label className="block font-semibold text-[#333333] text-center">Upload Image</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Upload Image
+            </label>
             <input
               type="file"
               name="image"
               accept="image/*"
-              className="border-2 mt-2 p-2 border-gray-400 w-full rounded outline-0"
+              className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.image && <p className="text-red-500">{errors.image}</p>}
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+            )}
           </div>
-        </div>
 
-    
-        <div>
-          <label className="block font-semibold text-[#333333] text-center">Description</label>
-          <textarea
-            name="description"
-            className="border-2 mt-2 p-2 w-full border-gray-400 rounded outline-0"
-            onChange={handleChange}
-          ></textarea>
-        </div>
-          <div className="flex justify-center items-center pt-10 ">
-        {/* Submit */}
-        <button type="submit" className="hover:bg-[#30ac57] py-2 text-[18px]  text-[#333333] px-10  rounded-4xl border-2 border-[#f89216] hover:text-white">
-          Upload
-        </button></div>
-      </form>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              name="description"
+              rows={4}
+              className="w-full border border-gray-300 rounded-2xl p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
+              onChange={handleChange}
+            ></textarea>
+          </div>
+
+          {/* Submit */}
+          <div className="flex justify-center pt-6">
+            <button
+              type="submit"
+              className="px-10 py-3 text-lg font-semibold text-white bg-[#f89216] rounded-full shadow hover:bg-[#333333] transform hover:scale-105 transition-all"
+            >
+              Upload {uploadType === "product" ? "Product" : "Service"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

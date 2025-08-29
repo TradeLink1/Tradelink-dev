@@ -81,21 +81,20 @@ const HeroSection = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       goToNextSlide();
-    }, 5000);
-
+    }, 4000); // faster switch
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative max-w-[1200px] mx-auto mt-45 rounded-[100px] h-[700px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[370px] max-mobile:h-[310px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
+    <section className="relative max-w-[1200px] mx-auto mt-45 rounded-[100px] h-[650px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[340px] max-mobile:h-[300px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlideIndex}
           className="absolute inset-0"
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ duration: 0.9, ease: "easeInOut" }}
         >
           <img
             src={slides[currentSlideIndex].image}
@@ -106,15 +105,15 @@ const HeroSection = () => {
       </AnimatePresence>
 
       {/* overlay */}
-      <div className="absolute inset-0 bg-[#010c1aa7] z-10" />
+      <div className="absolute inset-0 bg-[#011229b4] z-10" />
 
       {/* Text + Search */}
       <div className="relative z-20 flex flex-col justify-center items-center h-full text-white text-center px-4">
         <motion.h1
           key={currentSlideIndex}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -40 }}
+          exit={{ opacity: 0, y: -30 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-[60px] max-w-[800px] leading-16 font-bold mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
         >
@@ -122,13 +121,13 @@ const HeroSection = () => {
         </motion.h1>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
           className="flex justify-between gap-3 max-[510px]:text-[14px]"
         >
           <div className="rounded-l-full relative flex items-center bg-white overflow-hidden">
-            <FiSearch className="absolute left-5 top-5 text-gray-500 max-mobile:top-3 max-mobile:left-7 max-mobile:text-[10px] max-[510px]:top-4" />
+            <FiSearch className="absolute left-5 top-5 text-[#30ac57] max-mobile:top-3 max-mobile:left-7 max-mobile:text-[10px] max-[510px]:top-4" />
             <input
               type="text"
               value={query}
@@ -141,7 +140,7 @@ const HeroSection = () => {
           <div>
             <button
               onClick={triggerSearch}
-              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#333333] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px] max-[510px]:text-[10px]"
+              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#0e6b2b] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px] max-[510px]:text-[10px]"
             >
               Search
             </button>

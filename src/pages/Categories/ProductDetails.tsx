@@ -1,6 +1,6 @@
-import { useState/*, useEffect*/ } from "react";
+import { useState /*, useEffect*/ } from "react";
 import { useParams, Link } from "react-router-dom";
-import { categories as localCategories } from "../../data/categorieData";
+import { categories as localCategories } from "../../data/categories";
 
 interface Seller {
   id: string;
@@ -45,7 +45,10 @@ export default function ProductDetails() {
 
   return (
     <div className="p-6 bg-yellow-50 min-h-screen">
-      <Link to="/Categories/Products" className="text-blue-600 underline mb-4 block">
+      <Link
+        to="/Categories/Products"
+        className="text-blue-600 underline mb-4 block"
+      >
         ← Back to Categories
       </Link>
 
@@ -78,7 +81,9 @@ export default function ProductDetails() {
               />
               <div className="p-4">
                 <h2 className="text-xl font-semibold">{seller.name}</h2>
-                <p className="text-gray-600 mt-2">{seller.products.join(", ")}</p>
+                <p className="text-gray-600 mt-2">
+                  {seller.products.join(", ")}
+                </p>
               </div>
             </Link>
           ))}

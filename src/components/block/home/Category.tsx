@@ -80,6 +80,7 @@ const sellerCategories = [
 const Category = () => {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null);
   const [mouseIsHovering, setMouseIsHovering] = useState(false);
+  const [isTouching, setIsTouching] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
     "right"
   );
@@ -90,23 +91,23 @@ const Category = () => {
     if (!box) return;
 
     const scrollTimer = setInterval(() => {
-      if (!mouseIsHovering) {
+      if (!mouseIsHovering && !isTouching) {
         if (scrollDirection === "right") {
-          box.scrollLeft += 1;
+          box.scrollLeft += 3; // faster speed
           if (box.scrollLeft + box.clientWidth >= box.scrollWidth) {
             setScrollDirection("left");
           }
         } else {
-          box.scrollLeft -= 1;
+          box.scrollLeft -= 3; // faster speed
           if (box.scrollLeft <= 0) {
             setScrollDirection("right");
           }
         }
       }
-    }, 20);
+    });
 
     return () => clearInterval(scrollTimer);
-  }, [mouseIsHovering, scrollDirection]);
+  }, [mouseIsHovering, isTouching, scrollDirection]);
 
   return (
     <motion.section
@@ -146,7 +147,9 @@ const Category = () => {
         ref={scrollBoxRef}
         onMouseEnter={() => setMouseIsHovering(true)}
         onMouseLeave={() => setMouseIsHovering(false)}
-        className="mt-10 max-w-[1200px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth"
+        onTouchStart={() => setIsTouching(true)}
+        onTouchEnd={() => setIsTouching(false)}
+        className="mt-10 max-w-[1200px] mx-auto flex overflow-x-auto space-x-5 px-4 scrollbar-hide scroll-smooth touch-pan-x"
       >
         {sellerCategories.map((item, index) => (
           <motion.div
