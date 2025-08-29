@@ -19,7 +19,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#f89216] min-h-screen flex flex-col items-center justify-center">
+    <section
+      id="loginbg"
+      className="bg-[#f89216] min-h-screen flex flex-col items-center justify-center"
+    >
       <div>
         {/* Go Back Button */}
         <motion.button

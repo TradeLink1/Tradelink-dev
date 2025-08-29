@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
-
-
+import { useState, useEffect, useMemo } from "react";
+import {
+  ShoppingBag,
+  ClipboardList,
+  DollarSign,
+  MessageSquare,
+} from "lucide-react";
 
 interface Stats {
   totalProducts: number;
@@ -36,7 +40,6 @@ const Overview = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         setStats({
           totalProducts: 12,
           pendingOrders: 3,
@@ -45,14 +48,37 @@ const Overview = () => {
         });
 
         setRecentOrders([
-          { id: 1, customer: "John Doe", product: "Gas Cooker", status: "Pending" },
-          { id: 2, customer: "Jane Smith", product: "Blender", status: "Completed" },
-          { id: 3, customer: "Paul Adams", product: "Yam Tubers", status: "Pending" },
+          {
+            id: 1,
+            customer: "John Doe",
+            product: "Gas Cooker",
+            status: "Pending",
+          },
+          {
+            id: 2,
+            customer: "Jane Smith",
+            product: "Blender",
+            status: "Completed",
+          },
+          {
+            id: 3,
+            customer: "Paul Adams",
+            product: "Yam Tubers",
+            status: "Pending",
+          },
         ]);
 
         setRecentMessages([
-          { id: 1, sender: "John Doe", message: "Is the gas cooker still available?" },
-          { id: 2, sender: "Mary Obi", message: "Can you deliver to Lagos Island?" },
+          {
+            id: 1,
+            sender: "John Doe",
+            message: "Is the gas cooker still available?",
+          },
+          {
+            id: 2,
+            sender: "Mary Obi",
+            message: "Can you deliver to Lagos Island?",
+          },
         ]);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -62,48 +88,88 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  return (
-    <div className="w-full min-h-screen bg-[#fbf2e7] p-6 max-w-[1280px]">
+  // stat cards
+  const statCards = useMemo(
+    () => [
+      {
+        title: "Total Products",
+        value: stats.totalProducts,
+        color: "from-orange-400 to-orange-600",
+        icon: ShoppingBag,
+      },
+      {
+        title: "Pending Orders",
+        value: stats.pendingOrders,
+        color: "from-yellow-400 to-yellow-600",
+        icon: ClipboardList,
+      },
+      {
+        title: "Total Sales",
+        value: `₦${stats.totalSales.toLocaleString()}`,
+        color: "from-green-400 to-green-600",
+        icon: DollarSign,
+      },
+      {
+        title: "Messages",
+        value: stats.messages,
+        color: "from-blue-400 to-blue-600",
+        icon: MessageSquare,
+      },
+    ],
+    [stats]
+  );
 
-      <h1 className="text-2xl font-bold mb-4 text-[#f89216]">
-        Welcome back, <span className="text-[]">Rose’s Kitchen!</span>
+  return (
+    <div className="w-full h-full min-h-screen p-8 space-y-10">
+      <h1 className="text-[30px] max-mobile:text-[24px] font-bold mb-5 text-[#333333]">
+        Welcome back, <span className="text-[#f89216]">Rose’s Kitchen!</span>
       </h1>
 
-    
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 ">
-        {[
-          { label: "Total Products", value: stats.totalProducts },
-          { label: "Pending Orders", value: stats.pendingOrders },
-          { label: "Total Sales", value: `₦${stats.totalSales.toLocaleString()}` },
-          { label: "Messages", value: stats.messages },
-        ].map((item, index) => (
-          <div key={index} className=" bg-white text-[#f89216] p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-[#333333]">{item.label}</h2>
-            <p className="text-3xl font-bold text-[#f89216]">{item.value}</p>
+      {/* Stat Cards  */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((card, i) => (
+          <div
+            key={i}
+            className={`bg-gradient-to-r ${card.color} rounded-xl shadow-lg p-6 text-white flex flex-col gap-3 transform hover:scale-105 transition-transform duration-300`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-medium">{card.title}</span>
+              <div className="bg-white/20 p-2 rounded-lg">
+                <card.icon size={26} />
+              </div>
+            </div>
+            <div className="text-4xl font-bold">{card.value}</div>
           </div>
         ))}
       </div>
 
-    
-      <div className="bg-[white] p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-bold mb-4 text-[#333333]">Recent Orders</h2>
+      {/* Recent Orders */}
+      <div className="bg-white rounded-xl shadow-lg max-mobile:p-4 p-6">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Recent Orders</h2>
         {recentOrders.length > 0 ? (
-          <table className="w-full border-collapse">
-            <thead >
-              <tr className="bg-[#f89216] text-left  ">
-                <th className="p-2 text-white text-[18px] font-bold">Customer</th>
-                <th className="p-2 text-white text-[18px] font-bold">Product</th>
-                <th className="p-2 text-white text-[18px] font-bold">Status</th>
+          <table className="w-full max-mobile:text-[13px] border-collapse">
+            <thead>
+              <tr className="bg-[#f89216] text-white rounded-lg overflow-hidden">
+                <th className="p-3 text-left font-semibold">Customer</th>
+                <th className="p-3 text-left font-semibold">Product</th>
+                <th className="p-3 text-left font-semibold">Status</th>
               </tr>
             </thead>
             <tbody>
               {recentOrders.map((order) => (
-                <tr key={order.id} className="border-b ">
-                  <td className="p-2 text-[#333333] font-bold ">{order.customer}</td>
-                  <td className="p-2 text-[#333333] font-bold">{order.product}</td>
+                <tr
+                  key={order.id}
+                  className="border-b hover:bg-[#fff7f0] transition"
+                >
+                  <td className="p-3 font-medium text-[#333333]">
+                    {order.customer}
+                  </td>
+                  <td className="p-3 text-[#555555]">{order.product}</td>
                   <td
-                    className={`p-2 font-bold ${
-                      order.status === "Pending" ? "text-[#333333]" : "text-[#f89216]"
+                    className={`p-3 font-semibold ${
+                      order.status === "Pending"
+                        ? "text-red-500"
+                        : "text-green-600"
                     }`}
                   >
                     {order.status}
@@ -113,27 +179,38 @@ const Overview = () => {
             </tbody>
           </table>
         ) : (
-          <p>No recent orders found.</p>
+          <p className="text-gray-500">No recent orders found.</p>
         )}
       </div>
 
-      
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-[1200px]">
-        <h2 className="text-xl font-bold mb-4 text-[#f89216]">Recent Messages</h2>
+      {/* Recent Messages */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">
+          Recent Messages
+        </h2>
         {recentMessages.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             {recentMessages.map((msg) => (
-              <li key={msg.id} className="border-b pb-2 text-[#333333] font-bold">
-                <strong>{msg.sender}:</strong> {msg.message}
+              <li
+                key={msg.id}
+                className="flex items-start gap-4 border-b border-gray-100 last:border-none pb-4"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#f89216]/20 text-[#f89216] font-semibold">
+                  {msg.sender.charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-[#333333]">{msg.sender}</p>
+                  <p className="text-sm text-gray-600">{msg.message}</p>
+                </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No recent messages found.</p>
+          <p className="text-gray-500">No recent messages found.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default Overview; 
+export default Overview;
