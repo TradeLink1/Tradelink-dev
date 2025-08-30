@@ -119,7 +119,7 @@ const Header = () => {
           </section>
 
           <section className="flex gap-3 items-center text-[#333333] font-medium text-[15px] max-tablet:hidden">
-            <a href="/Login" target="_blank" rel="noopener noreferrer">
+            <a href="/Login"  rel="noopener noreferrer">
               <Button
                 name="Login"
                 border="2px solid "
@@ -128,7 +128,7 @@ const Header = () => {
                 hoverTextColor="white"
               />
             </a>
-            <a href="/Register" target="_blank" rel="noopener noreferrer">
+            <a href="/Register"  rel="noopener noreferrer">
               <Button
                 name="Register"
                 bgColor="#f89216"
