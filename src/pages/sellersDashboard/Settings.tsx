@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Settings as SettingsIcon,
   Lock,
@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   Upload,
 } from "lucide-react";
+import api from "../../api/axios";
 
 const Settings = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,28 @@ const Settings = () => {
     confirmPassword: "",
   });
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("api/v1/sellers/get/profile");
+        const sellerData = res.data.seller;
+
+        setFormData((prev) => ({
+          ...prev,
+          name: sellerData.storeName || "",
+          email: sellerData.email || "",
+          phone: sellerData.phone || "",
+          description: sellerData.description || "",
+          businessCategory: sellerData.businessCategory || "",
+        }));
+      } catch (err) {
+        console.log("Error fetching seller profile:", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   const handleChange = (e: any) => {
     const { name, value, type, checked, files } = e.target;
     setFormData({
@@ -30,22 +53,68 @@ const Settings = () => {
     });
   };
 
-  const handleSaveProfileStore = (e: any) => {
+  // UPDATED function with single request for profile + logo
+  const handleSaveProfileStore = async (e: any) => {
     e.preventDefault();
-    alert(" Profile & Store settings saved (dummy).");
+    try {
+      const updateData = new FormData();
+      updateData.append("storeName", formData.name);
+      updateData.append("email", formData.email);
+      updateData.append("phone", formData.phone);
+      updateData.append("description", formData.description);
+      updateData.append("businessCategory", formData.businessCategory);
+
+      if (formData.logo) {
+        updateData.append("logo", formData.logo);
+      }
+
+      // Log FormData entries for debugging
+      for (let pair of updateData.entries()) {
+        console.log("FormData:", pair[0], pair[1]);
+      }
+
+      const profileRes = await api.put("api/v1/sellers/edit/profile", updateData, {
+        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token") }`
+      }});
+
+      console.log("Profile update response:", profileRes.data);
+      alert("Profile updated successfully!");
+    } catch (err: any) {
+      console.error("Error updating profile:", err.response?.data || err);
+      alert(
+        "Failed to update profile: " + (err.response?.data?.message || "")
+      );
+    }
   };
 
-  const handleChangePassword = (e: any) => {
+  const handleChangePassword = async (e: any) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert(" Passwords do not match!");
+      alert("Passwords do not match!");
       return;
     }
-    alert("Password changed successfully (dummy).");
+
+    try {
+      await api.put("api/v1/auth/reset-password", {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+      });
+
+      alert("Password changed successfully!");
+      setFormData((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
+    } catch (err: any) {
+      console.error("Error changing password:", err);
+      alert(err.response?.data?.message || "Failed to change password.");
+    }
   };
 
   const handleDeactivate = () => {
-    alert(" Account deactivated (dummy). Backend will handle this later.");
+    alert("Account deactivated (dummy). Backend will handle this later.");
   };
 
   const handleDelete = () => {
@@ -54,7 +123,7 @@ const Settings = () => {
         "Are you sure you want to delete your account? This cannot be undone."
       )
     ) {
-      alert(" Account deleted (dummy). Backend will handle real delete.");
+      alert("Account deleted (dummy). Backend will handle real delete.");
     }
   };
 
@@ -110,11 +179,7 @@ const Settings = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputField
-            label="Business Name"
-            name="name"
-            onChange={handleChange}
-          />
+          <InputField label="Business Name" name="name" onChange={handleChange} />
           <InputField
             label="Email"
             name="email"
@@ -161,13 +226,12 @@ const Settings = () => {
 
           {/* Description */}
           <div>
-            <label className="block font-medium mb-1 text-sm">
-              Description
-            </label>
+            <label className="block font-medium mb-1 text-sm">Description</label>
             <textarea
               name="description"
               className="border p-2 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-[#30ac57]"
               onChange={handleChange}
+              value={formData.description}
             ></textarea>
           </div>
 
@@ -180,6 +244,7 @@ const Settings = () => {
               name="businessCategory"
               className="border p-2 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-[#30ac57]"
               onChange={handleChange}
+              value={formData.businessCategory}
             >
               <option value="">-- Select --</option>
               <option value="products">Products</option>
@@ -216,9 +281,7 @@ const Settings = () => {
       >
         <div className="flex items-center gap-2">
           <Lock className="text-[#30ac57]" size={20} />
-          <h3 className="text-lg font-semibold text-[#333333]">
-            Account Settings
-          </h3>
+          <h3 className="text-lg font-semibold text-[#333333]">Account Settings</h3>
         </div>
 
         <div className="space-y-4">
@@ -227,18 +290,21 @@ const Settings = () => {
             name="currentPassword"
             type="password"
             onChange={handleChange}
+            value={formData.currentPassword}
           />
           <InputField
             label="New Password"
             name="newPassword"
             type="password"
             onChange={handleChange}
+            value={formData.newPassword}
           />
           <InputField
             label="Confirm Password"
             name="confirmPassword"
             type="password"
             onChange={handleChange}
+            value={formData.confirmPassword}
           />
         </div>
 
