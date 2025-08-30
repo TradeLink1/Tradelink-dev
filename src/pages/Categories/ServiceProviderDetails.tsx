@@ -1,138 +1,53 @@
-import React, { useState, useEffect } from "react";
-import { Search, MapPin, Briefcase } from "lucide-react";
-import Button from "../../components/reusable/Button";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-const ServiceProviders: React.FC = () => {
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("All Locations");
-  const [service, setService] = useState("All Services");
-  const [providers, setProviders] = useState<any[]>([]);
-  const [filteredProviders, setFilteredProviders] = useState<any[]>([]);
-  const navigate = useNavigate();
+const ServiceProviderDetails: React.FC = () => {
+  const { providerId } = useParams();
+  const [provider, setProvider] = useState<any>(null);
+  const [services, setServices] = useState<any[]>([]);
 
-  // Fetch all sellers (service providers)
   useEffect(() => {
-    fetch("/api/v1/sellers/get/all/sellers")
+    // Fetch provider details
+    fetch(`/api/v1/sellers/get/profile?id=${providerId}`)
       .then((response) => response.json())
-      .then((data) => {
-        setProviders(data);
-        setFilteredProviders(data); // Initial population of filtered data
-      })
-      .catch((error) => console.error("Error fetching sellers:", error));
-  }, []);
+      .then((data) => setProvider(data))
+      .catch((error) => console.error("Error fetching provider:", error));
 
-  // Search sellers
-  useEffect(() => {
-    if (query) {
-      fetch(`/api/v1/sellers/search?query=${query}`)
-        .then((response) => response.json())
-        .then((data) => setFilteredProviders(data))
-        .catch((error) => console.error("Error searching sellers:", error));
-    } else {
-      setFilteredProviders(providers); // Reset to all providers when query is empty
-    }
-  }, [query, providers]);
+    // Fetch provider services
+    fetch(`/api/v1/services/seller/${providerId}`)
+      .then((response) => response.json())
+      .then((data) => setServices(data))
+      .catch((error) => console.error("Error fetching services:", error));
+  }, [providerId]);
 
-  const handleFilterChange = () => {
-    const filtered = providers.filter(
-      (p) =>
-        (location === "All Locations" || p.location === location) &&
-        (service === "All Services" || p.category === service)
-    );
-    setFilteredProviders(filtered);
-  };
-
-  const handleViewProfile = (providerId: string) => {
-    navigate(`/service-provider/${providerId}`);
-  };
+  if (!provider) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="max-w-[1280px] mt-20 mx-auto px-4 py-6">
-      {/* Filters */}
-      <div className="bg-white p-4 rounded-2xl shadow mb-6 grid gap-4 md:grid-cols-3">
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <Search size={16} className="text-gray-500" />
-          <input
-            placeholder="Search services..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full text-sm outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <MapPin size={16} className="text-gray-500" />
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full text-sm outline-none"
-          >
-            <option>All Locations</option>
-            <option>Lagos</option>
-            <option>Abuja</option>
-            <option>Port Harcourt</option>
-            <option>Kano</option>
-            <option>Enugu</option>
-            <option>Ibadan</option>
-            <option>Jos</option>
-            <option>Benin City</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <Briefcase size={16} className="text-gray-500" />
-          <select
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-            className="w-full text-sm outline-none"
-          >
-            <option>All Services</option>
-            <option>Plumber</option>
-            <option>Electrician</option>
-            <option>Carpenter</option>
-            <option>Makeup Artist</option>
-            <option>Tailor</option>
-            <option>Hair Stylist</option>
-            <option>Photographer</option>
-            <option>Caterer</option>
-          </select>
-        </div>
-        <Button className="flex items-center justify-center gap-2 text-sm" onClick={handleFilterChange}>
-          Apply Filters
-        </Button>
-      </div>
+      <div className="bg-white p-4 rounded-2xl shadow mb-6">
+        <h2 className="text-2xl font-semibold">{provider.name}</h2>
+        <p className="text-lg text-gray-700">{provider.description}</p>
 
-      {/* Providers Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
-        {filteredProviders.length === 0 ? (
-          <p className="text-center text-gray-500 col-span-full">No providers found.</p>
-        ) : (
-          filteredProviders.map((p) => (
-            <div
-              key={p.id}
-              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
-              onClick={() => handleViewProfile(p.id)}
-            >
-              <div className="relative">
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="h-28 w-full object-cover rounded mb-3"
-                />
+        {/* Provider Info */}
+        <div className="mt-4">
+          <h3 className="text-xl font-semibold">Services</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {services.map((service) => (
+              <div
+                key={service.id}
+                className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition"
+              >
+                <h4 className="text-lg font-semibold text-orange-600">{service.name}</h4>
+                <p className="text-gray-600">{service.description}</p>
               </div>
-
-              <h3 className="font-semibold text-lg sm:text-sm text-orange-600">{p.category}</h3>
-              <p className="font-medium text-[11px] sm:text-xs text-gray-800">{p.name}</p>
-              <p className="text-[10px] sm:text-xs text-gray-500">{p.location}</p>
-              <p className="text-[20px] text-yellow-600">⭐ {p.rating}</p>
-              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
-                View Profile
-              </Button>
-            </div>
-          ))
-        )}
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ServiceProviders;
+export default ServiceProviderDetails;
