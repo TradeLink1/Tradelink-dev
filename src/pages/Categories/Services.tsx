@@ -1,176 +1,138 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { categories as localCategories } from "../../data/categories";
-import type { Category, Seller } from "../../data/categories";
-import { FiMenu, FiX } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { Search, MapPin, Briefcase } from "lucide-react";
+import Button from "../../components/reusable/Button";
+import { useNavigate } from "react-router-dom";
 
-type SellerWithCategory = Seller & {
-  categoryId: string;
-  categoryTitle: string;
-};
+const ServiceProviders: React.FC = () => {
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("All Locations");
+  const [service, setService] = useState("All Services");
+  const [providers, setProviders] = useState<any[]>([]);
+  const [filteredProviders, setFilteredProviders] = useState<any[]>([]);
+  const navigate = useNavigate();
 
-export default function Products() {
-  const [categories] = useState<Category[]>(localCategories);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Fetch all sellers (service providers)
+  useEffect(() => {
+    fetch("/api/v1/sellers/get/all/sellers")
+      .then((response) => response.json())
+      .then((data) => {
+        setProviders(data);
+        setFilteredProviders(data); // Initial population of filtered data
+      })
+      .catch((error) => console.error("Error fetching sellers:", error));
+  }, []);
 
-  const allSellers: SellerWithCategory[] = categories.flatMap((cat) =>
-    cat.sellers.map((s) => ({
-      ...s,
-      categoryId: cat.id,
-      categoryTitle: cat.title,
-    }))
-  );
+  // Search sellers
+  useEffect(() => {
+    if (query) {
+      fetch(`/api/v1/sellers/search?query=${query}`)
+        .then((response) => response.json())
+        .then((data) => setFilteredProviders(data))
+        .catch((error) => console.error("Error searching sellers:", error));
+    } else {
+      setFilteredProviders(providers); // Reset to all providers when query is empty
+    }
+  }, [query, providers]);
 
-  let sellers = selectedCategory
-    ? allSellers.filter((s) => s.categoryId === selectedCategory)
-    : allSellers;
+  const handleFilterChange = () => {
+    const filtered = providers.filter(
+      (p) =>
+        (location === "All Locations" || p.location === location) &&
+        (service === "All Services" || p.category === service)
+    );
+    setFilteredProviders(filtered);
+  };
 
-  sellers = sellers.filter(
-    (seller) =>
-      seller.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.products.some((p) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      seller.categoryTitle.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  sellers.sort((a, b) => b.reviews - a.reviews);
+  const handleViewProfile = (providerId: string) => {
+    navigate(`/service-provider/${providerId}`);
+  };
 
   return (
-    <div className="flex pt-20 bg-gray-50 min-h-screen">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden lg:block w-64 bg-white shadow-md rounded-r-xl p-5 h-screen sticky top-0">
-        <h2 className="text-xl font-bold mb-4 text-gray-700">Categories</h2>
-        <ul className="space-y-2">
-          <li
-            className={`cursor-pointer p-2 rounded-lg transition ${
-              !selectedCategory
-                ? "bg-[#F89216] text-white shadow"
-                : "hover:bg-gray-100"
-            }`}
-            onClick={() => setSelectedCategory(null)}
-          >
-            All Sellers
-          </li>
-          {categories.map((cat) => (
-            <li
-              key={cat.id}
-              className={`cursor-pointer p-2 rounded-lg transition ${
-                selectedCategory === cat.id
-                  ? "bg-[#F89216] text-white shadow"
-                  : "hover:bg-gray-100"
-              }`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              {cat.title}
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-5 left-4 z-50 p-2 bg-[#F89216] text-white rounded-lg shadow-md"
-      >
-        {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-      </button>
-
-      {/* Mobile Slide-in Menu */}
-      <div
-        className={`fixed inset-0 z-40 lg:hidden transform transition-transform duration-300 ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="relative w-64 h-full bg-white shadow-xl p-4 flex flex-col">
-          <h2 className="text-xl font-bold mb-4">Categories</h2>
-          <ul className="space-y-2 overflow-y-auto flex-1 pr-2">
-            <li
-              className={`cursor-pointer p-2 rounded-lg ${
-                !selectedCategory
-                  ? "bg-[#F89216] text-white shadow"
-                  : "hover:bg-gray-100"
-              }`}
-              onClick={() => {
-                setSelectedCategory(null);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              All Sellers
-            </li>
-            {categories.map((cat) => (
-              <li
-                key={cat.id}
-                className={`cursor-pointer p-2 rounded-lg ${
-                  selectedCategory === cat.id
-                    ? "bg-[#F89216] text-white shadow"
-                    : "hover:bg-gray-100"
-                }`}
-                onClick={() => {
-                  setSelectedCategory(cat.id);
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                {cat.title}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <main className="flex-1 px-6">
-        <h1 className="text-3xl font-extrabold mb-6 text-gray-800 text-center">
-          Sellers
-        </h1>
-
-        {/* Search */}
-        <div className="flex justify-center mb-6">
+    <div className="max-w-[1280px] mt-20 mx-auto px-4 py-6">
+      {/* Filters */}
+      <div className="bg-white p-4 rounded-2xl shadow mb-6 grid gap-4 md:grid-cols-3">
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <Search size={16} className="text-gray-500" />
           <input
-            type="text"
-            placeholder="Search sellers, products, or location..."
-            className="border border-gray-300 p-3 rounded-xl w-full max-w-md shadow-sm focus:ring-2 focus:ring-[#F89216] outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search services..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full text-sm outline-none"
           />
         </div>
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <MapPin size={16} className="text-gray-500" />
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full text-sm outline-none"
+          >
+            <option>All Locations</option>
+            <option>Lagos</option>
+            <option>Abuja</option>
+            <option>Port Harcourt</option>
+            <option>Kano</option>
+            <option>Enugu</option>
+            <option>Ibadan</option>
+            <option>Jos</option>
+            <option>Benin City</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <Briefcase size={16} className="text-gray-500" />
+          <select
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+            className="w-full text-sm outline-none"
+          >
+            <option>All Services</option>
+            <option>Plumber</option>
+            <option>Electrician</option>
+            <option>Carpenter</option>
+            <option>Makeup Artist</option>
+            <option>Tailor</option>
+            <option>Hair Stylist</option>
+            <option>Photographer</option>
+            <option>Caterer</option>
+          </select>
+        </div>
+        <Button className="flex items-center justify-center gap-2 text-sm" onClick={handleFilterChange}>
+          Apply Filters
+        </Button>
+      </div>
 
-        {/* Seller Grid */}
-        {sellers.length === 0 ? (
-          <p className="text-center text-gray-500">No sellers found.</p>
+      {/* Providers Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
+        {filteredProviders.length === 0 ? (
+          <p className="text-center text-gray-500 col-span-full">No providers found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sellers.map((seller) => (
-              <Link
-                key={seller.id}
-                to={`/Categories/Products/${seller.categoryId}/seller/${seller.id}`}
-                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 overflow-hidden"
-              >
+          filteredProviders.map((p) => (
+            <div
+              key={p.id}
+              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
+              onClick={() => handleViewProfile(p.id)}
+            >
+              <div className="relative">
                 <img
-                  src={seller.image}
-                  alt={seller.name}
-                  className="h-48 w-full object-cover"
+                  src={p.image}
+                  alt={p.name}
+                  className="h-28 w-full object-cover rounded mb-3"
                 />
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {seller.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm">📍 {seller.location}</p>
-                  <p className="text-yellow-600 font-medium">
-                    ⭐ {seller.reviews} reviews
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2 line-clamp-1">
-                    {seller.products.map((p) => p.name).join(", ")}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+
+              <h3 className="font-semibold text-lg sm:text-sm text-orange-600">{p.category}</h3>
+              <p className="font-medium text-[11px] sm:text-xs text-gray-800">{p.name}</p>
+              <p className="text-[10px] sm:text-xs text-gray-500">{p.location}</p>
+              <p className="text-[20px] text-yellow-600">⭐ {p.rating}</p>
+              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
+                View Profile
+              </Button>
+            </div>
+          ))
         )}
-      </main>
+      </div>
     </div>
   );
-}
+};
+
+export default ServiceProviders;
