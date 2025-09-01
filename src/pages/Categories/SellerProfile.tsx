@@ -1,52 +1,90 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { categories as localCategories } from "../../data/categories";
-import Button from "../../components/reusable/Button";
 
 export default function SellerProfile() {
-  const { categoryId, sellerId } = useParams();
-
-  // --- OFFLINE VERSION (only using categories.ts) ---
-  const category = localCategories.find((c) => c.id === categoryId);
-  const seller = category?.sellers.find((s) => s.id === sellerId);
-
-  // --- API VERSION (commented out for now) ---
-  /*
+  const { sellerId } = useParams<{ sellerId: string }>();
   const [seller, setSeller] = useState<any>(null);
-  useEffect(() => {
-    fetch(`https://tradelink-backend-5a6c.onrender.com/api/v1/categories/${categoryId}/sellers/${sellerId}`)
-      .then((res) => res.json())
-      .then((data) => setSeller(data))
-      .catch((err) => console.error(err));
-  }, [categoryId, sellerId]);
-  */
-
-  const [messages, setMessages] = useState<{ from: string; text: string }[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  if (!seller) {
-    return <div className="p-6">Seller not found.</div>;
-  }
+  const currentUserId = localStorage.getItem("userId"); // 👈 store buyer's id in localStorage after login
+  const token = localStorage.getItem("authToken"); // 👈 JWT for auth
+
+  // Fetch seller details
+  useEffect(() => {
+    if (!sellerId) return;
+
+    fetch(`https://tradelink-backend-5a6c.onrender.com/api/v1/sellers/get/${sellerId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setSeller(data.seller);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching seller:", err);
+        setLoading(false);
+      });
+  }, [sellerId, token]);
+
+  // Fetch messages with this seller
+  useEffect(() => {
+    if (!sellerId || !currentUserId) return;
+
+    fetch(`https://tradelink-backend-5a6c.onrender.com/api/v1/messages/get/all/conversations/${sellerId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setMessages(data.messages || []))
+      .catch((err) => console.error("Error fetching conversation:", err));
+  }, [sellerId, token, currentUserId]);
 
   const sendMessage = () => {
-    if (newMessage.trim() === "") return;
-    setMessages([...messages, { from: "buyer", text: newMessage }]);
-    setNewMessage("");
-    // 🔔 Notification trigger would go here
+    if (!newMessage.trim()) return;
+
+    fetch(`https://tradelink-backend-5a6c.onrender.com/api/v1/messages/send`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        senderId: currentUserId,
+        receiverId: sellerId,
+        text: newMessage,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages((prev) => [...prev, data.message]); // append new message
+        setNewMessage("");
+      })
+      .catch((err) => console.error("Error sending message:", err));
   };
 
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!seller) return <div className="p-6">Seller not found.</div>;
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 py-23 min-h-screen">
+    <div className="max-w-[1280px] mx-auto px-4 py-20 bg-yellow-50 min-h-screen">
       {/* Back button */}
       <Link
-        to="/Categories/Products"
+        to="/sellers"
         className="text-blue-600 underline mb-6 block"
       >
         ← Back to Sellers
       </Link>
 
-      {/* Seller Info Card */}
-      <div className=" p-6 flex flex-col sm:flex-row gap-6 items-center mb-10">
+      {/* Seller Info */}
+      <div className="bg-white p-6 rounded-2xl shadow flex flex-col sm:flex-row gap-6 items-center mb-10">
         <img
           src={seller.image}
           alt={seller.name}
@@ -55,29 +93,22 @@ export default function SellerProfile() {
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-800">{seller.name}</h1>
           <p className="text-gray-600">📍 {seller.location}</p>
+          <p className="text-gray-500">📧 {seller.email}</p>
+          <p className="text-gray-500">📞 {seller.phoneNumber}</p>
           <p className="text-gray-500">⭐ {seller.reviews} Reviews</p>
-          {/* Added contact info */}
-          {seller.phone && (
-            <p className="text-gray-700">📞 {seller.phone}</p>
-          )}
-          {seller.email && (
-            <p className="text-gray-700">✉️ {seller.email}</p>
-          )}
+          <p className="text-gray-700">{seller.category}</p>
         </div>
-        <Button className="bg-orange-500 text-white hover:bg-orange-600">
-          Message Seller
-        </Button>
       </div>
 
-      {/* Products Grid */}
+      {/* Seller Products */}
       <h2 className="text-xl font-semibold mb-4">Products by {seller.name}</h2>
-      {seller.products.length === 0 ? (
+      {seller.products?.length === 0 ? (
         <p className="text-gray-500">This seller has no products yet.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {seller.products.map((product) => (
+          {seller.products.map((product: any) => (
             <div
-              key={product.id}
+              key={product._id}
               className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col"
             >
               <img
@@ -85,12 +116,8 @@ export default function SellerProfile() {
                 alt={product.name}
                 className="h-28 w-full object-cover rounded mb-3"
               />
-              <h3 className="font-semibold text-sm text-orange-600">
-                {product.name}
-              </h3>
-              <p className="text-xs text-gray-700">
-                ₦{product.price.toLocaleString()}
-              </p>
+              <h3 className="font-semibold text-sm text-orange-600">{product.name}</h3>
+              <p className="text-xs text-gray-700">₦{product.price.toLocaleString()}</p>
               <p className="text-[10px] text-gray-500">Qty: {product.quantity}</p>
             </div>
           ))}
@@ -109,13 +136,11 @@ export default function SellerProfile() {
             messages.map((msg, i) => (
               <div
                 key={i}
-                className={`mb-2 ${
-                  msg.from === "buyer" ? "text-right" : "text-left"
-                }`}
+                className={`mb-2 ${msg.senderId === currentUserId ? "text-right" : "text-left"}`}
               >
                 <span
                   className={`inline-block px-3 py-2 rounded-lg ${
-                    msg.from === "buyer"
+                    msg.senderId === currentUserId
                       ? "bg-[#F89216] text-white"
                       : "bg-gray-200"
                   }`}
