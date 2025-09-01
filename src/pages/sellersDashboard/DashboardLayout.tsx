@@ -104,7 +104,7 @@ const DashboardLayout = () => {
             className="flex items-center gap-2 text-white px-6 py-2 rounded-[50px] text-[16px] border-1 border-[#f89216] font-semibold hover:bg-[#f89216] hover:text-white transition-all duration-200"
           >
             <FiLogOut size={18} />
-            Log Out
+            Back To Home
           </button>
         </div>
       </aside>

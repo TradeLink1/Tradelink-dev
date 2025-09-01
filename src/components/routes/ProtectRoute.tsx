@@ -18,7 +18,7 @@ const ProtectRoute = ({ children, allowedRole }: ProtectRouteProps) => {
   }
 
   // 2️⃣ If role is restricted and does not match, redirect
-  if (allowedRole && role !== allowedRole) {
+  if (allowedRole && role !== allowedRole) { 
     return <Navigate to="/" replace />; // or some "unauthorized" page
   }
 
