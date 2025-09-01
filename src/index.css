@@ -89,7 +89,23 @@ button {
   background-repeat: no-repeat;
 }
 
-#faq {
+#loginbg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#regbg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#mainchat {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* emoji wave */
@@ -124,6 +140,10 @@ button {
   100% {
     transform: rotate(0deg);
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 /* <<< ISHOLA CSS STYLES >>> */

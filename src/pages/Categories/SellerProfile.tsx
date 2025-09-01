@@ -1,11 +1,12 @@
-import { useState/*, useEffect*/ } from "react";
+import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { categories as localCategories } from "../../data/categories";
+import Button from "../../components/reusable/Button";
 
 export default function SellerProfile() {
   const { categoryId, sellerId } = useParams();
 
-  // --- OFFLINE VERSION (default) ---
+  // --- OFFLINE VERSION (only using categories.ts) ---
   const category = localCategories.find((c) => c.id === categoryId);
   const seller = category?.sellers.find((s) => s.id === sellerId);
 
@@ -13,7 +14,7 @@ export default function SellerProfile() {
   /*
   const [seller, setSeller] = useState<any>(null);
   useEffect(() => {
-    fetch(`https://my-json-server.typicode.com/<your-username>/<repo>/categories/${categoryId}/sellers/${sellerId}`)
+    fetch(`https://tradelink-backend-5a6c.onrender.com/api/v1/categories/${categoryId}/sellers/${sellerId}`)
       .then((res) => res.json())
       .then((data) => setSeller(data))
       .catch((err) => console.error(err));
@@ -31,56 +32,66 @@ export default function SellerProfile() {
     if (newMessage.trim() === "") return;
     setMessages([...messages, { from: "buyer", text: newMessage }]);
     setNewMessage("");
-    // 🔔 Here you would trigger a notification to the seller (via backend/socket)
+    // 🔔 Notification trigger would go here
   };
 
   return (
-    <div className="p-6 bg-yellow-50 min-h-screen">
+    <div className="max-w-[1280px] mx-auto px-4 py-23 min-h-screen">
       {/* Back button */}
       <Link
         to="/Categories/Products"
-        className="text-blue-600 underline mb-4 block"
+        className="text-blue-600 underline mb-6 block"
       >
-        ← Back to Categories
+        ← Back to Sellers
       </Link>
 
-      {/* Seller Info */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <img
-            src={seller.image}
-            alt={seller.name}
-            className="w-40 h-40 rounded-full object-cover shadow"
-          />
-          <div>
-            <h1 className="text-3xl font-bold">{seller.name}</h1>
-            <p className="text-gray-600">📍 {seller.location}</p>
-            <p className="text-gray-500">⭐ {seller.reviews} Reviews</p>
-          </div>
+      {/* Seller Info Card */}
+      <div className=" p-6 flex flex-col sm:flex-row gap-6 items-center mb-10">
+        <img
+          src={seller.image}
+          alt={seller.name}
+          className="h-32 w-32 rounded-full object-cover shadow"
+        />
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-gray-800">{seller.name}</h1>
+          <p className="text-gray-600">📍 {seller.location}</p>
+          <p className="text-gray-500">⭐ {seller.reviews} Reviews</p>
+          {/* Added contact info */}
+          {seller.phone && (
+            <p className="text-gray-700">📞 {seller.phone}</p>
+          )}
+          {seller.email && (
+            <p className="text-gray-700">✉️ {seller.email}</p>
+          )}
         </div>
+        <Button className="bg-orange-500 text-white hover:bg-orange-600">
+          Message Seller
+        </Button>
       </div>
 
-      {/* Seller Products */}
-      <h2 className="text-2xl font-semibold mb-4">Products</h2>
+      {/* Products Grid */}
+      <h2 className="text-xl font-semibold mb-4">Products by {seller.name}</h2>
       {seller.products.length === 0 ? (
         <p className="text-gray-500">This seller has no products yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {seller.products.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col"
             >
               <img
                 src={product.image}
                 alt={product.name}
-                className="h-40 w-full object-cover"
+                className="h-28 w-full object-cover rounded mb-3"
               />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{product.name}</h3>
-                <p className="text-gray-600">₦{product.price.toLocaleString()}</p>
-                <p className="text-gray-500">Qty: {product.quantity}</p>
-              </div>
+              <h3 className="font-semibold text-sm text-orange-600">
+                {product.name}
+              </h3>
+              <p className="text-xs text-gray-700">
+                ₦{product.price.toLocaleString()}
+              </p>
+              <p className="text-[10px] text-gray-500">Qty: {product.quantity}</p>
             </div>
           ))}
         </div>

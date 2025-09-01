@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const ServiceProviders: React.FC = () => {
   const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("All Locations");
+  const [location, setLocation] = useState("All Locations");   
   const [service, setService] = useState("All Services");
   const [time, setTime] = useState("All Times");
   const [selectedProvider, setSelectedProvider] = useState<any | null>(null);
@@ -227,3 +227,4 @@ const ServiceProviders: React.FC = () => {
 };
 
 export default ServiceProviders;
+

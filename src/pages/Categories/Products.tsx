@@ -1,123 +1,126 @@
-import { useState/*, useEffect*/ } from "react";
+import React, { useState/*, useEffect*/ } from "react";
+import { Search, MapPin, Briefcase } from "lucide-react";
+import Button from "../../components/reusable/Button";
 import { Link } from "react-router-dom";
 import { categories as localCategories } from "../../data/categories";
 import type { Category, Seller } from "../../data/categories";
 
-// Extend Seller type to include category info
-type SellerWithCategory = Seller & {
-  categoryId: string;
-  categoryTitle: string;
-};
-
 export default function Products() {
+  // --- OFFLINE VERSION (default) ---
   const [categories] = useState<Category[]>(localCategories);
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  // --- API VERSION (commented out for now) ---
+  /*
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    fetch("https://my-json-server.typicode.com/<your-username>/<repo>/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error(err));
+  }, []);
+  */
 
-  // ✅ Only one declaration of allSellers
-  const allSellers: SellerWithCategory[] = categories.flatMap((cat) =>
-    cat.sellers.map((s) => ({
-      ...s,
-      categoryId: cat.id,
-      categoryTitle: cat.title,
-    }))
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("All Locations");
+  const [categoryFilter, setCategoryFilter] = useState("All Categories");
+
+  // Flatten sellers from categories
+  const allSellers: (Seller & { categoryId: string; categoryTitle: string })[] =
+    categories.flatMap((cat) =>
+      cat.sellers.map((s) => ({
+        ...s,
+        categoryId: cat.id,
+        categoryTitle: cat.title,
+      }))
+    );
+
+  // Filtering
+  const filtered = allSellers.filter(
+    (s) =>
+      (query === "" || s.name.toLowerCase().includes(query.toLowerCase())) &&
+      (location === "All Locations" || s.location === location) &&
+      (categoryFilter === "All Categories" || s.categoryTitle === categoryFilter)
   );
 
-  // Filter sellers by category
-  let sellers = selectedCategory
-    ? allSellers.filter((s) => s.categoryId === selectedCategory)
-    : allSellers;
-
-  // Apply search filter
-  sellers = sellers.filter(
-    (seller) =>
-      seller.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.products.some((p) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      seller.categoryTitle.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Sort by reviews
-  sellers.sort((a, b) => b.reviews - a.reviews);
+  // Sort by reviews (highest first)
+  filtered.sort((a, b) => b.reviews - a.reviews);
 
   return (
-    <div className="flex bg-yellow-50 min-h-screen ">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-4 
-  h-[450px] my-auto self-start mt-20 rounded-lg">
-  <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
-  <ul className="space-y-2">
-    <li
-      className={`cursor-pointer p-2 rounded text-center ${
-        !selectedCategory ? "bg-[#F89216] text-white" : "hover:bg-gray-100"
-      }`}
-      onClick={() => setSelectedCategory(null)}
-    >
-      All Sellers
-    </li>
-    {categories.map((cat) => (
-      <li
-        key={cat.id}
-        className={`cursor-pointer p-2 rounded text-center ${
-          selectedCategory === cat.id
-            ? "bg-[#F89216] text-white"
-            : "hover:bg-gray-100"
-        }`}
-        onClick={() => setSelectedCategory(cat.id)}
-      >
-        {cat.title}
-      </li>
-    ))}
-  </ul>
-</aside>
+    <div className="max-w-[1280px] mx-auto px-4 py-20 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Sellers</h1>
 
-      {/* Main content */}
-      <main className="flex-1 p-6 pt-24">   {/* ✅ add pt-24 to push below navbar */}
-  <h1 className="text-3xl font-bold mb-6 text-center">Sellers</h1>
-
-        {/* Search bar */}
-        <div className="flex justify-center mb-6">
+      {/* Search + Filters */}
+      <div className="bg-white p-4 rounded-2xl shadow mb-6 grid gap-4 md:grid-cols-3">
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <Search size={16} className="text-gray-500" />
           <input
-            type="text"
-            placeholder="Search by seller, product, location, or category..."
-            className="border p-2 rounded w-full max-w-xl"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by sellers, location, and category..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full text-sm outline-none"
           />
         </div>
-
-        {sellers.length === 0 ? (
-          <p className="text-center text-gray-500">No sellers found.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sellers.map((seller) => (
-              <Link
-                key={seller.id}
-                to={`/Categories/Products/${seller.categoryId}/seller/${seller.id}`}
-                className="bg-white rounded-lg shadow hover:shadow-lg overflow-hidden transition"
-              >
-                <img
-                  src={seller.image}
-                  alt={seller.name}
-                  className="h-48 w-full object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold">{seller.name}</h2>
-                  <p className="text-gray-600">📍 {seller.location}</p>
-                  <p className="text-gray-500">⭐ {seller.reviews} reviews</p>
-                  <p className="text-sm mt-2">
-                    {seller.products.slice(0, 2).map((p) => p.name).join(", ")}
-                    {seller.products.length > 2 ? "..." : ""}
-                  </p>
-                </div>
-              </Link>
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <MapPin size={16} className="text-gray-500" />
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full text-sm outline-none"
+          >
+            <option>All Locations</option>
+            {[...new Set(allSellers.map((s) => s.location))].map((loc) => (
+              <option key={loc}>{loc}</option>
             ))}
-          </div>
+          </select>
+        </div>
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+          <Briefcase size={16} className="text-gray-500" />
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="w-full text-sm outline-none"
+          >
+            <option>All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id}>{cat.title}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Sellers Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {filtered.length === 0 ? (
+          <p className="text-gray-500 text-center col-span-full">
+            No sellers found.
+          </p>
+        ) : (
+          filtered.map((s) => (
+            <Link
+              key={s.id}
+              to={`/Categories/Products/${s.categoryId}/seller/${s.id}`}
+              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
+            >
+              <div className="relative">
+                <img
+                  src={s.image}
+                  alt={s.name}
+                  className="h-28 w-full object-cover rounded mb-3"
+                />
+              </div>
+              <h3 className="font-semibold text-sm text-orange-600">
+                {s.name}
+              </h3>
+              <p className="text-xs text-gray-500">{s.location}</p>
+              <p className="text-xs text-gray-500">{s.categoryTitle}</p>
+              <p className="text-[13px] text-yellow-600">⭐ {s.reviews}</p>
+              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
+                View Profile
+              </Button>
+            </Link>
+          ))
         )}
-      </main>
+      </div>
     </div>
   );
 }
