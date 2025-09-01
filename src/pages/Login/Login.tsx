@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate,useLocation } from "react-router-dom"
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa"
 import { HiOutlineMail } from "react-icons/hi"
 import { GoLock } from "react-icons/go"
@@ -12,6 +12,7 @@ import api from "../../api/axios"
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [role, setRole] = useState<"user" | "seller">("user")
   const [showPassword, setShowPassword] = useState(false)
 
@@ -99,13 +100,22 @@ const Login: React.FC = () => {
       })
 
       // Navigate based on role
-      if (backendRole === "user") {
-        navigate("/")
-      } else if (backendRole === "seller") {
-        navigate("/dashboard")
-      } else {
-        navigate("/") // fallback
-      }
+      // if (backendRole === "seller") {
+      //  const redirectTo =(location.state as any)?.from || "/dashboard";
+      //  navigate(redirectTo)
+      // } else if (backendRole === "user") {
+      //   const redirectTo =(location.state as any)?.from || "/Categories/Products";
+      //   navigate(redirectTo)
+      // } else {
+      //   navigate("/") // fallback
+      // }
+      // Determine where to redirect after login
+const redirectTo =
+  (location.state as any)?.from || (backendRole === "seller" ? "/dashboard" : "/Categories/Products");
+
+// Navigate to the proper page
+navigate(redirectTo);
+
     } catch (err: any) {
       Swal.close()
 

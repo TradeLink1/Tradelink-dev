@@ -20,7 +20,7 @@ const VerifyEmail = () => {
 
       try {
         // adjust endpoint to match backend
-        await api.post("/api/auth/verify-email", { token });
+        await api.post("/api/v1/auth/verify-email", { token });
 
         Swal.fire({
           icon: "success",

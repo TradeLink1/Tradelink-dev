@@ -19,6 +19,8 @@ const Settings = () => {
     confirmPassword: "",
   })
 
+  const [isDeleting, setIsDeleting] = useState(false)
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -32,11 +34,8 @@ const Settings = () => {
           phone: sellerData.phone || "",
           description: sellerData.description || "",
           businessCategory: sellerData.businessCategory || "",
-          // Add address if it exists in the response
           address: sellerData.address || "",
         }))
-
-        console.log("Seller data from backend:", sellerData)
       } catch (err) {
         console.log("Error fetching seller profile:", err)
       }
@@ -54,7 +53,6 @@ const Settings = () => {
     })
   }
 
-  // UPDATED function with single request for profile + logo
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSaveProfileStore = async (e: any) => {
     e.preventDefault()
@@ -70,18 +68,15 @@ const Settings = () => {
         updateData.append("logo", formData.logo)
       }
 
-      // Log FormData entries for debugging
-      for (const pair of updateData.entries()) {
-        console.log("FormData:", pair[0], pair[1])
-      }
-
-      const profileRes = await api.put("api/v1/sellers/edit/profile", updateData, {
-        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const profileRes = await api.put("api/v1/sellers/all/profile", updateData, {
+        headers: { 
+          "Content-Type": "multipart/form-data", 
+          Authorization: `Bearer ${localStorage.getItem("token")}` 
+        },
       })
 
       console.log("Profile update response:", profileRes.data)
       alert("Profile updated successfully!")
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Error updating profile:", err.response?.data || err)
       alert("Failed to update profile: " + (err.response?.data?.message || ""))
@@ -109,20 +104,29 @@ const Settings = () => {
         newPassword: "",
         confirmPassword: "",
       }))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Error changing password:", err)
       alert(err.response?.data?.message || "Failed to change password.")
     }
   }
 
-  const handleDeactivate = () => {
-    alert("Account deactivated (dummy). Backend will handle this later.")
-  }
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This cannot be undone.")) return
 
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete your account? This cannot be undone.")) {
-      alert("Account deleted (dummy). Backend will handle real delete.")
+    try {
+      setIsDeleting(true)
+      const res = await api.delete("/api/v1/users/delete/profile", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      alert("Account deleted successfully!")
+      console.log("Delete response:", res.data)
+      localStorage.removeItem("token")
+      window.location.href = "/" // redirect to homepage or login
+    } catch (err: any) {
+      console.error("Error deleting account:", err)
+      alert(err.response?.data?.message || "Failed to delete account.")
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -304,19 +308,14 @@ const Settings = () => {
           <AlertTriangle className="text-red-600" size={20} />
           <h3 className="text-lg font-semibold text-red-600">Danger Zone</h3>
         </div>
-        <p className="text-sm text-gray-600 mb-4">Be careful! These actions cannot be undone.</p>
+        <p className="text-sm text-gray-600 mb-4">Be careful! This action cannot be undone.</p>
         <div className="flex flex-col sm:flex-row gap-4">
           <button
-            onClick={handleDeactivate}
-            className="bg-gray-700 hover:bg-gray-900 text-white font-medium px-6 py-2 rounded-full shadow transition"
-          >
-            Deactivate Account
-          </button>
-          <button
             onClick={handleDelete}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2 rounded-full shadow transition"
+            disabled={isDeleting}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2 rounded-full shadow transition disabled:opacity-50"
           >
-            Delete Account
+            {isDeleting ? "Deleting..." : "Delete Account"}
           </button>
         </div>
       </div>

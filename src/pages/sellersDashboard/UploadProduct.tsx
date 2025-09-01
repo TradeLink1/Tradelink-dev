@@ -49,7 +49,7 @@ const UploadProduct = () => {
       newErrors.stock = "Stock must be a valid number"
     }
 
-    if (!formData.image) newErrors.image = "Please upload an image"
+    // if (!formData.image) newErrors.image = "Please upload an image"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -101,18 +101,24 @@ const UploadProduct = () => {
         if (fileInput) fileInput.value = ""
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        console.error(`Error creating ${uploadType}:`, error)
+        // 👇 This will log the raw error so you can inspect it in the browser console
+        console.error("Error creating " + uploadType, {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data,
+        })
+
         if (error.response?.data?.errors) {
           setErrors(error.response.data.errors)
         } else {
           setErrors({
-            submit: error.response?.data?.message || `Failed to upload ${uploadType}. Please try again.`,
+            submit:
+              error.response?.data?.message ||
+              `Failed to upload ${uploadType}. Please try again.`,
           })
         }
-      } finally {
-        setIsLoading(false)
       }
-    }
+    }   // ✅ FIXED: this closes handleSubmit properly
   }
 
   return (

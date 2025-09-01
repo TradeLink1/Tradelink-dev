@@ -1,6 +1,6 @@
 // src/components/ProtectedRoute.tsx
 import type { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectRouteProps {
   children: ReactNode;
@@ -9,11 +9,12 @@ interface ProtectRouteProps {
 
 const ProtectRoute = ({ children, allowedRole }: ProtectRouteProps) => {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // get role from login
+  const role = localStorage.getItem("role");
+  const location = useLocation(); // get current path
 
-  // 1️⃣ If no token, redirect to login
+  // 1️⃣ If no token, redirect to login and store intended page
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
   // 2️⃣ If role is restricted and does not match, redirect

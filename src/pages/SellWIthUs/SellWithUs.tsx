@@ -41,7 +41,7 @@ const SellWithUs = () => {
     category: "",
     address: "",
     description: "",
-    sampleImage: null as File | null,
+    // sampleImage: null as File | null, // ❌ commented out upload image
     password: "",
     confirmPassword: "",
   })
@@ -95,7 +95,7 @@ const SellWithUs = () => {
         category: formData.category,
         address: formData.address,
         description: formData.description,
-        sampleImage: formData.sampleImage,
+        // sampleImage: formData.sampleImage, // ❌ commented out upload image
         role: "seller",
       }
 
@@ -298,7 +298,8 @@ const SellWithUs = () => {
               ></textarea>
             </div>
 
-            {/* Upload Sample */}
+            {/* Upload Sample - Commented Out */}
+            {/*
             <div className="md:col-span-2">
               <label className="block font-medium mb-2 text-[#333333]">Upload Sample (Optional)</label>
               <input
@@ -309,6 +310,7 @@ const SellWithUs = () => {
                 onChange={handleChange}
               />
             </div>
+            */}
 
             {/* Passwords */}
             {[
@@ -371,6 +373,7 @@ const SellWithUs = () => {
         </motion.section>
       </div>
 
+      {/* Resend Modal */}
       {showResendModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
