@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Link, useNavigate,useLocation } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa"
 import { HiOutlineMail } from "react-icons/hi"
 import { GoLock } from "react-icons/go"
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
     }
   }, [])
 
-  // ✅ Login
+  // ✅ Updated Login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -89,9 +89,19 @@ const Login: React.FC = () => {
         return
       }
 
-      // Save to localStorage properly
+      // ✅ Save to localStorage properly
       localStorage.setItem("token", token)
       localStorage.setItem("role", backendRole)
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: res.data.userId,
+          sellerId: res.data.sellerId,
+          name: res.data.name,
+          role: res.data.role,
+          token: res.data.token,
+        })
+      )
 
       Swal.close()
       Toast.fire({
@@ -99,23 +109,12 @@ const Login: React.FC = () => {
         title: "Login successful 🎉",
       })
 
-      // Navigate based on role
-      // if (backendRole === "seller") {
-      //  const redirectTo =(location.state as any)?.from || "/dashboard";
-      //  navigate(redirectTo)
-      // } else if (backendRole === "user") {
-      //   const redirectTo =(location.state as any)?.from || "/Categories/Products";
-      //   navigate(redirectTo)
-      // } else {
-      //   navigate("/") // fallback
-      // }
-      // Determine where to redirect after login
-const redirectTo =
-  (location.state as any)?.from || (backendRole === "seller" ? "/dashboard" : "/Categories/Products");
+      // ✅ Navigate based on role
+      const redirectTo =
+        (location.state as any)?.from ||
+        (backendRole === "seller" ? "/dashboard" : "/Categories/Products")
 
-// Navigate to the proper page
-navigate(redirectTo);
-
+      navigate(redirectTo)
     } catch (err: any) {
       Swal.close()
 
@@ -157,9 +156,7 @@ navigate(redirectTo);
       })
 
       try {
-        await api.post("api/v1/auth/forgot-password", {
-          email,
-        })
+        await api.post("api/v1/auth/forgot-password", { email })
 
         Swal.close()
         Swal.fire({
