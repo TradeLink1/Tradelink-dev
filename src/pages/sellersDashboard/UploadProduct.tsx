@@ -1,152 +1,190 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import api from "../../api/axios"
-// import KycPopup from "./kycPopup"
-
+import { useState } from "react";
+import { motion } from "framer-motion";
+import api from "../../api/axios";
 
 const UploadProduct = () => {
-  const [uploadType, setUploadType] = useState<"product" | "service">("product")
+  const [uploadType, setUploadType] = useState("product");
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    category: string;
+    price: string;
+    quantity: string;
+    description: string;
+    imageFile: File | null; // Unified state for the image file
+  }>({
     name: "",
     category: "",
     price: "",
-    stock: "",
+    quantity: "",
     description: "",
-    image: null as File | null,
-  })
+    imageFile: null,
+  });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [errors, setErrors] = useState<any>({})
-  // const [isVerified, setIsVerified] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  type ErrorFields = {
+    name?: string;
+    category?: string;
+    price?: string;
+    quantity?: string;
+    imageFile?: string;
+    description?: string;
+    submit?: string;
+  };
 
-  // if (!isVerified) {
-  //   return <KycPopup onVerify={() => setIsVerified(true)} />
-  // }
+  const [errors, setErrors] = useState<ErrorFields>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (e: any) => {
-    const { name, value, files } = e.target
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    })
-  }
+  // Corrected the type of 'e'
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files) {
+      setFormData({ ...formData, imageFile: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
 
+  // Form validation function moved above handleSubmit
   const validateForm = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newErrors: any = {}
+    const newErrors: ErrorFields = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name is required"
-    if (!formData.category) newErrors.category = "Category is required"
-    if (!formData.price || isNaN(Number(formData.price))) newErrors.price = "Price must be a valid number"
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.price || isNaN(Number(formData.price)))
+      newErrors.price = "Price must be a valid number";
 
-    if (uploadType === "product" && (!formData.stock || isNaN(Number(formData.stock)))) {
-      newErrors.stock = "Stock must be a valid number"
+    if (
+      uploadType === "product" &&
+      (!formData.quantity || isNaN(Number(formData.quantity)))
+    ) {
+      newErrors.quantity = "Quantity must be a valid number";
     }
 
-    // if (!formData.image) newErrors.image = "Please upload an image"
+    // Now uses a single imageFile state variable for validation
+    if (!formData.imageFile) {
+      newErrors.imageFile = `A ${uploadType} image is required`;
+    }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
+  // Corrected the type of 'e'
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (validateForm()) {
-      setIsLoading(true)
-      setErrors({})
+      setIsLoading(true);
+      setErrors({});
 
       try {
-        const formDataToSend = new FormData()
-        formDataToSend.append("name", formData.name)
-        formDataToSend.append("uploadType", uploadType)
-        formDataToSend.append("category", formData.category)
-        formDataToSend.append("price", formData.price)
+        const formDataToSend = new FormData();
+        formDataToSend.append("name", formData.name);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("price", formData.price);
+        formDataToSend.append("description", formData.description);
+
         if (uploadType === "product") {
-          formDataToSend.append("stock", formData.stock)
-        }
-        formDataToSend.append("description", formData.description)
-        if (formData.image) {
-          formDataToSend.append("image", formData.image)
+          formDataToSend.append("quantity", formData.quantity);
+          // For products, the backend expects the field name "image"
+          if (formData.imageFile) {
+            formDataToSend.append("image", formData.imageFile);
+          }
+        } else {
+          // For services, the backend expects the field name "serviceImg"
+          if (formData.imageFile) {
+            formDataToSend.append("serviceImg", formData.imageFile);
+          }
         }
 
-        const endpoint = uploadType === "product" ? "/api/v1/products/create" : "/api/v1/services/create"
+        const endpoint =
+          uploadType === "product"
+            ? "/api/v1/products/create"
+            : "/api/v1/services/create";
+
         const response = await api.post(endpoint, formDataToSend, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        })
+        });
 
-        console.log(`${uploadType} created successfully:`, response.data)
-        setSubmitSuccess(true)
+        console.log(`${uploadType} created successfully:`, response.data);
+        setSubmitSuccess(true);
 
-        // Reset form after successful submission
         setFormData({
           name: "",
           category: "",
           price: "",
-          stock: "",
+          quantity: "",
           description: "",
-          image: null,
-        })
+          imageFile: null,
+        });
 
-        // Reset file input
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
-        if (fileInput) fileInput.value = ""
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        // 👇 This will log the raw error so you can inspect it in the browser console
-        console.error("Error creating " + uploadType, {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data,
-        })
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) (fileInput as HTMLInputElement).value = "";
+      } catch (error) {
+        if (typeof error === "object" && error !== null) {
+          const err = error as {
+            message?: string;
+            response?: { status?: number; data?: any };
+          };
+          console.error("Error creating " + uploadType, {
+            message: err.message,
+            status: err.response?.status,
+            data: err.response?.data,
+          });
 
-        if (error.response?.data?.errors) {
-          setErrors(error.response.data.errors)
+          if (err.response?.data?.errors) {
+            setErrors(err.response.data.errors);
+          } else {
+            setErrors({
+              submit:
+                err.response?.data?.message ||
+                `Failed to upload ${uploadType}. Please try again.`,
+            });
+          }
         } else {
+          console.error("Error creating " + uploadType, error);
           setErrors({
-            submit:
-              error.response?.data?.message ||
-              `Failed to upload ${uploadType}. Please try again.`,
-          })
+            submit: `Failed to upload ${uploadType}. Please try again.`,
+          });
         }
+      } finally {
+        setIsLoading(false);
       }
-    }   // ✅ FIXED: this closes handleSubmit properly
-  }
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full bg-white rounded-[30px] shadow-lg p-8">
-        {/* Header */}
         <h2 className="text-[30px] leading-8 font-bold text-center text-[#f89216] max-mobile:text-[25px] mb-8">
           Upload {uploadType === "product" ? "Product" : "Service"}
         </h2>
-
-        {/* Success Message */}
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
-            {uploadType === "product" ? "Product" : "Service"} uploaded successfully!
-            <button onClick={() => setSubmitSuccess(false)} className="ml-2 text-green-800 hover:text-green-900">
+            {uploadType === "product" ? "Product" : "Service"} uploaded
+            successfully!
+            <button
+              onClick={() => setSubmitSuccess(false)}
+              className="ml-2 text-green-800 hover:text-green-900"
+            >
               ×
             </button>
           </div>
         )}
-
-        {/* General Error Message */}
         {errors.submit && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
             {errors.submit}
           </div>
         )}
 
-        {/* Toggle Switch */}
         <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1">
           <motion.div
             layout
@@ -157,7 +195,6 @@ const UploadProduct = () => {
             }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           />
-          {/* Buttons */}
           <button
             onClick={() => setUploadType("product")}
             className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
@@ -176,9 +213,7 @@ const UploadProduct = () => {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               {uploadType === "product" ? "Product Name" : "Service Name"}
@@ -186,106 +221,150 @@ const UploadProduct = () => {
             <input
               type="text"
               name="name"
+              value={formData.name}
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
-
-          {/* Price */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Price
+            </label>
             <input
               type="number"
               name="price"
+              value={formData.price}
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
-
-          {/* Category */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
+              value={formData.category}
               className="w-full border border-gray-300 rounded-full p-3 bg-white focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             >
               <option value="">-- Select Category --</option>
               {uploadType === "product" ? (
                 <>
-                  <option value="grocery">Groceries & Essentials</option>
-                  <option value="fashion">Fashion & Clothing</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="home">Home & Kitchen</option>
+                  <option value="Groceries & Essentials">
+                    Groceries & Essentials
+                  </option>
+                  <option value="Fresh & Perishables">
+                    Fresh & Perishables
+                  </option>
+                  <option value="Fashion & Clothing">Fashion & Clothing</option>
+                  <option value="Home & Kitchen">Home & Kitchen</option>
+                  <option value="Building Materials & Hardware">
+                    Building Materials & Hardware
+                  </option>
+                  <option value="Electronics & Gadgets">
+                    Electronics & Gadgets
+                  </option>
+                  <option value="Automobile & Parts">Automobile & Parts</option>
+                  <option value="Health & Beauty">Health & Beauty</option>
+                  <option value="Toys, Baby & Kids">Toys, Baby & Kids</option>
+                  <option value="Sports & Fitness">Sports & Fitness</option>
+                  <option value="Books, Stationery & Office">
+                    Books, Stationery & Office
+                  </option>
                 </>
               ) : (
                 <>
-                  <option value="hair">Hair Stylist</option>
-                  <option value="plumber">Plumber</option>
-                  <option value="photographer">Photographer</option>
-                  <option value="mechanic">Mechanic</option>
+                  <option value="Hair Stylist">Hair Stylist</option>
+                  <option value="Fashion Designer">Fashion Designer</option>
+                  <option value="Caterer">Caterer</option>
+                  <option value="Plumber">Plumber</option>
+                  <option value="Mechanic">Mechanic</option>
+                  <option value="Photographer">Photographer</option>
+                  <option value="Electrician">Electrician</option>
+                  <option value="Makeup Artist">Makeup Artist</option>
+                  <option value="Barber">Barber</option>
+                  <option value="Cleaner">Cleaner</option>
+                  <option value="Car Wash">Car Wash</option>
+                  <option value="Other">Other</option>
                 </>
               )}
             </select>
-            {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+            )}
           </div>
-
-          {/* Stock only if product */}
           {uploadType === "product" && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Stock Quantity</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Quantity
+              </label>
               <input
                 type="number"
-                name="stock"
+                name="quantity"
+                value={formData.quantity}
                 className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
                 onChange={handleChange}
               />
-              {errors.stock && <p className="text-red-500 text-sm mt-1">{errors.stock}</p>}
+              {errors.quantity && (
+                <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+              )}
             </div>
           )}
-
-          {/* Image */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Upload Image
+            </label>
             <input
               type="file"
-              name="image"
+              // The name attribute here is not important for the form data,
+              // as we are manually appending the correct field name in handleSubmit
+              name="imageFile"
               accept="image/*"
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
+            {errors.imageFile && (
+              <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>
+            )}
           </div>
-
-          {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
             <textarea
               name="description"
+              value={formData.description}
               rows={4}
               className="w-full border border-gray-300 rounded-2xl p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             ></textarea>
           </div>
-
-          {/* Submit */}
           <div className="flex justify-center pt-6">
             <button
               type="submit"
               disabled={isLoading}
               className={`px-10 py-3 text-lg font-semibold text-white rounded-full shadow transform transition-all ${
-                isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
               }`}
             >
-              {isLoading ? "Uploading..." : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
+              {isLoading
+                ? "Uploading..."
+                : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UploadProduct
+export default UploadProduct;
