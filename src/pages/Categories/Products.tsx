@@ -2,52 +2,56 @@ import React, { useState, useEffect } from "react";
 import { Search, MapPin, Briefcase } from "lucide-react";
 import Button from "../../components/reusable/Button";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 const Products: React.FC = () => {
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("All Locations");
-  const [service, setService] = useState("All Categories");
-  const [sellers, setSellers] = useState<any[]>([]);
-  const [filteredSellers, setFilteredSellers] = useState<any[]>([]);
+  const [category, setCategory] = useState("All Categories");
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // ✅ Fetch sellers from API
+  // ✅ Fetch products from API
   useEffect(() => {
-    fetch(
-      "https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/all/sellers",
-      {
-        headers: {
-          "Content-Type": "application/json",
-          // 🔑 If auth is required, add token here:
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setSellers(data.sellers || []);
-        console.log(data.sellers);
-        console.log(data);
-        setFilteredSellers(data.sellers || []);
+    api
+      .get("/api/v1/products")
+      .then((res) => {
+        // Handle both array response and { products: [...] }
+        const data = Array.isArray(res.data) ? res.data : res.data.products;
+
+        setProducts(data || []);
+        setFilteredProducts(data || []);
+        console.log("Fetched products:", data);
       })
-      .catch((error) => console.error("Error fetching sellers:", error));
+      .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
-  // 🔍 Filter sellers
-  const handleFilterChange = () => {
-    // const filtered = sellers.filter(
-    //   (s) =>
-    //     (query === "" ||
-    //       s.name.toLowerCase().includes(query.toLowerCase()) ||
-    //       s.category.toLowerCase().includes(query.toLowerCase())) &&
-    //     (location === "All Locations" || s.location === location) &&
-    //     (service === "All Categories" || s.category === service)
-    // );
-    // setFilteredSellers(filtered);
-  };
+  // ✅ Auto filter when query/category/location changes
+  useEffect(() => {
+    const filtered = products.filter((p) => {
+      const matchesQuery =
+        query === "" ||
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
+        p.category.toLowerCase().includes(query.toLowerCase()) ||
+        p.description.toLowerCase().includes(query.toLowerCase());
 
-  const handleViewProfile = (sellerId: string) => {
-    navigate(`/sellers/${sellerId}`); // ✅ Route to SellerProfile
+      const matchesCategory =
+        category === "All Categories" ||
+        p.category.toLowerCase() === category.toLowerCase();
+
+      const matchesLocation =
+        location === "All Locations" ||
+        (p.location && p.location.toLowerCase() === location.toLowerCase());
+
+      return matchesQuery && matchesCategory && matchesLocation;
+    });
+
+    setFilteredProducts(filtered);
+  }, [query, category, location, products]);
+
+  const handleViewProduct = (productId: string) => {
+    navigate(`/products/${productId}`);
   };
 
   return (
@@ -55,18 +59,18 @@ const Products: React.FC = () => {
       {/* Filters */}
       <div className="bg-white p-4 rounded-2xl shadow mb-6 grid gap-4 md:grid-cols-4">
         {/* Search */}
-        {/* <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
           <Search size={16} className="text-gray-500" />
           <input
-            placeholder="Search sellers..."
+            placeholder="Search products..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full text-sm outline-none"
           />
-        </div> */}
+        </div>
 
         {/* Location */}
-        {/* <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
           <MapPin size={16} className="text-gray-500" />
           <select
             value={location}
@@ -74,69 +78,81 @@ const Products: React.FC = () => {
             className="w-full text-sm outline-none"
           >
             <option>All Locations</option>
-            {[...new Set(sellers.map((s) => s.location))].map((loc) => (
-              <option key={loc}>{loc}</option>
-            ))}
+            {[...new Set(products.map((p) => p.location).filter(Boolean))].map(
+              (loc) => (
+                <option key={loc}>{loc}</option>
+              )
+            )}
           </select>
-        </div> */}
+        </div>
 
         {/* Category */}
         <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
           <Briefcase size={16} className="text-gray-500" />
           <select
-            value={service}
-            onChange={(e) => setService(e.target.value)}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             className="w-full text-sm outline-none"
           >
             <option>All Categories</option>
-            {[...new Set(sellers.map((s) => s.category))].map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
+            {[...new Set(products.map((p) => p.category).filter(Boolean))].map(
+              (cat) => (
+                <option key={cat}>{cat}</option>
+              )
+            )}
           </select>
         </div>
 
-        {/* Apply Filters */}
+        {/* Reset Filters */}
         <Button
           className="flex items-center justify-center gap-2 text-sm"
-          onClick={handleFilterChange}
+          onClick={() => {
+            setQuery("");
+            setCategory("All Categories");
+            setLocation("All Locations");
+          }}
         >
-          Apply Filters
+          Reset Filters
         </Button>
       </div>
 
-      {/* Sellers Grid */}
+      {/* Products Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
-        {filteredSellers.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <p className="text-center text-gray-500 col-span-full">
-            No sellers found.
+            No products found.
           </p>
         ) : (
-          filteredSellers?.map((s, index) => (
+          filteredProducts.map((p) => (
             <div
-              key={s._id}
+              key={p._id}
               className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
-              onClick={() => handleViewProfile(s._id)}
+              onClick={() => handleViewProduct(p._id)}
             >
               <div className="relative">
                 <img
-                  src={s.image}
-                  alt={s.name}
+                  src={
+                    p.productImg ||
+                    "https://via.placeholder.com/150?text=No+Image"
+                  }
+                  alt={p.name}
                   className="h-28 w-full object-cover rounded mb-3"
                 />
               </div>
 
-              <h3 className="font-semibold text-lg sm:text-sm text-orange-600">
-                {s.category}
+              <h3 className="font-semibold text-sm text-orange-600">
+                {p.name}
               </h3>
-              <p className="font-medium capitalize text-[11px] sm:text-xs text-gray-800">
-                {s.storeName}
+              <p className="text-[11px] sm:text-xs text-gray-800 line-clamp-2">
+                {p.description}
               </p>
               <p className="text-[10px] sm:text-xs text-gray-500">
-                {s?.location?.address}
+                📍 {p.location || "No location"}
               </p>
-              {/* <p className="text-[20px] text-yellow-600">⭐ {s.reviews}</p> */}
+              <p className="text-[12px] text-gray-600">📂 {p.category}</p>
+
               <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
-                View Profile
+                View Product
               </Button>
             </div>
           ))
