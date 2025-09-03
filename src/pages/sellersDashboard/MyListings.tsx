@@ -13,10 +13,16 @@ interface Listing {
   serviceImg?: string;
 }
 
-const MyListings = () => {
+interface MyListingsProps{
+  sellerId:string
+}
+
+const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
   const [activeTab, setActiveTab] = useState<"products" | "services">(
     "products"
   );
+
+
   const [products, setProducts] = useState<Listing[]>([]);
   const [services, setServices] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +57,7 @@ const MyListings = () => {
     };
 
     fetchListings();
-  }, []);
+  }, [sellerId]);
 
   const handleDelete = async (id: string, type: "products" | "services") => {
     try {
