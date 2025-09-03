@@ -50,9 +50,11 @@ const SellWithUs = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [showResendModal, setShowResendModal] = useState(false)
-  const [resendEmail, setResendEmail] = useState("")
-  const [resendLoading, setResendLoading] = useState(false)
+
+  // ❌ Commented out resend verification states
+  // const [showResendModal, setShowResendModal] = useState(false)
+  // const [resendEmail, setResendEmail] = useState("")
+  // const [resendLoading, setResendLoading] = useState(false)
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target
@@ -121,50 +123,42 @@ const SellWithUs = () => {
     }
   }
 
-  const handleResendVerification = () => {
-    setShowResendModal(true)
-    setResendEmail("") // Clear previous email
-  }
+  // ❌ Commented out resend verification handlers
+  // const handleResendVerification = () => {
+  //   setShowResendModal(true)
+  //   setResendEmail("")
+  // }
 
-  const handleResendSubmit = async (e: any) => {
-    e.preventDefault()
-
-    if (!resendEmail.trim()) {
-      return Swal.fire("Error", "Please enter your email address", "error")
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(resendEmail)) {
-      return Swal.fire("Error", "Please enter a valid email address", "error")
-    }
-
-    try {
-      setResendLoading(true)
-
-      await api.post("/api/v1/auth/resend-verification", {
-        email: resendEmail,
-      })
-
-      Swal.fire({
-        icon: "success",
-        title: "Email Sent 📧",
-        text: "Verification link has been resent to your email.",
-        confirmButtonColor: "#30ac57",
-      })
-
-      setShowResendModal(false)
-      setResendEmail("")
-    } catch (error: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error?.response?.data?.message || "Failed to resend verification email",
-      })
-    } finally {
-      setResendLoading(false)
-    }
-  }
+  // const handleResendSubmit = async (e: any) => {
+  //   e.preventDefault()
+  //   if (!resendEmail.trim()) {
+  //     return Swal.fire("Error", "Please enter your email address", "error")
+  //   }
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  //   if (!emailRegex.test(resendEmail)) {
+  //     return Swal.fire("Error", "Please enter a valid email address", "error")
+  //   }
+  //   try {
+  //     setResendLoading(true)
+  //     await api.post("/api/v1/auth/resend-verification", { email: resendEmail })
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Email Sent 📧",
+  //       text: "Verification link has been resent to your email.",
+  //       confirmButtonColor: "#30ac57",
+  //     })
+  //     setShowResendModal(false)
+  //     setResendEmail("")
+  //   } catch (error: any) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error",
+  //       text: error?.response?.data?.message || "Failed to resend verification email",
+  //     })
+  //   } finally {
+  //     setResendLoading(false)
+  //   }
+  // }
 
   return (
     <section className="max-w-[1200px] mx-auto">
@@ -338,7 +332,7 @@ const SellWithUs = () => {
                 <button
                   type="button"
                   onClick={() => setShow(!show)}
-                  className="absolute right-4 top-15 transform -translate-y-1/2 text-gray-500"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
                 >
                   {show ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -358,6 +352,8 @@ const SellWithUs = () => {
                 {loading ? "Registering..." : "Register as Seller"}
               </motion.button>
 
+              {/* ❌ Commented out resend verification link */}
+              {/*
               <p className="mt-4 text-gray-600">
                 Didn't get the email?{" "}
                 <button
@@ -368,12 +364,14 @@ const SellWithUs = () => {
                   Resend Verification
                 </button>
               </p>
+              */}
             </div>
           </form>
         </motion.section>
       </div>
 
-      {/* Resend Modal */}
+      {/* ❌ Commented out Resend Modal */}
+      {/*
       {showResendModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
@@ -421,6 +419,7 @@ const SellWithUs = () => {
           </motion.div>
         </div>
       )}
+      */}
     </section>
   )
 }

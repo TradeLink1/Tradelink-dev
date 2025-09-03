@@ -13,11 +13,15 @@ import api from "../../api/axios";
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [role, setRole] = useState<"user" | "seller">("user");
   const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // ✅ Resend Verification State
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
 
   const Toast = Swal.mixin({
     toast: true,
@@ -48,12 +52,11 @@ const Login: React.FC = () => {
         confirmButtonColor: "#F89216",
       });
 
-      // Remove the query param from URL
       window.history.replaceState({}, document.title, "/login");
     }
   }, []);
 
-  // ✅ Updated Login
+  // ✅ Login Handler
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -70,36 +73,21 @@ const Login: React.FC = () => {
       const res = await api.post("api/v1/auth/login", {
         email,
         password,
-        role, // ✅ send selected role to backend
       });
 
-      const { token, role: backendRole } = res.data;
+      const { token, role: backendRole, userId, sellerId, name } = res.data;
 
-      // ✅ Role mismatch check
-      if (backendRole !== role) {
-        Swal.close();
-        Swal.fire({
-          icon: "error",
-          title: "Role mismatch",
-          text:
-            backendRole === "seller"
-              ? "This account is registered as a seller. Please select 'I'm a seller'."
-              : "This account is registered as a buyer. Please select 'I'm a buyer'.",
-        });
-        return;
-      }
-
-      // Save to localStorage properly
+      // ✅ Store everything in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", backendRole);
       localStorage.setItem(
         "user",
         JSON.stringify({
-          id: res.data.userId,
-          sellerId: res.data.sellerId,
-          name: res.data.name,
-          role: res.data.role,
-          token: res.data.token,
+          id: userId,
+          sellerId,
+          name,
+          role: backendRole,
+          token,
         })
       );
 
@@ -109,26 +97,14 @@ const Login: React.FC = () => {
         title: "Login successful 🎉",
       });
 
-      // Navigate based on role
-      // if (backendRole === "seller") {
-      //  const redirectTo =(location.state as any)?.from || "/dashboard";
-      //  navigate(redirectTo)
-      // } else if (backendRole === "user") {
-      //   const redirectTo =(location.state as any)?.from || "/Categories/Products";
-      //   navigate(redirectTo)
-      // } else {
-      //   navigate("/") // fallback
-      // }
-      // Determine where to redirect after login
-      const redirectTo =
-        (location.state as any)?.from ||
-        (backendRole === "seller" ? "/dashboard" : "/Categories/Products");
-
-      // Navigate to the proper page
-      navigate(redirectTo);
+      // ✅ Redirect based on role
+      if (backendRole === "seller") {
+        navigate("/dashboard");
+      } else {
+        navigate("/"); // buyers go home
+      }
     } catch (err: any) {
       Swal.close();
-
       Toast.fire({
         icon: "error",
         title: err.response?.data?.message || "Invalid email or password",
@@ -192,62 +168,50 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Reset Password Modal (when token from email is present)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+  // ✅ Resend Verification Handlers
+  const handleResendVerification = () => {
+    setShowResendModal(true);
+    setResendEmail(email); // default to current email if typed
+  };
 
-    if (token) {
-      Swal.fire({
-        title: "Reset Password",
-        html: `
-          <input type="password" id="newPassword" class="swal2-input" placeholder="Enter new password"/>
-          <input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirm password"/>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: "Reset",
-        preConfirm: () => {
-          const newPassword = (
-            document.getElementById("newPassword") as HTMLInputElement
-          )?.value;
-          const confirmPassword = (
-            document.getElementById("confirmPassword") as HTMLInputElement
-          )?.value;
+  const handleResendSubmit = async (e: any) => {
+    e.preventDefault();
 
-          if (!newPassword || !confirmPassword) {
-            Swal.showValidationMessage("Please fill in both fields");
-            return;
-          }
-
-          if (newPassword !== confirmPassword) {
-            Swal.showValidationMessage("Passwords do not match");
-            return;
-          }
-
-          return { newPassword };
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await api.post("api/v1/auth/reset-password", {
-              token,
-              password: result.value.newPassword,
-            });
-
-            Swal.fire("Success", "Password reset successful ✅", "success");
-            navigate("/login");
-          } catch (error: any) {
-            Swal.fire(
-              "Error",
-              error.response?.data?.message || "Reset failed",
-              "error"
-            );
-          }
-        }
-      });
+    if (!resendEmail.trim()) {
+      return Swal.fire("Error", "Please enter your email address", "error");
     }
-  }, [navigate]);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(resendEmail)) {
+      return Swal.fire("Error", "Please enter a valid email address", "error");
+    }
+
+    try {
+      setResendLoading(true);
+
+      await api.post("/api/v1/auth/resend-verification", {
+        email: resendEmail,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Email Sent 📧",
+        text: "Verification link has been resent to your email.",
+        confirmButtonColor: "#30ac57",
+      });
+
+      setShowResendModal(false);
+      setResendEmail("");
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error?.response?.data?.message || "Failed to resend verification email",
+      });
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   return (
     <section
@@ -279,30 +243,6 @@ const Login: React.FC = () => {
           <p className="text-[14px] mb-3 text-center text-[#333333]">
             Sign in to your TradeLink account
           </p>
-
-          {/* Role Switch */}
-          <div className="flex justify-between w-max p-0.5 bg-[#f9eac5] border border-[#FEF6E1] mx-auto rounded-full mb-6">
-            <button
-              onClick={() => setRole("user")}
-              className={`px-9 py-2 rounded-full text-sm ${
-                role === "user"
-                  ? "bg-[#F89216] text-white"
-                  : "hover:bg-[#F89216]/30"
-              }`}
-            >
-              I’m a buyer
-            </button>
-            <button
-              onClick={() => setRole("seller")}
-              className={`px-9 py-2 rounded-full text-sm ${
-                role === "seller"
-                  ? "bg-[#F89216] text-white"
-                  : "hover:bg-[#F89216]/30"
-              }`}
-            >
-              I’m a seller
-            </button>
-          </div>
 
           <form onSubmit={handleLogin}>
             {/* Email */}
@@ -372,34 +312,74 @@ const Login: React.FC = () => {
             >
               Sign In
             </motion.button>
-          </form>
 
-          {/* Conditional Bottom Text */}
-          <div className="text-center mt-4 text-sm">
-            {role === "user" ? (
-              <p>
-                Don’t have an account?{" "}
-                <Link
-                  to="/Register"
-                  className="text-[#F89216] font-medium hover:underline"
-                >
-                  Signup
-                </Link>
-              </p>
-            ) : (
-              <p>
-                New to selling?{" "}
-                <Link
-                  to="/SellWithUs"
-                  className="text-[#F89216] font-medium hover:underline"
-                >
-                  Join as a seller
-                </Link>
-              </p>
-            )}
-          </div>
+            {/* ✅ Resend Verification Button */}
+            <p className="mt-4 text-center text-sm text-gray-600">
+              Didn't get the verification email?{" "}
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                className="text-[#30ac57] font-semibold hover:underline"
+              >
+                Resend Verification
+              </button>
+            </p>
+          </form>
         </motion.div>
       </div>
+
+      {/* Resend Modal */}
+      {showResendModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+          >
+            <h3 className="text-2xl font-bold text-[#333333] mb-4 text-center">
+              Resend Verification Email
+            </h3>
+            <p className="text-gray-600 mb-6 text-center">
+              Enter your email address to receive a new verification link.
+            </p>
+
+            <form onSubmit={handleResendSubmit}>
+              <div className="mb-6">
+                <label className="block font-medium mb-2 text-[#333333]">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  className="border-2 border-gray-300 focus:border-[#30ac57] focus:ring-4 focus:ring-[#30ac57]/30 p-3 w-full rounded-full outline-none transition-all duration-200"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowResendModal(false)}
+                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all"
+                >
+                  Cancel
+                </button>
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  disabled={resendLoading}
+                  className="flex-1 bg-[#30ac57] text-white py-3 rounded-full font-semibold hover:bg-[#2a9b4f] transition-all disabled:opacity-50"
+                >
+                  {resendLoading ? "Sending..." : "Send Email"}
+                </motion.button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </section>
   );
 };
