@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Search, MapPin, Briefcase } from "lucide-react";
+import {   Briefcase } from "lucide-react";
+//  search MapPin
 import Button from "../../components/reusable/Button";
 import { useNavigate } from "react-router-dom";
 
 const Products: React.FC = () => {
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("All Locations");
+  // const [query, setQuery] = useState("");
+  // const [location, setLocation] = useState("All Locations");
   const [service, setService] = useState("All Categories");
   const [sellers, setSellers] = useState<any[]>([]);
   const [filteredSellers, setFilteredSellers] = useState<any[]>([]);
@@ -111,7 +112,8 @@ const Products: React.FC = () => {
             No sellers found.
           </p>
         ) : (
-          filteredSellers?.map((s, index) => (
+          filteredSellers?.map((s, ) => (
+            // index
             <div
               key={s._id}
               className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"

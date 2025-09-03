@@ -4,9 +4,9 @@ import { useParams, Link } from "react-router-dom";
 export default function SellerProfile() {
   const { id: sellerId } = useParams<{ id: string }>();
   const [seller, setSeller] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [messages] = useState<any[]>([]);
+  // const [newMessage,setNewMessage] = useState("");
+  const [loading,setLoading] = useState(true);
 
   const currentUserId = localStorage.getItem("userId"); // 👈 store buyer's id in localStorage after login
   const token = localStorage.getItem("token"); // 👈 JWT for auth
@@ -59,31 +59,31 @@ export default function SellerProfile() {
       .catch((err) => console.error("Error fetching conversation:", err));
   }, [sellerId, token, currentUserId]);
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
+  // const sendMessage = () => {
+  //   if (!newMessage.trim()) return;
 
-    fetch(
-      `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/send`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          senderId: currentUserId,
-          receiverId: sellerId,
-          text: newMessage,
-        }),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages((prev) => [...prev, data.message]); // append new message
-        setNewMessage("");
-      })
-      .catch((err) => console.error("Error sending message:", err));
-  };
+    // fetch(
+    //   `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/send`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({
+    //       senderId: currentUserId,
+    //       receiverId: sellerId,
+    //       text: newMessage,
+    //     }),
+    //   }
+    // )
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setMessages((prev) => [...prev, data.message]); // append new message
+  //       setNewMessage("");
+  //     })
+  //     .catch((err) => console.error("Error sending message:", err));
+  // };
 
   if (loading) return <div className="p-6">Loading...</div>;
   if (!seller) return <div className="p-6">Seller not found.</div>;
