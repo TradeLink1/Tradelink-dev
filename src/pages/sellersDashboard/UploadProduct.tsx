@@ -13,12 +13,9 @@ const UploadProduct = () => {
     price: string;
     quantity: string;
     description: string;
-<<<<<<< HEAD
-    imageFile: File | null;
-=======
     imageFile: File | null; // Unified state for the image file
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
-  }>({
+  }>
+  ({
     name: "",
     category: "",
     price: "",
@@ -41,10 +38,7 @@ const UploadProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-<<<<<<< HEAD
-=======
   // Corrected the type of 'e'
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -83,10 +77,7 @@ const UploadProduct = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-<<<<<<< HEAD
-=======
   // Corrected the type of 'e'
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
@@ -102,18 +93,12 @@ const UploadProduct = () => {
 
         if (uploadType === "product") {
           formDataToSend.append("quantity", formData.quantity);
-<<<<<<< HEAD
-=======
           // For products, the backend expects the field name "image"
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
           if (formData.imageFile) {
             formDataToSend.append("image", formData.imageFile);
           }
         } else {
-<<<<<<< HEAD
-=======
           // For services, the backend expects the field name "serviceImg"
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
           if (formData.imageFile) {
             formDataToSend.append("serviceImg", formData.imageFile);
           }
@@ -339,11 +324,8 @@ const UploadProduct = () => {
             </label>
             <input
               type="file"
-<<<<<<< HEAD
-=======
               // The name attribute here is not important for the form data,
               // as we are manually appending the correct field name in handleSubmit
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
               name="imageFile"
               accept="image/*"
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"

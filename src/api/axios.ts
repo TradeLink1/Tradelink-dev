@@ -1,11 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
 
 const api: AxiosInstance = axios.create({
-<<<<<<< HEAD
-  baseURL: "https://tradelink-backend-6z6y.onrender.com",
-=======
   baseURL: "https://tradelink-backend-6z6y.onrender.com/",
->>>>>>> 2e3a3a4c0ed12e2841244411c9b1031cb452df9a
   headers: { "Content-Type": "application/json" },
 });
 
