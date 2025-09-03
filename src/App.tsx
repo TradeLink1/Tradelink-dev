@@ -29,7 +29,7 @@ import AdminOverview from "./pages/adminDashboard/AdminOverview";
 import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
-import ProtectRoute from "./components/routes/ProtectRoute";
+// import ProtectRoute from "./components/routes/ProtectRoute";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 
@@ -63,17 +63,17 @@ const App = () => {
                 <Route
                   path="/Categories/Products"
                   element={
-                    <ProtectRoute allowedRole="user">
+                  
                       <Product />
-                    </ProtectRoute>
+                    
                   }
                 />
                 <Route
                   path="/Categories/Services"
                   element={
-                    <ProtectRoute>
+                  
                       <Services />
-                    </ProtectRoute>
+              
                   }
                 />
                 <Route path="/SellWithUs" element={<SellWithUs />} />
@@ -87,9 +87,9 @@ const App = () => {
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectRoute allowedRole="seller">
+  
                     <DashboardLayout />
-                  </ProtectRoute>
+                
                 }
               >
                 <Route index element={<Overview />} />
