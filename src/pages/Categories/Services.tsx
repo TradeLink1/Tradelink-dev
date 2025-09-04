@@ -7,7 +7,7 @@ const ServiceProviders: React.FC = () => {
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("All Locations");
   const [service, setService] = useState("All Services");
-  const [providers, setProviders] = useState<any[]>([]);
+  const [providers] = useState<any[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<any[]>([]);
   const navigate = useNavigate();
 

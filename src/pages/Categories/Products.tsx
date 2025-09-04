@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Search, MapPin, Briefcase } from "lucide-react";
+import {   Briefcase } from "lucide-react";
+//  search MapPin
 import Button from "../../components/reusable/Button";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";

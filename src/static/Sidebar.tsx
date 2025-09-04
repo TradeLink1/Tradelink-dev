@@ -3,18 +3,55 @@ import Button from "../components/reusable/Button";
 import { TbChevronDown } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { MdMiscellaneousServices, MdOutlineSell } from "react-icons/md";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import api from "../api/axios";
 
 const Sidebar = ({ handleToggle }: any) => {
   const [showDropdown, setShowDropwn] = useState(false);
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null); // ✅ track user's name
+
   const toggleDropdown = () => {
     setShowDropwn(!showDropdown);
   };
 
+  // ✅ Check login state + role + name
+  useEffect(() => {
+    const checkLogin = () => {
+      const token = localStorage.getItem("token");
+      const storedRole = localStorage.getItem("role");
+      const storedName = localStorage.getItem("name"); // assuming you store user name
+      setIsLoggedIn(!!token);
+      setRole(storedRole);
+      setUserName(storedName);
+    };
 
+    checkLogin();
+    window.addEventListener("storage", checkLogin);
+
+    return () => window.removeEventListener("storage", checkLogin);
+  }, []);
+
+  // ✅ Logout handler
+  const handleLogout = async () => {
+    try {
+      await api.post("api/v1/auth/logout");
+    } catch (error) {
+      console.error("Logout failed on server, clearing local anyway", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("name"); // remove stored name
+      setIsLoggedIn(false);
+      setRole(null);
+      setUserName(null);
+
+      window.dispatchEvent(new Event("storage"));
+      window.location.href = "/";
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -68,9 +105,9 @@ const Sidebar = ({ handleToggle }: any) => {
           </AnimatePresence>
 
           {/* Other Links */}
-          <Link to="/SellWithUs" onClick={handleToggle}>
+          <Link to="/AboutUs" onClick={handleToggle}>
             <nav className="hover:text-[#f89216] flex items-center gap-1 border-b pb-2 border-[#f89216]">
-              <MdOutlineSell /> Sell with Us
+              <MdOutlineSell /> About Us
             </nav>
           </Link>
           <Link to="/Faq" onClick={handleToggle}>
@@ -84,30 +121,78 @@ const Sidebar = ({ handleToggle }: any) => {
             </nav>
           </Link>
 
-          
+          {/* ✅ Auth buttons */}
+          {isLoggedIn ? (
+            <>
+              {role === "seller" ? (
+                <a href="/Dashboard" rel="noopener noreferrer">
+                  <Button
+                    name="Dashboard"
+                    bgColor="#f89216"
+                    hoverBgColor="#333333"
+                    hoverTextColor="white"
+                  />
+                </a>
+              ) : (
+                // ✅ Buyer view: Welcome back + Sell With Us
+                <>
+                  <Button
+                    name={`Welcome back, ${userName || "User"}`}
+                    bgColor="#30ac57"
+                    hoverBgColor="#333333"
+                    hoverTextColor="white"
+                  />
+                  <a href="/SellWithUs" rel="noopener noreferrer">
+                    <Button
+                      name="Sell With Us"
+                      bgColor="#f89216"
+                      hoverBgColor="#333333"
+                      hoverTextColor="white"
+                    />
+                  </a>
+                </>
+              )}
 
-      
-          
-      
-            <a href="/Login" target="_blank" rel="noopener noreferrer">
-              <Button
-                name="Login"
-                border="2px solid "
-                borderColor="#f89216"
-                hoverBgColor="#30ac57"
-                hoverTextColor="white"
-              />
-            </a>
-            <a href="/Register" target="_blank" rel="noopener noreferrer">
-              <Button
-                name="Register"
-                bgColor="#f89216"
-                hoverBgColor="#333333"
-                hoverTextColor="white"
-              />
-            </a> 
-          </section>
-          {/* </section> */}
+              <button onClick={handleLogout}>
+                <Button
+                  name="Logout"
+                  border="2px solid "
+                  borderColor="#f89216"
+                  hoverBgColor="#30ac57"
+                  hoverTextColor="white"
+                />
+              </button>
+            </>
+          ) : (
+            <>
+              <a href="/Login" rel="noopener noreferrer">
+                <Button
+                  name="Login"
+                  border="2px solid "
+                  borderColor="#f89216"
+                  hoverBgColor="#30ac57"
+                  hoverTextColor="white"
+                />
+              </a>
+              <a href="/Register" rel="noopener noreferrer">
+                <Button
+                  name="Register"
+                  bgColor="#f89216"
+                  hoverBgColor="#333333"
+                  hoverTextColor="white"
+                />
+              </a>
+              <a href="/SellWithUs" rel="noopener noreferrer">
+                <Button
+                  name="Sell With Us"
+                  bgColor="#f89216"
+                  hoverBgColor="#333333"
+                  hoverTextColor="white"
+                />
+              </a>
+            </>
+          )}
+        </section>
       </motion.div>
     </AnimatePresence>
   );
