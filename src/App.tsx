@@ -39,7 +39,7 @@ const Layout = () => {
   const location = useLocation();
 
   //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register"].includes(
+  const hideHeaderFooter = ["/login", "/register","/categories/products"].includes(
     location.pathname.toLowerCase()
   );
 
