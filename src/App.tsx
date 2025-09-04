@@ -33,7 +33,8 @@ import AdminSellersReport from "./pages/adminDashboard/AdminReports";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
-import AboutUs from "./pages/aboutus/AboutUs.tsx"
+import AboutUs from "./pages/aboutus/AboutUs.tsx";
+import UserProfile from "./components/userProfile/userProfile.tsx"
 
 const Layout = () => {
   const location = useLocation();
@@ -99,6 +100,10 @@ const App = () => {
                 
                 }
               >
+               
+
+
+                
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
                 <Route
@@ -116,6 +121,8 @@ const App = () => {
                 <Route path="reports" element={<AdminSellersReport />} />
                 <Route path="kyc" element={<AdminKyc />} />
               </Route>
+
+              <Route path="/userProfile" element={<UserProfile/>}/>
             </Routes>
           </BrowserRouter>
         </SearchProvider>
