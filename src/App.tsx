@@ -33,6 +33,7 @@ import AdminSellersReport from "./pages/adminDashboard/AdminReports";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
+import AboutUs from "./pages/aboutus/AboutUs.tsx"
 
 const Layout = () => {
   const location = useLocation();
@@ -82,6 +83,7 @@ const App = () => {
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
+                <Route path="/AboutUs" element={<AboutUs/>}/>
                 <Route path="/Faq" element={<Faq />} />
                 <Route path="/Contact" element={<Contact />} />
                 <Route path="/Login" element={<Login />} />

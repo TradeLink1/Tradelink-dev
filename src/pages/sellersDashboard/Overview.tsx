@@ -11,7 +11,7 @@ interface Stats {
   totalProducts: number;
   pendingOrders: number;
   totalSales: number;
-  messages: number;
+  totalMessages: number;
 }
 
 interface Order {
@@ -24,7 +24,7 @@ interface Order {
 interface Message {
   id: number;
   sender: string;
-  message: string;
+  totalMessages: string;
 }
 
 interface SellerProfile {
@@ -37,7 +37,7 @@ const Overview = () => {
     totalProducts: 0,
     pendingOrders: 0,
     totalSales: 0,
-    messages: 0,
+    totalMessages: 0
   });
 
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
@@ -70,7 +70,7 @@ const Overview = () => {
           totalProducts: data.totalProducts,
           pendingOrders: data.pendingOrders,
           totalSales: data.totalSales,
-          messages: data.messages,
+          totalMessages: data.totalMessages,
         });
 
         setRecentOrders(data.recentOrders || []);
@@ -112,7 +112,7 @@ const Overview = () => {
       },
       {
         title: "Messages",
-        value: stats.messages,
+        value: stats.totalMessages,
         color: "from-blue-400 to-blue-600",
         icon: MessageSquare,
       },
@@ -205,7 +205,7 @@ const Overview = () => {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-[#333333]">{msg.sender}</p>
-                  <p className="text-sm text-gray-600">{msg.message}</p>
+                  <p className="text-sm text-gray-600">{msg.totalMessages}</p>
                 </div>
               </li>
             ))}

@@ -14,7 +14,8 @@ const Header = () => {
   const [showDropdown, setShowDropwn] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // added for login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [role, setRole] = useState<string | null>(null); // ✅ track role
 
   const handleToggle = () => {
     setToggle(!toggle);
@@ -53,15 +54,17 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Check login state initially and on storage changes
+  // ✅ Check login state + role
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
+      const storedRole = localStorage.getItem("role");
       setIsLoggedIn(!!token);
+      setRole(storedRole);
     };
 
-    checkLogin(); // initial check
-    window.addEventListener("storage", checkLogin); // listen for changes
+    checkLogin(); 
+    window.addEventListener("storage", checkLogin); 
 
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
@@ -69,18 +72,17 @@ const Header = () => {
   // ✅ Logout handler
   const handleLogout = async () => {
     try {
-      await api.post("api/v1/auth/logout"); // call backend logout
+      await api.post("api/v1/auth/logout"); 
     } catch (error) {
       console.error("Logout failed on server, clearing local anyway", error);
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       setIsLoggedIn(false);
+      setRole(null);
 
-      // Trigger storage event for other tabs/pages
       window.dispatchEvent(new Event("storage"));
 
-      // Redirect to homepage
       window.location.href = "/";
     }
   };
@@ -134,9 +136,9 @@ const Header = () => {
                   </div>
                 )}
               </div>
-              <Link to="/SellWithUs">
+              <Link to="/AboutUs">
                 <nav className="hover:text-[#f89216] flex items-center gap-1 hover:transistion-colors hover:duration-500 hover:ease-in-out ">
-                  <MdOutlineSell /> Sell with Us
+                  <MdOutlineSell /> About Us
                 </nav>
               </Link>
               <Link to="/Faq">
@@ -152,17 +154,50 @@ const Header = () => {
             </div>
           </section>
 
+          {/* ✅ Updated buttons section */}
           <section className="flex gap-3 items-center text-[#333333] font-medium text-[15px] max-tablet:hidden">
             {isLoggedIn ? (
-              <button onClick={handleLogout}>
-                <Button
-                  name="Logout"
-                  border="2px solid "
-                  borderColor="#f89216"
-                  hoverBgColor="#30ac57"
-                  hoverTextColor="white"
-                />
-              </button>
+              <>
+                {/* Seller */}
+                {role === "seller" && (
+                  <a href="/Dashboard" rel="noopener noreferrer">
+                    <Button
+                      name="My Dashboard"
+                      bgColor="#f89216"
+                      hoverBgColor="#333333"
+                      hoverTextColor="white"
+                    />
+                  </a>
+                )}
+
+                {/* Buyer/User */}
+                {role === "user" && (
+                  <>
+                    <span className="text-[#333333] font-semibold px-3 py-1 rounded-md border border-[#f89216] bg-[#fef9f0]">
+                      Welcome back, {localStorage.getItem("name") || "User"}!
+                    </span>
+                    <a href="/SellWithUs" rel="noopener noreferrer">
+                      <Button
+                        name="Sell With Us"
+                        bgColor="#f89216"
+                        hoverBgColor="#333333"
+                        hoverTextColor="white"
+                      />
+                    </a>
+                  </>
+                )}
+
+                {/* Logout button */}
+                <button onClick={handleLogout}>
+                  <Button
+                    name="Logout"
+                    border="2px solid "
+                    borderColor="#f89216"
+                    hoverBgColor="#30ac57"
+                    hoverTextColor="white"
+                  />
+                </button>
+              </>
             ) : (
               <>
                 <a href="/Login" rel="noopener noreferrer">
@@ -177,6 +212,14 @@ const Header = () => {
                 <a href="/Register" rel="noopener noreferrer">
                   <Button
                     name="Register"
+                    bgColor="#f89216"
+                    hoverBgColor="#333333"
+                    hoverTextColor="white"
+                  />
+                </a>
+                <a href="/SellWithUs" rel="noopener noreferrer">
+                  <Button
+                    name="Sell With Us"
                     bgColor="#f89216"
                     hoverBgColor="#333333"
                     hoverTextColor="white"
