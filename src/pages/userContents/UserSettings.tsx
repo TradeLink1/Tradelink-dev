@@ -2,8 +2,8 @@ import React, { useState } from "react";
 
 const UserSettings: React.FC = () => {
   const [profilePic, setProfilePic] = useState<string | null>(null);
-  const [fullName, setFullName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe@example.com");
+  const [fullName, setFullName] = useState("Adeoluwa Wummi");
+  const [email, setEmail] = useState("adeoluwummi@gmail.com");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("123 Main St, New York, USA");
   const [orderUpdates, setOrderUpdates] = useState(true);
