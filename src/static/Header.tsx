@@ -7,6 +7,7 @@ import { TbChevronDown } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { MdMiscellaneousServices } from "react-icons/md";
 import { MdOutlineSell } from "react-icons/md";
+
 import Sidebar from "./Sidebar";
 import api from "../api/axios"; // added for logout
 
@@ -14,7 +15,7 @@ const Header = () => {
   const [showDropdown, setShowDropwn] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState<string | null>(null); // ✅ track role
 
   const handleToggle = () => {
@@ -54,7 +55,7 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Check login state + role
+  //  Check login state + role
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
@@ -63,16 +64,16 @@ const Header = () => {
       setRole(storedRole);
     };
 
-    checkLogin(); 
-    window.addEventListener("storage", checkLogin); 
+    checkLogin();
+    window.addEventListener("storage", checkLogin);
 
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
-  // ✅ Logout handler
+  //  Logout handler
   const handleLogout = async () => {
     try {
-      await api.post("api/v1/auth/logout"); 
+      await api.post("api/v1/auth/logout");
     } catch (error) {
       console.error("Logout failed on server, clearing local anyway", error);
     } finally {
@@ -99,7 +100,7 @@ const Header = () => {
           WebkitBackdropFilter: "saturate(180%) blur(8px)",
         }}
       >
-        <div className="px-20 py-5 flex justify-between items-center max-w-[1200px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
+        <div className="px-20 py-5 flex justify-between items-center max-w-[1280px] mx-auto text-[15px] max-tablet:px-10 top-0 z-20 max-mobile:px-5 ">
           <section className="flex gap-18 items-center  ">
             <div>
               <Link to="/">
@@ -138,7 +139,7 @@ const Header = () => {
               </div>
               <Link to="/AboutUs">
                 <nav className="hover:text-[#f89216] flex items-center gap-1 hover:transistion-colors hover:duration-500 hover:ease-in-out ">
-                  <MdOutlineSell /> About Us
+                  About Us
                 </nav>
               </Link>
               <Link to="/Faq">
@@ -154,7 +155,7 @@ const Header = () => {
             </div>
           </section>
 
-          {/* ✅ Updated buttons section */}
+          {/*  Updated buttons section */}
           <section className="flex gap-3 items-center text-[#333333] font-medium text-[15px] max-tablet:hidden">
             {isLoggedIn ? (
               <>
@@ -217,14 +218,12 @@ const Header = () => {
                     hoverTextColor="white"
                   />
                 </a>
-                <a href="/SellWithUs" rel="noopener noreferrer">
-                  <Button
-                    name="Sell With Us"
-                    bgColor="#f89216"
-                    hoverBgColor="#333333"
-                    hoverTextColor="white"
-                  />
-                </a>
+                <Link to="/SellWithUs">
+                  <nav className="hover:text-[#f89216] hover:transistion-colors hover:duration-500 hover:ease-in-out flex items-center gap-1">
+                    <MdOutlineSell />
+                    Sell With Us
+                  </nav>
+                </Link>
               </>
             )}
           </section>

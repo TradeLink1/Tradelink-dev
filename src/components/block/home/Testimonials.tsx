@@ -38,7 +38,7 @@ const cardData2 = [
   {
     icon: seller2,
     title:
-      "Uploading my voice note on TradeLink helped customers trust me more. They say it feels like they know me before calling!.",
+      "Uploading my products on TradeLink helped me reached out to more customers than usual. Thanks to TradeLink...",
     description: "⇾ Tunde, Furniture Maker.",
   },
   {
@@ -59,7 +59,7 @@ const Testimonials = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-bold max-mobile:text-[25px]"
+            className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-extrabold max-mobile:text-[25px]"
           >
             What Our Users Say
           </motion.h1>

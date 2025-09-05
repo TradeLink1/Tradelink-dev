@@ -217,38 +217,35 @@ function Faq() {
       }));
 
   return (
-    <div className="max-w-[1200px] mt-20 mx-auto px-4 py-12">
+    <div className="max-w-[1200px] mt-30 mx-auto px-4 py-12">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-12 relative"
+        className="text-center mb-12"
       >
-        <h1 className="text-[42px] max-[510px]:text-[35px] text-[#333333] font-bold max-mobile:text-[25px] mb-2">
+        <h1 className="text-[42px] max-[510px]:text-[35px] text-[#333333] font-extrabold max-mobile:text-[25px] mb-2">
           Frequently Asked Questions{" "}
           <span className="text-[#30ac57]">(FAQs)</span>
         </h1>
-        <p className="text-[23px] max-tablet:text-[20px] font-medium text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-mobile:mx-auto">
+        <p className="text-[20px] md:text-[23px] font-medium text-[#555] max-w-[650px] mx-auto">
           Find answers to common questions about TradeLink marketplace
         </p>
         <div className="relative max-w-md mx-auto mt-6">
-          <FiSearch className="absolute left-3 top-3 text-gray-500" />
+          <FiSearch className="absolute left-3 top-3 text-gray-400" />
           <input
             type="text"
             placeholder="Search questions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f89216]"
+            className="w-full pl-10 pr-4 py-2 border-1 border-[#30ac57] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f89216] transition"
           />
         </div>
       </motion.div>
 
       {/* Layout */}
-      <div
-        id="faq"
-        className="grid p-10 rounded-[30px]  lg:grid-cols-4 gap-8 outline-1 outline-[#333333]"
-      >
+      <div className="grid p-8 lg:grid-cols-4 gap-8 bg-white rounded-[25px] shadow-lg border border-gray-100">
         {/* Sidebar */}
         {!searchTerm && (
           <div className="lg:col-span-1">
@@ -262,9 +259,9 @@ function Faq() {
                   <motion.button
                     key={categoryKey}
                     onClick={() => setActiveCategory(categoryKey)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-all duration-200 ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl font-medium transition-all duration-200 ${
                       isActive
-                        ? "bg-[#f89216] text-white shadow-md"
+                        ? "bg-gradient-to-r from-[#f89216] to-[#ffb347] text-white shadow-md"
                         : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                     }`}
                     whileTap={{ scale: 0.97 }}
@@ -304,20 +301,25 @@ function Faq() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#ffffff] border border-gray-200 mx-auto w-full rounded-lg shadow-sm overflow-hidden"
+                    className="bg-white border border-gray-100 mx-auto w-full rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
                   >
                     <button
                       onClick={() => toggleItem(item.categoryKey, item.index)}
                       className="w-full max-mobile:max-w-[280px] px-4 text-left py-4  flex   hover:bg-gray-50 transition-colors duration-200"
                     >
-                      <span className="font-medium  text-gray-900">
+                      <span className="font-medium text-gray-900">
                         {item.question}
                       </span>
-                      {expanded ? (
-                        <FiChevronUp className="w-5 h-5" />
-                      ) : (
-                        <FiChevronDown className="w-5 h-5" />
-                      )}
+                      <motion.div
+                        animate={{ rotate: expanded ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {expanded ? (
+                          <FiChevronUp className="w-5 h-5 text-gray-500" />
+                        ) : (
+                          <FiChevronDown className="w-5 h-5 text-gray-500" />
+                        )}
+                      </motion.div>
                     </button>
 
                     <AnimatePresence>
@@ -349,21 +351,21 @@ function Faq() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mt-16 text-center"
+        className="mt-20 text-center"
       >
-        <div className="w-12 h-12 text-[#f89216] mx-auto mb-2">
-          <FiHelpCircle size={52} />
+        <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#fff3e5] mx-auto mb-4 shadow-inner">
+          <FiHelpCircle className="text-[#f89216]" size={36} />
         </div>
-        <h3 className="text-[42px] max-[510px]:text-[35px] text-[#333333] font-bold max-mobile:text-[25px] mb-2">
+        <h3 className="text-[36px] max-[510px]:text-[28px] text-[#333333] font-bold mb-3">
           Still have questions?
         </h3>
-        <p className="text-[23px] max-w-[600px] mx-auto max-tablet:text-[20px] max-[510px]:w-[] font-medium text-[#333333] max-mobile:text-[17px] max-mobile:max-w-[350px] max-mobile:mx-auto mb-5">
+        <p className="text-[18px] md:text-[20px] text-[#555] max-w-[600px] mx-auto mb-6">
           Can't find what you're looking for? Our support team is here to help
           you get started.
         </p>
         <motion.button
           onClick={handleNavigate}
-          className="bg-[#30ac57] text-white px-7 py-3 mb-7 rounded-[10px] font-medium hover:bg-[#f89216] hover:rounded-full hover:text-white transition-colors duration-200"
+          className="bg-[#30ac57] mb-20 text-white px-8 py-3 rounded-lg font-medium hover:bg-[#333333] hover:rounded-full transition-all duration-300 shadow-md"
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.05 }}
         >

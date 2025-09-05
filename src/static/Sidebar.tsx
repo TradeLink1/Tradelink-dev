@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import Button from "../components/reusable/Button";
 import { TbChevronDown } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
-import { MdMiscellaneousServices, MdOutlineSell } from "react-icons/md";
+import { MdMiscellaneousServices } from "react-icons/md";
+import { MdOutlineSell } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api/axios";
@@ -17,7 +18,7 @@ const Sidebar = ({ handleToggle }: any) => {
     setShowDropwn(!showDropdown);
   };
 
-  // ✅ Check login state + role + name
+  //  Check login state + role + name
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
@@ -34,7 +35,7 @@ const Sidebar = ({ handleToggle }: any) => {
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
-  // ✅ Logout handler
+  //  Logout handler
   const handleLogout = async () => {
     try {
       await api.post("api/v1/auth/logout");
@@ -106,8 +107,8 @@ const Sidebar = ({ handleToggle }: any) => {
 
           {/* Other Links */}
           <Link to="/AboutUs" onClick={handleToggle}>
-            <nav className="hover:text-[#f89216] flex items-center gap-1 border-b pb-2 border-[#f89216]">
-              <MdOutlineSell /> About Us
+            <nav className="hover:text-[#f89216]  items-center gap-1 border-b pb-2 border-[#f89216]">
+              About Us
             </nav>
           </Link>
           <Link to="/Faq" onClick={handleToggle}>
@@ -121,7 +122,7 @@ const Sidebar = ({ handleToggle }: any) => {
             </nav>
           </Link>
 
-          {/* ✅ Auth buttons */}
+          {/*  Auth buttons */}
           {isLoggedIn ? (
             <>
               {role === "seller" ? (
@@ -134,7 +135,7 @@ const Sidebar = ({ handleToggle }: any) => {
                   />
                 </a>
               ) : (
-                // ✅ Buyer view: Welcome back + Sell With Us
+                //  Buyer view: Welcome back + Sell With Us
                 <>
                   <Button
                     name={`Welcome back, ${userName || "User"}`}
@@ -182,14 +183,12 @@ const Sidebar = ({ handleToggle }: any) => {
                   hoverTextColor="white"
                 />
               </a>
-              <a href="/SellWithUs" rel="noopener noreferrer">
-                <Button
-                  name="Sell With Us"
-                  bgColor="#f89216"
-                  hoverBgColor="#333333"
-                  hoverTextColor="white"
-                />
-              </a>
+              <Link to="/SellWithUs">
+                <nav className="hover:text-[#f89216] hover:transistion-colors hover:duration-500 hover:ease-in-out flex items-center gap-1">
+                  <MdOutlineSell />
+                  Sell With Us
+                </nav>
+              </Link>
             </>
           )}
         </section>

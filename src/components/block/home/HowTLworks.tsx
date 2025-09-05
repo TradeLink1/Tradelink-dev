@@ -41,7 +41,7 @@ const HowTLworks = () => {
         viewport={{ once: true }}
         className="flex max-w-[1200px] mx-auto items-center justify-center mb-10 text-center"
       >
-        <h1 className="text-[42px] text-[#333333] font-bold max-[510px]:text-[35px] max-mobile:text-[25px]">
+        <h1 className="text-[42px] text-[#333333] font-extrabold max-[510px]:text-[35px] max-mobile:text-[25px]">
           How TradeLinks Works
         </h1>
       </motion.div>
@@ -67,7 +67,7 @@ const HowTLworks = () => {
                 transition: { duration: 0.25 },
               }}
               whileTap={{ scale: 0.98 }}
-              className="w-[320px] p-8 bg-white rounded-3xl shadow-md cursor-pointer hover:shadow-lg"
+              className="w-[320px] p-8 bg-white rounded-3xl hover:border-1 shadow-md cursor-pointer hover:shadow-lg"
             >
               <motion.img
                 src={card.icon}

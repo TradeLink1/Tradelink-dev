@@ -86,7 +86,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative max-w-[1200px] mx-auto mt-45 rounded-[100px] h-[650px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[340px] max-mobile:h-[300px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
+    <section className="relative max-w-[1180px] mx-auto mt-50 rounded-[100px] h-[600px] overflow-hidden max-tablet:max-h-[500px] max-tablet:max-w-[700px] max-mobile:w-[340px] max-mobile:h-[300px] max-mobile:rounded-[65px] max-[510px]:h-[400px] max-[510px]:w-[450px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlideIndex}
@@ -115,7 +115,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -30 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-[60px] max-w-[800px] leading-16 font-bold mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
+          className="text-[60px] max-w-[800px] leading-16 font-extrabold text-orange-100 mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
         >
           {slides[currentSlideIndex].title}
         </motion.h1>
@@ -140,7 +140,7 @@ const HeroSection = () => {
           <div>
             <button
               onClick={triggerSearch}
-              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#0e6b2b] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px] max-[510px]:text-[10px]"
+              className="bg-[#30ac57] rounded-r-full px-6 py-4 text-white hover:bg-[#16903d] transition-colors duration-300 max-mobile:px-3 max-mobile:py-2 max-mobile:text-[12px] max-[510px]:text-[10px]"
             >
               Search
             </button>
