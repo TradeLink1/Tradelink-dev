@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BsSend } from "react-icons/bs";
+import Swal from "sweetalert2";
 import Button from "../../components/reusable/Button";
 
 type FormData = {
@@ -31,6 +32,14 @@ const ContactForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
+
+    Swal.fire({
+      icon: "success",
+      title: "Message Sent!",
+      text: "We have received your message and will get back to you soon.",
+      confirmButtonColor: "#F89216",
+    });
+
     setFormData({
       name: "",
       email: "",

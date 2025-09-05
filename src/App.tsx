@@ -11,7 +11,6 @@ import Home from "./pages/Homepage/Home";
 // import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
-
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -22,8 +21,8 @@ import { SearchProvider } from "./context/SearchContext";
 import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
 import Overview from "./pages/sellersDashboard/Overview";
 import MyListings from "./pages/sellersDashboard/MyListings";
-import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
+import Messages from "./pages/sellersDashboard/Messages";
 import Settings from "./pages/sellersDashboard/Settings";
 import AdminLayout from "./pages/adminDashboard/AdminLayout";
 import AdminOverview from "./pages/adminDashboard/AdminOverview";
@@ -34,7 +33,12 @@ import AdminSellersReport from "./pages/adminDashboard/AdminReports";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
-import AboutUs from "./pages/aboutus/AboutUs.tsx"
+import AboutUs from "./pages/aboutus/AboutUs.tsx";
+import UserProfile from "./components/userProfile/userProfile.tsx";
+import Logout from "./pages/userContents/Logout.tsx";
+import UserLayout from "./pages/userContents/UserLayout";
+import EditProfile from "./pages/userContents/EditProfile";
+import UserSettings from "./pages/userContents/UserSettings.tsx";
 
 const Layout = () => {
   const location = useLocation();
@@ -55,7 +59,7 @@ const Layout = () => {
 
 const App = () => {
   return (
-    <div className=" mx-auto">
+    <div className="mx-auto">
       <AuthProvider>
         <SearchProvider>
           <BrowserRouter>
@@ -71,7 +75,6 @@ const App = () => {
                     
                   }
                 />
-                <Route path="/Categories/Products/:id" element={<ProductDetails />} />
                 <Route
                   path="/Categories/Services"
                   element={
@@ -85,28 +88,20 @@ const App = () => {
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
-                <Route path="/AboutUs" element={<AboutUs/>}/>
+                <Route path="/AboutUs" element={<AboutUs />} />
                 <Route path="/Faq" element={<Faq />} />
                 <Route path="/Contact" element={<Contact />} />
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
               </Route>
-              {/* Nested dashboard routes */}
-              <Route
-                path="/dashboard"
-                element={
-  
-                    <DashboardLayout />
-                
-                }
-              >
+
+              <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
                 <Route
                   path="listings"
                   element={<MyListings sellerId="user.id" />}
-                  // element={<MyListings />}
                 />
                 <Route path="messages" element={<Messages />} />
                 <Route path="settings" element={<Settings />} />
@@ -118,6 +113,15 @@ const App = () => {
                 <Route path="reports" element={<AdminSellersReport />} />
                 <Route path="kyc" element={<AdminKyc />} />
               </Route>
+
+              <Route path="/userProfile" element={<UserLayout />}>
+                <Route index element={<UserProfile />} />
+                <Route path="messages" element={<Messages />} />
+                <Route path="edit-profile" element={<EditProfile />} />
+                <Route path="settings" element={<UserSettings />} />
+              </Route>
+
+              <Route path="/logout" element={<Logout />} />
             </Routes>
           </BrowserRouter>
         </SearchProvider>

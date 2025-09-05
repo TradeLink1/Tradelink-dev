@@ -15,7 +15,7 @@ const Header = () => {
   const [toggle, setToggle] = useState(false);
   const [visible, setVisible] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
-  const [role, setRole] = useState<string | null>(null); // ✅ track role
+  const [role, setRole] = useState<string | null>(null); // track role
 
   const handleToggle = () => {
     setToggle(!toggle);
@@ -54,7 +54,7 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Check login state + role
+  // Check login state + role
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
@@ -69,7 +69,7 @@ const Header = () => {
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
-  // ✅ Logout handler
+  // Logout handler
   const handleLogout = async () => {
     try {
       await api.post("api/v1/auth/logout"); 
@@ -78,6 +78,7 @@ const Header = () => {
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("name"); // remove name too
       setIsLoggedIn(false);
       setRole(null);
 
@@ -154,7 +155,7 @@ const Header = () => {
             </div>
           </section>
 
-          {/* ✅ Updated buttons section */}
+          {/* Updated buttons section */}
           <section className="flex gap-3 items-center text-[#333333] font-medium text-[15px] max-tablet:hidden">
             {isLoggedIn ? (
               <>
@@ -170,20 +171,26 @@ const Header = () => {
                   </a>
                 )}
 
-                {/* Buyer/User */}
-                {role === "user" && (
+                {/* Non-seller users */}
+                {role !== "seller" && (
                   <>
-                    <span className="text-[#333333] font-semibold px-3 py-1 rounded-md border border-[#f89216] bg-[#fef9f0]">
-                      Welcome back, {localStorage.getItem("name") || "User"}!
-                    </span>
-                    <a href="/SellWithUs" rel="noopener noreferrer">
+                    <a href="/userProfile" rel="noopener noreferrer">
+                      <Button
+                        name={`${localStorage.getItem("name") || "User"} Profile`}
+                        bgColor="#f89216"
+                        hoverBgColor="#333333"
+                        hoverTextColor="white"
+                      />
+                    </a>
+
+                    <Link to="/SellWithUs" rel="noopener noreferrer">
                       <Button
                         name="Sell With Us"
                         bgColor="#f89216"
                         hoverBgColor="#333333"
                         hoverTextColor="white"
                       />
-                    </a>
+                    </Link>
                   </>
                 )}
 
@@ -217,14 +224,14 @@ const Header = () => {
                     hoverTextColor="white"
                   />
                 </a>
-                <a href="/SellWithUs" rel="noopener noreferrer">
+                <Link to="/SellWithUs" rel="noopener noreferrer">
                   <Button
                     name="Sell With Us"
                     bgColor="#f89216"
                     hoverBgColor="#333333"
                     hoverTextColor="white"
                   />
-                </a>
+                </Link>
               </>
             )}
           </section>

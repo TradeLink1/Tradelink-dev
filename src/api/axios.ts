@@ -14,4 +14,28 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const loginUser = async (data: { email: string; password: string }) => {
+  const res = await api.post("/api/v1/auth/login", data);
+  return res.data;
+};
+
+// UserProfile API Calls
+export const getUserProfile = async () => {
+  const res = await api.get("/api/v1/users/get/profile");
+  return res.data;
+};
+
+export const updateUserProfile = async (data: any) => {
+  const res = await api.put("/api/v1/users/profile/update", data);
+  return res.data;
+};
+
+export const changeUserPassword = async (data: {
+  oldPassword: string;
+  newPassword: string;
+}) => {
+  const res = await api.put("/api/v1/users/change-password", data);
+  return res.data;
+};
+
 export default api;
