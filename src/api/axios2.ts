@@ -1,12 +1,13 @@
+// src/api/servicesApi.ts
 import axios, { type AxiosInstance } from "axios";
 
-const api: AxiosInstance = axios.create({
-  baseURL: "https://tradelink-backend-6z6y.onrender.com",
+const axios2: AxiosInstance = axios.create({
+  baseURL: "https://backend-dev-ltev.onrender.com",
   headers: { "Content-Type": "application/json" },
 });
 
-// Optional: attach token if available
-api.interceptors.request.use((config) => {
+// Attach token automatically
+axios2.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,4 +15,4 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default api;
+export default axios2;

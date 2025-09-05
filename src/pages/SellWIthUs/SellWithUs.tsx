@@ -98,7 +98,7 @@ const SellWithUs = () => {
         address: formData.address,
         description: formData.description,
         // sampleImage: formData.sampleImage, // ❌ commented out upload image
-        role: "seller",
+        
       }
 
       await api.post("/api/v1/auth/register", payload)

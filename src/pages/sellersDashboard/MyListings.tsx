@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import api from "../../api/axios";
 
 interface Listing {
-  _id: string;
+  id: string;
   name: string;
   category: string;
   price: number;
@@ -13,15 +13,14 @@ interface Listing {
   serviceImg?: string;
 }
 
-interface MyListingsProps{
-  sellerId:string
+interface MyListingsProps {
+  sellerId: string;
 }
 
-const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
+const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
   const [activeTab, setActiveTab] = useState<"products" | "services">(
     "products"
   );
-
 
   const [products, setProducts] = useState<Listing[]>([]);
   const [services, setServices] = useState<Listing[]>([]);
@@ -63,9 +62,9 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
     try {
       await api.delete(`/api/v1/${type}/${id}`);
       if (type === "products") {
-        setProducts((prev) => prev.filter((p) => p._id !== id));
+        setProducts((prev) => prev.filter((p) => p.id !== id));
       } else {
-        setServices((prev) => prev.filter((s) => s._id !== id));
+        setServices((prev) => prev.filter((s) => s.id !== id));
       }
     } catch (err) {
       console.error(`Failed to delete ${type}:, err`);
@@ -81,7 +80,7 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div
-            key={item._id}
+            key={item.id}
             className="bg-white rounded-[30px] shadow-md hover:shadow-xl transition overflow-hidden"
           >
             <div className="relative">
@@ -109,7 +108,7 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
                   <FiEdit size={16} /> Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(item._id, type)}
+                  onClick={() => handleDelete(item.id, type)}
                   className="flex items-center gap-1 bg-[#333333] hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm transition cursor-pointer"
                 >
                   <FiTrash2 size={16} /> Delete

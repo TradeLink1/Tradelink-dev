@@ -27,7 +27,7 @@ const DashboardLayout = () => {
   const navItems = [
     { name: "Overview", path: "/dashboard", icon: <FiHome size={18} /> },
     {
-      name: "Upload Products",
+      name: "Upload Listings",
       path: "/dashboard/upload",
       icon: <FiUpload size={18} />,
     },

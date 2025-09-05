@@ -38,6 +38,8 @@ import Logout from "./pages/userContents/Logout.tsx";
 import UserLayout from "./pages/userContents/UserLayout";
 import EditProfile from "./pages/userContents/EditProfile";
 import UserSettings from "./pages/userContents/UserSettings.tsx";
+import ResetPassword from "./pages/Login/ResetPassword.tsx";
+
 
 const Layout = () => {
   const location = useLocation();
@@ -78,6 +80,8 @@ const App = () => {
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+
               </Route>
 
               <Route path="/dashboard" element={<DashboardLayout />}>
