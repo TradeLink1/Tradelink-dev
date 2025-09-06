@@ -96,7 +96,7 @@ const UploadProduct = () => {
 
       if (uploadType === "product") {
         formDataToSend.append("quantity", productData.quantity);
-        if (productData.imageFile) formDataToSend.append("image", productData.imageFile);
+        if (productData.imageFile) formDataToSend.append("productImg", productData.imageFile);
       } else {
         const sellerId = localStorage.getItem("sellerId") || "";
         if (sellerId) formDataToSend.append("sellerId", sellerId);
@@ -110,7 +110,7 @@ const UploadProduct = () => {
       }
 
       const axiosInstance = uploadType === "product" ? api : axios2;
-      const endpoint = uploadType === "product" ? "/api/v1/products/create" : "api/v1/services/create";
+      const endpoint = uploadType === "product" ? "/api/v1/products" : "api/v1/services/create";
 
       const response = await axiosInstance.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },

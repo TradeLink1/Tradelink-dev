@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 interface Stats {
-  totalProducts: number; // ✅ still matches backend
+  totalProducts: number;
   totalMessages: number;
   totalCustomerReviews: number;
   accountStatus: string; // ✅ frontend only
@@ -49,20 +49,39 @@ const Overview = () => {
   const [customerReviews, setCustomerReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No auth token found!");
-        return;
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No auth token found!");
+      return;
+    }
 
+    // ✅ Fetch seller profile (storeName only)
+    const fetchSellerProfile = async () => {
       try {
-        const res = await api.get("api/v1/sellers/get/profile");
+        const res = await api.get("/api/v1/sellers/only/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Response shape: { success: true, data: { storeName: "..." } }
+        const profile = res.data?.data;
+        setSeller({ storeName: profile?.storeName || "" });
+      } catch (error) {
+        console.error("Error fetching seller profile:", error);
+      }
+    };
+
+    // ✅ Fetch dashboard stats/messages/reviews
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get("/api/v1/sellers/dashboard", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = res.data;
 
-        setSeller({ storeName: data.seller?.storeName || "" });
-
-        // ✅ keep accountStatus hardcoded (don’t override with backend)
         setStats((prev) => ({
           ...prev,
           totalProducts: data.totalProducts || 0,
@@ -73,18 +92,19 @@ const Overview = () => {
         setRecentMessages(data.recentMessages || []);
         setCustomerReviews(data.customerReviews || []);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching dashboard data:", error);
       }
     };
 
-    fetchData();
+    fetchSellerProfile();
+    fetchDashboardData();
   }, []);
 
   // ✅ Stat Cards
   const statCards = useMemo(
     () => [
       {
-        title: "Total Listings", // 👀 frontend label
+        title: "Total Listings",
         value: stats.totalProducts,
         color: "from-orange-400 to-orange-600",
         icon: ShoppingBag,
@@ -102,7 +122,7 @@ const Overview = () => {
         icon: Star,
       },
       {
-        title: "Account Status", // ✅ purely frontend
+        title: "Account Status",
         value: stats.accountStatus,
         color: "from-purple-400 to-purple-600",
         icon: Activity,
@@ -139,7 +159,7 @@ const Overview = () => {
         })}
       </div>
 
-      {/* ✅ Quick Actions */}
+      {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4 text-gray-800">Quick Actions</h2>
         <div className="flex flex-wrap gap-4">
@@ -205,7 +225,9 @@ const Overview = () => {
                 key={review._id}
                 className="border-b border-gray-100 last:border-none pb-4"
               >
-                <p className="font-medium text-[#333333]">{review.customerReviews}</p>
+                <p className="font-medium text-[#333333]">
+                  {review.customerReviews}
+                </p>
                 <p className="text-sm text-gray-600">{review.comment}</p>
               </li>
             ))}

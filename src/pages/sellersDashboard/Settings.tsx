@@ -17,6 +17,10 @@ const Settings = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    location: {
+      city: "",
+      state: "",
+    },
   })
 
   const [isDeleting, setIsDeleting] = useState(false)
@@ -35,6 +39,8 @@ const Settings = () => {
           description: sellerData.description || "",
           businessCategory: sellerData.businessCategory || "",
           address: sellerData.address || "",
+          location: sellerData.location || { city: "", state: "" },
+          logo: sellerData.storeLogo || null, // ✅ map backend storeLogo
         }))
       } catch (err) {
         console.log("Error fetching seller profile:", err)
@@ -47,10 +53,22 @@ const Settings = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: any) => {
     const { name, value, type, checked, files } = e.target
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : files ? files[0] : value,
-    })
+
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".")
+      setFormData((prev: any) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value,
+        },
+      }))
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : files ? files[0] : value,
+      })
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,13 +83,22 @@ const Settings = () => {
       updateData.append("businessCategory", formData.businessCategory)
 
       if (formData.logo) {
-        updateData.append("logo", formData.logo)
+        updateData.append("storeLogo", formData.logo) // ✅ backend expects storeLogo
       }
 
-      const profileRes = await api.put("api/v1/sellers/all/profile", updateData, {
-        headers: { 
-          "Content-Type": "multipart/form-data", 
-          Authorization: `Bearer ${localStorage.getItem("token")}` 
+      // ✅ Add location schema (no coordinates)
+      updateData.append(
+        "location",
+        JSON.stringify({
+          city: formData.location.city,
+          state: formData.location.state,
+        })
+      )
+
+      const profileRes = await api.post("/api/v1/sellers/profile/full", updateData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
 
@@ -144,11 +171,19 @@ const Settings = () => {
         <div className="flex items-center gap-4">
           <div className="min-w-[80px] h-20 rounded-full border-2 border-[#f89216] flex items-center justify-center overflow-hidden">
             {formData.logo ? (
-              <img
-                src={URL.createObjectURL(formData.logo) || "/placeholder.svg"}
-                alt="Logo Preview"
-                className="w-full h-full object-cover"
-              />
+              typeof formData.logo === "string" ? (
+                <img
+                  src={formData.logo}
+                  alt="Logo Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src={URL.createObjectURL(formData.logo)}
+                  alt="Logo Preview"
+                  className="w-full h-full object-cover"
+                />
+              )
             ) : (
               <span className="text-gray-400 text-xs">No Logo</span>
             )}
@@ -178,6 +213,31 @@ const Settings = () => {
           <InputField label="Email" name="email" value={formData.email} onChange={handleChange} />
           <InputField label="Phone" name="phone" value={formData?.phone} onChange={handleChange} />
           <InputField label="Address" name="address" value={formData?.address} onChange={handleChange} />
+          {/* ✅ Location fields */}
+          <InputField label="City" name="location.city" value={formData.location.city} onChange={handleChange} />
+
+          <div>
+            <label className="block font-medium mb-1 text-sm">State</label>
+            <select
+              name="location.state"
+              value={formData.location.state}
+              onChange={handleChange}
+              className="border p-2 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-[#30ac57]"
+            >
+              <option value="">-- Select State --</option>
+              {[
+                "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue",
+                "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT - Abuja",
+                "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi",
+                "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo",
+                "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
+              ].map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -185,9 +245,15 @@ const Settings = () => {
           <div>
             <label className="block font-medium mb-2 text-sm">Store Logo</label>
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-[#f89216] transition">
-              {formData.logo ? (
+              {formData.logo && typeof formData.logo !== "string" ? (
                 <img
-                  src={URL.createObjectURL(formData.logo) || "/placeholder.svg"}
+                  src={URL.createObjectURL(formData.logo)}
+                  alt="Logo Preview"
+                  className="w-24 h-24 object-cover rounded-full border border-gray-300 mb-3"
+                />
+              ) : formData.logo && typeof formData.logo === "string" ? (
+                <img
+                  src={formData.logo}
                   alt="Logo Preview"
                   className="w-24 h-24 object-cover rounded-full border border-gray-300 mb-3"
                 />

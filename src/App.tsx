@@ -15,6 +15,7 @@ import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Product from "./pages/Categories/Products";
+import ProductDetails from "./pages/Categories/ProductDetails";
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
 import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
@@ -45,7 +46,7 @@ const Layout = () => {
   const location = useLocation();
 
   //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register"].includes(
+  const hideHeaderFooter = ["/login", "/register","/categories/products,/categories/products/:id"].includes(
     location.pathname.toLowerCase()
   );
 
@@ -67,8 +68,23 @@ const App = () => {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/Categories/Products" element={<Product />} />
-                <Route path="/Categories/Services" element={<Services />} />
+                {/* <Route path="/Categories" element={<Categories />} /> */}
+                <Route
+                  path="/Categories/Products"
+                  element={
+                  
+                      <Product />
+                    
+                  }
+                />
+                <Route
+                  path="/Categories/Services"
+                  element={
+                  
+                      <Services />
+              
+                  }
+                />
                 <Route path="/SellWithUs" element={<SellWithUs />} />
                 <Route
                   path="/service-provider/:id"

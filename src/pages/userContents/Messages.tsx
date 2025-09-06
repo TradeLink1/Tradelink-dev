@@ -11,7 +11,6 @@ const Messages: React.FC = () => {
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
-    // Show SweetAlert loader when Messages component is opened
     Swal.fire({
       title: "Loading messages...",
       text: "Please wait while we fetch your conversations",
@@ -21,11 +20,10 @@ const Messages: React.FC = () => {
       },
     });
 
-    // Simulate a delay (e.g. fetching from API)
     const timer = setTimeout(() => {
       Swal.close();
       setLoading(false);
-    }, 1500); // 1.5s delay
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -40,7 +38,7 @@ const Messages: React.FC = () => {
     setNewMessage("");
   };
 
-  if (loading) return null; // Prevent UI from flashing before loader closes
+  if (loading) return null;
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md flex flex-col h-full">
