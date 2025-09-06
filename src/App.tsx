@@ -41,6 +41,7 @@ import UserSettings from "./pages/userContents/UserSettings";
 import ResetPassword from "./pages/Login/ResetPassword";
 
 const Layout = () => {
+<<<<<<< HEAD
   const location = useLocation();
 
   const hideHeaderFooter = [
@@ -50,6 +51,15 @@ const Layout = () => {
     "/categories/products/:id",
   ].includes(location.pathname.toLowerCase());
 
+=======
+const hideHeaderFooter = [
+  "/login",
+  "/register",
+  "/categories/products",
+  "/seller-profile"
+].some((path) => location.pathname.toLowerCase().startsWith(path)) ||
+location.pathname.toLowerCase().startsWith("/products/");
+>>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
   return (
     <>
       {!hideHeaderFooter && <Header />}
@@ -70,15 +80,39 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/categories/products" element={<Product />} />
                 <Route
+<<<<<<< HEAD
                   path="/categories/products/:id"
                   element={<ProductDetails />}
                 />
                 <Route path="/categories/services" element={<Services />} />
                 <Route path="/sellwithus" element={<SellWithUs />} />
+=======
+                  path="/Categories/Products"
+                  element={
+                  
+                      <Product />
+                    
+                  }
+
+                />
+                 <Route path="/products/:id" element={<ProductDetails />} />
+                 <Route path="/seller-profile/:sellerId" element={<SellerProfile />} />
+                <Route
+                  path="/Categories/Services"
+                  element={
+                  
+                      <Services />
+              
+                  }
+                />
+                
+                <Route path="/SellWithUs" element={<SellWithUs />} />
+>>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
                 <Route
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
+<<<<<<< HEAD
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/faq" element={<Faq />} />
                 <Route path="/contact" element={<Contact />} />
@@ -89,6 +123,17 @@ const App = () => {
                   path="/reset-password/:token"
                   element={<ResetPassword />}
                 />
+=======
+                
+                <Route path="/AboutUs" element={<AboutUs />} />
+                <Route path="/Faq" element={<Faq />} />
+                <Route path="/Contact" element={<Contact />} />
+                <Route path="/Login" element={<Login />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+>>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
               </Route>
 
               <Route path="/dashboard" element={<DashboardLayout />}>

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import api from "../../api/axios";
 
 interface Listing {
-  id: string;
+  _id: string; // ✅ backend usually sends _id
   name: string;
   category: string;
   price: number;
@@ -18,9 +18,7 @@ interface MyListingsProps {
 }
 
 const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
-  const [activeTab, setActiveTab] = useState<"products" | "services">(
-    "products"
-  );
+  const [activeTab, setActiveTab] = useState<"products" | "services">("products");
 
   const [products, setProducts] = useState<Listing[]>([]);
   const [services, setServices] = useState<Listing[]>([]);
@@ -40,11 +38,11 @@ const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
           return;
         }
 
-        // Fetch products
-        const productRes = await api.get(`/api/v1/products/seller/${sellerId}`);
+        // ✅ Fetch seller products (corrected endpoint)
+        const productRes = await api.get(`/api/v1/products/only/${sellerId}`);
         setProducts(productRes.data.products || []);
 
-        // Fetch services
+        // ✅ Fetch seller services (leave as is if backend supports it)
         const serviceRes = await api.get(`/api/v1/services/seller/${sellerId}`);
         setServices(serviceRes.data.services || []);
       } catch (err: any) {
@@ -62,12 +60,12 @@ const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
     try {
       await api.delete(`/api/v1/${type}/${id}`);
       if (type === "products") {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
+        setProducts((prev) => prev.filter((p) => p._id !== id));
       } else {
-        setServices((prev) => prev.filter((s) => s.id !== id));
+        setServices((prev) => prev.filter((s) => s._id !== id));
       }
     } catch (err) {
-      console.error(`Failed to delete ${type}:, err`);
+      console.error(`Failed to delete ${type}:`, err);
     }
   };
 
@@ -80,7 +78,7 @@ const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="bg-white rounded-[30px] shadow-md hover:shadow-xl transition overflow-hidden"
           >
             <div className="relative">
@@ -108,7 +106,7 @@ const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
                   <FiEdit size={16} /> Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id, type)}
+                  onClick={() => handleDelete(item._id, type)}
                   className="flex items-center gap-1 bg-[#333333] hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm transition cursor-pointer"
                 >
                   <FiTrash2 size={16} /> Delete
