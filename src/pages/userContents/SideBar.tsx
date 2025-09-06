@@ -33,14 +33,14 @@ const Sidebar: React.FC = () => {
   const menuLinks = [
     {
       path: "/userProfile",
-      label: "Dashboard",
+      label: "My Profile",
       icon: <MdDashboard size={20} />,
     },
     {
       path: "/userProfile/messages",
       label: "Messages",
       icon: <MdMessage size={20} />,
-      onClick: handleMessagesClick, // Add custom handler here
+      onClick: handleMessagesClick,
     },
     {
       path: "/userProfile/edit-profile",

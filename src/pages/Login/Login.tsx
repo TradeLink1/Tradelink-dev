@@ -1,4 +1,3 @@
-"use client";
 
 import type React from "react";
 import { useState, useEffect } from "react";
@@ -18,7 +17,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Resend Verification State
+  //  Resend Verification State
   const [showResendModal, setShowResendModal] = useState(false);
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
@@ -39,7 +38,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Show modal if user just verified email via link
+  //  Show modal if user just verified email via link
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const verified = params.get("verified");
@@ -56,7 +55,7 @@ const Login: React.FC = () => {
     }
   }, []);
 
-  // ✅ Login Handler
+  //  Login Handler
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -77,7 +76,7 @@ const Login: React.FC = () => {
 
       const { token, role: backendRole, userId, sellerId, name } = res.data;
 
-      // ✅ Store everything in localStorage
+      //  Store everything in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", backendRole);
       localStorage.setItem(
@@ -97,7 +96,7 @@ const Login: React.FC = () => {
         title: "Login successful 🎉",
       });
 
-      // ✅ Redirect based on role
+      //  Redirect based on role
       if (backendRole === "seller") {
         navigate("/dashboard");
       } else {
@@ -112,7 +111,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Forgot Password Modal
+  //  Forgot Password Modal
   const handleForgotPassword = async () => {
     const { value: email } = await Swal.fire({
       title: "Forgot Password",
@@ -168,7 +167,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Resend Verification Handlers
+  //  Resend Verification Handlers
   const handleResendVerification = () => {
     setShowResendModal(true);
     setResendEmail(email); // default to current email if typed
@@ -206,7 +205,9 @@ const Login: React.FC = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error?.response?.data?.message || "Failed to resend verification email",
+        text:
+          error?.response?.data?.message ||
+          "Failed to resend verification email",
       });
     } finally {
       setResendLoading(false);
@@ -313,7 +314,7 @@ const Login: React.FC = () => {
               Sign In
             </motion.button>
 
-            {/* ✅ Resend Verification Button */}
+            {/*  Resend Verification Button */}
             <p className="mt-4 text-center text-sm text-gray-600">
               Didn't get the verification email?{" "}
               <button

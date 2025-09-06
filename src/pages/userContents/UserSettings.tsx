@@ -1,70 +1,55 @@
-import React, { useState } from "react";
-// If you have a pre-configured axios instance (with baseURL/interceptors), use it:
-import api from"../../api/axios"
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import { getUserProfile, updateUserProfile } from "../../api/axios"; // Adjust the import path as necessary
 
 const UserSettings: React.FC = () => {
-  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserProfile();
+        const { avatarUrl, fullName, email, address } = response.data;
+        setUser(response.data);
+        setAvatarUrl(avatarUrl);
+        setFullName(fullName);
+        setEmail(email);
+        setAddress(address);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSave = async () => {
-    setLoading(true);
     try {
-      // If your api instance already injects the token via interceptor, you can omit the headers below.
-      let config: { headers: Record<string, string> } = {
-        headers: { "Content-Type": "application/json" },
-      };
-
-      // Optional: attach token manually if not handled by interceptors
-      if (typeof window !== "undefined") {
-        const token = localStorage.getItem("token");
-        if (token) config.headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      const res = await api.put(
-        "/api/v1/users/profile/update",
-        {
-          name: fullName,
-          email,
-          phone,
-          address,
-          logo: profilePic, // send URL if your API expects a URL; base64 if your API accepts it
-        },
-        config
-      );
-
-      if (res.data?.success) {
-        alert(res.data.message || "User profile updated successfully!");
-        const u = res.data.data || {};
-        setFullName(u.name || "");
-        setEmail(u.email || "");
-        setPhone(u.phone || "");
-        setAddress(u.address || "");
-        setProfilePic(u.logo || null);
-      } else {
-        console.error("API Error:", res.data);
-        alert(res.data?.message || "Failed to update profile.");
-      }
-    } catch (err: any) {
-      console.error("API Error:", err?.response?.data || err?.message || err);
-      alert(err?.response?.data?.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
+      await updateUserProfile({ avatarUrl, fullName, email, address });
+      Swal.fire({
+        title: "Settings Saved",
+        text: "Your settings have been updated successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "There was an issue saving your settings. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col gap-6">
@@ -72,7 +57,7 @@ const UserSettings: React.FC = () => {
 
       <div className="flex items-center gap-4">
         <img
-          src={profilePic || "https://via.placeholder.com/80"}
+          src={avatarUrl || "https://via.placeholder.com/80"}
           alt="Profile"
           className="w-20 h-20 rounded-full object-cover border"
         />
@@ -81,7 +66,15 @@ const UserSettings: React.FC = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={handleProfilePicChange}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setAvatarUrl(reader.result as string);
+                };
+                reader.readAsDataURL(e.target.files[0]);
+              }
+            }}
             className="hidden"
           />
         </label>
@@ -91,8 +84,8 @@ const UserSettings: React.FC = () => {
         <span className="text-sm text-gray-600">Full Name</span>
         <input
           type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="border border-gray-300 rounded px-3 py-2"
         />
       </label>
@@ -108,17 +101,7 @@ const UserSettings: React.FC = () => {
       </label>
 
       <label className="flex flex-col">
-        <span className="text-sm text-gray-600">Phone</span>
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2"
-        />
-      </label>
-
-      <label className="flex flex-col">
-        <span className="text-sm text-gray-600">Address</span>
+        <span className="text-sm text-gray-600">Default Delivery Address</span>
         <textarea
           value={address}
           onChange={(e) => setAddress(e.target.value)}
@@ -129,10 +112,9 @@ const UserSettings: React.FC = () => {
 
       <button
         onClick={handleSave}
-        disabled={loading}
-        className={`bg-[#30AC57] text-white px-4 py-2 rounded transition mt-4 ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#28994d]"}`}
+        className="bg-[#30AC57] text-white px-4 py-2 rounded hover:bg-[#28994d] transition mt-4"
       >
-        {loading ? "Saving..." : "Save Changes"}
+        Save Changes
       </button>
     </div>
   );
