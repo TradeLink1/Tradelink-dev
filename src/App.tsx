@@ -76,6 +76,7 @@ const App = () => {
                       <Product />
                     
                   }
+
                 />
                  <Route path="/products/:id" element={<ProductDetails />} />
                  <Route path="/seller-profile/:sellerId" element={<SellerProfile />} />
@@ -93,6 +94,7 @@ const App = () => {
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
+                
                 <Route path="/AboutUs" element={<AboutUs />} />
                 <Route path="/Faq" element={<Faq />} />
                 <Route path="/Contact" element={<Contact />} />
