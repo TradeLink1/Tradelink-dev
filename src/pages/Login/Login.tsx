@@ -7,7 +7,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { GoLock } from "react-icons/go";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import api from "../../api/axios";
+import api from "../../api/axios2";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

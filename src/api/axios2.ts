@@ -2,7 +2,7 @@
 import axios, { type AxiosInstance } from "axios";
 
 const axios2: AxiosInstance = axios.create({
-  baseURL: "https://backend-dev-ltev.onrender.com",
+  baseURL: "https://tradelink-be.onrender.com",
   headers: { "Content-Type": "application/json" },
 });
 

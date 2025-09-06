@@ -1,130 +1,244 @@
-import React from "react";
-import { CheckCircle, Mail, Phone, MapPin, Briefcase, ArrowLeft } from "lucide-react";
-import Button from "../../components/reusable/Button";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Mail, Phone, MapPin, Send, ArrowLeft } from "lucide-react";
 
-const dummySeller = {
-  _id: "68b4a5db6a318979887c779c",
-  storeName: "Adamzy Autos",
-  email: "adamzy@example.com",
-  phone: "07035681278",
-  location: {
-    address: "Abuja, Nigeria",
-    city: "Abuja",
-    state: "FCT",
-  },
-  verified: true,
-  createdAt: "2024-11-15T10:30:00Z",
-  description: "Trusted car dealer with over 10 years of experience",
-  products: [
-    {
-      _id: "68add65b98b34764e4ad9fa7",
-      name: "Wireless Headphones",
-      price: 150,
-      category: "Electronics & Gadgets",
-      quantity: 50,
-      description: "This is new",
-      productImg: "https://via.placeholder.com/300x200?text=Headphones",
-      createdAt: "2025-08-26T15:44:27.461Z",
-    },
-    {
-      _id: "68b6cff2c9dd670d20dfc45f",
-      name: "Groundnut",
-      price: 200,
-      category: "Groceries & Essentials",
-      quantity: 2,
-      description: "Freshly roasted groundnut",
-      productImg: "https://via.placeholder.com/300x200?text=Groundnut",
-      createdAt: "2025-09-02T11:07:30.289Z",
-    },
-  ],
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
+  productImg: string;
 };
 
-const SellerProfile: React.FC = () => {
+type Seller = {
+  _id: string;
+  storeName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  description?: string;
+  businessCategory?: string;
+  businessLevel?: string;
+  storeLogo?: string;
+  location?: {
+    city?: string;
+    state?: string;
+  };
+};
+
+const SellerProfile = () => {
+  const { sellerId } = useParams<{ sellerId: string }>();
   const navigate = useNavigate();
 
+  const [seller, setSeller] = useState<Seller | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    const fetchSellerProfile = async () => {
+      try {
+        const res = await axios.get(
+          "https://tradelink-be.onrender.com/api/v1/sellers/get/profile",
+          {
+            params: { sellerId },
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSeller(res.data?.seller || null);
+      } catch (err) {
+        console.error("Error fetching seller profile:", err);
+      }
+    };
+
+    const fetchSellerProducts = async () => {
+      try {
+        const res = await axios.get(
+          `https://tradelink-be.onrender.com/api/v1/products/seller/${sellerId}`
+        );
+        setProducts(res.data?.products || []);
+      } catch (err) {
+        console.error("Error fetching seller products:", err);
+      }
+    };
+
+    Promise.all([fetchSellerProfile(), fetchSellerProducts()]).finally(() =>
+      setLoading(false)
+    );
+  }, [sellerId]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || !seller?._id) return;
+
+    try {
+      setSending(true);
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        "https://tradelink-be.onrender.com/api/v1/messages/send",
+        {
+          recipientId: seller._id,
+          content: message,
+          conversationId: "",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMessage("");
+      alert("Message sent ✅");
+    } catch (err) {
+      console.error("Error sending message:", err);
+      alert("Failed to send message ❌");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading) return <p className="p-6 text-center">Loading...</p>;
+  if (!seller) return <p className="p-6 text-center">Seller not found.</p>;
+
   return (
-    <div className="p-6">
-      {/* Back Button */}
-      <Button
-        className="flex items-center gap-2 mb-6 bg-gray-100 hover:bg-gray-200"
-        onClick={() => navigate("/products")}
-      >
-        <ArrowLeft size={16} />
-        Back to Products
-      </Button>
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-full md:w-1/3 lg:w-1/4 bg-white p-6 shadow-md flex-shrink-0 sticky top-0 md:h-screen overflow-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 mb-4 text-gray-700 hover:text-orange-500"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
 
-      {/* Seller Info */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-orange-600 flex items-center gap-2">
-            {dummySeller.storeName}
-            {dummySeller.verified && (
-              <CheckCircle className="text-green-500" size={20} />
-            )}
-          </h2>
-          <span className="text-sm text-gray-500">
-            Since {new Date(dummySeller.createdAt).toLocaleDateString()}
-          </span>
-        </div>
-
-        <p className="mt-3 text-gray-700">{dummySeller.description}</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <Mail size={16} className="text-orange-500" />
-            {dummySeller.email}
-          </div>
-          <div className="flex items-center gap-2">
-            <Phone size={16} className="text-orange-500" />
-            {dummySeller.phone}
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin size={16} className="text-orange-500" />
-            {dummySeller.location.address}, {dummySeller.location.state}
-          </div>
-        </div>
-      </div>
-
-      {/* Seller Products */}
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <Briefcase size={18} className="text-orange-500" />
-        Products by {dummySeller.storeName}
-      </h3>
-
-      {dummySeller.products.length === 0 ? (
-        <p className="text-gray-500">No products available.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {dummySeller.products.map((p) => (
-            <div
-              key={p._id}
-              className="border rounded-lg bg-white shadow-sm hover:shadow-lg transition p-4 flex flex-col"
-            >
-              <div className="relative">
-                <img
-                  src={p.productImg}
-                  alt={p.name}
-                  className="h-48 w-full object-cover rounded mb-3"
-                />
-              </div>
-
-              <h4 className="font-semibold text-base text-orange-600">
-                {p.name}
-              </h4>
-              <p className="text-sm text-gray-700 line-clamp-2">{p.description}</p>
-              <p className="text-xs text-gray-500 mt-1">📂 {p.category}</p>
-              <p className="text-sm font-medium text-gray-900 mt-2">
-                ₦{p.price.toLocaleString()}
-              </p>
-
-              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-sm py-2">
-                View Product
-              </Button>
+        {/* Seller Info */}
+        <div className="flex flex-col items-center gap-4">
+          {seller.storeLogo ? (
+            <img
+              src={seller.storeLogo}
+              alt={seller.storeName || "Seller"}
+              className="w-32 h-32 rounded-full object-cover border"
+            />
+          ) : (
+            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-2xl">
+              {(seller.storeName?.[0] || "S").toUpperCase()}
             </div>
-          ))}
+          )}
+
+          <h1 className="text-2xl font-bold text-center">
+            {seller.storeName || "Seller"}
+          </h1>
+          <p className="text-sm text-gray-600 text-center">
+            {seller.businessCategory || "Category"} • {seller.businessLevel || "Level"}
+          </p>
+          <p className="text-sm text-gray-600 flex items-center justify-center gap-1 mt-1">
+            <MapPin className="w-4 h-4" />
+            {seller.location
+              ? `${seller.location.city || ""}, ${seller.location.state || ""}`
+              : "Location not found"}
+          </p>
+          {seller.description && (
+            <p className="text-sm text-gray-700 mt-2 text-center">{seller.description}</p>
+          )}
+
+          {/* Contact Info */}
+          <div className="mt-4 w-full space-y-2 text-left">
+            {seller.email && (
+              <p className="text-sm flex items-center gap-2 text-gray-700 break-all">
+                <Mail className="w-4 h-4" />
+                <a href={`mailto:${seller.email}`} className="text-blue-600 hover:underline">
+                  {seller.email}
+                </a>
+              </p>
+            )}
+            {seller.phone && (
+              <p className="text-sm flex items-center gap-2 text-gray-700">
+                <Phone className="w-4 h-4" />
+                <a href={`tel:${seller.phone}`} className="text-blue-600 hover:underline">
+                  {seller.phone}
+                </a>
+              </p>
+            )}
+          </div>
+
+          {/* Message Box */}
+          <div className="mt-6 w-full">
+            <h3 className="text-lg font-semibold mb-2">Message Seller</h3>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <button
+                type="button"
+                onClick={handleSendMessage}
+                disabled={sending}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Send className="w-4 h-4" />
+                {sending ? "Sending..." : "Send"}
+              </button>
+            </div>
+          </div>
         </div>
-      )}
+      </aside>
+
+      {/* Main Products */}
+      <main className="flex-1 p-6">
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => navigate(`/products/${product.id}`)}
+                className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition"
+              >
+                <img
+                  src={product.productImg}
+                  alt={product.name}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  <p className="text-sm text-gray-500">{product.category}</p>
+                  <p className="text-orange-600 font-bold mt-2">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">Qty: {product.quantity}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No products available</p>
+        )}
+      </main>
+
+      {/* Mobile Sticky Message Box */}
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white p-4 shadow-t flex items-center gap-2 z-50 border-t">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+        <button
+          type="button"
+          onClick={handleSendMessage}
+          disabled={sending}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+        >
+          <Send className="w-4 h-4" />
+          {sending ? "Sending..." : "Send"}
+        </button>
+      </div>
     </div>
   );
 };

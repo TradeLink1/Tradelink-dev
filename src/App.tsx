@@ -43,13 +43,13 @@ import ResetPassword from "./pages/Login/ResetPassword.tsx";
 
 
 const Layout = () => {
-  const location = useLocation();
-
-  //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register","/categories/products,/categories/products/:id"].includes(
-    location.pathname.toLowerCase()
-  );
-
+const hideHeaderFooter = [
+  "/login",
+  "/register",
+  "/categories/products",
+  "/seller-profile"
+].some((path) => location.pathname.toLowerCase().startsWith(path)) ||
+location.pathname.toLowerCase().startsWith("/products/");
   return (
     <>
       {!hideHeaderFooter && <Header />}
@@ -77,6 +77,8 @@ const App = () => {
                     
                   }
                 />
+                 <Route path="/products/:id" element={<ProductDetails />} />
+                 <Route path="/seller-profile/:sellerId" element={<SellerProfile />} />
                 <Route
                   path="/Categories/Services"
                   element={
@@ -85,6 +87,7 @@ const App = () => {
               
                   }
                 />
+                
                 <Route path="/SellWithUs" element={<SellWithUs />} />
                 <Route
                   path="/service-provider/:id"
