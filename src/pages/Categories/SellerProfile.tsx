@@ -1,198 +1,132 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import React from "react";
+import { CheckCircle, Mail, Phone, MapPin, Briefcase, ArrowLeft } from "lucide-react";
+import Button from "../../components/reusable/Button";
+import { useNavigate } from "react-router-dom";
 
-export default function SellerProfile() {
-  const { id: sellerId } = useParams<{ id: string }>();
-  const [seller, setSeller] = useState<any>(null);
-  const [messages] = useState<any[]>([]);
-  // const [newMessage,setNewMessage] = useState("");
-  const [loading,setLoading] = useState(true);
+const dummySeller = {
+  _id: "68b4a5db6a318979887c779c",
+  storeName: "Adamzy Autos",
+  email: "adamzy@example.com",
+  phone: "07035681278",
+  location: {
+    address: "Abuja, Nigeria",
+    city: "Abuja",
+    state: "FCT",
+  },
+  verified: true,
+  createdAt: "2024-11-15T10:30:00Z",
+  description: "Trusted car dealer with over 10 years of experience",
+  products: [
+    {
+      _id: "68add65b98b34764e4ad9fa7",
+      name: "Wireless Headphones",
+      price: 150,
+      category: "Electronics & Gadgets",
+      quantity: 50,
+      description: "This is new",
+      productImg: "https://via.placeholder.com/300x200?text=Headphones",
+      createdAt: "2025-08-26T15:44:27.461Z",
+    },
+    {
+      _id: "68b6cff2c9dd670d20dfc45f",
+      name: "Groundnut",
+      price: 200,
+      category: "Groceries & Essentials",
+      quantity: 2,
+      description: "Freshly roasted groundnut",
+      productImg: "https://via.placeholder.com/300x200?text=Groundnut",
+      createdAt: "2025-09-02T11:07:30.289Z",
+    },
+  ],
+};
 
-  const currentUserId = localStorage.getItem("userId"); // 👈 store buyer's id in localStorage after login
-  const token = localStorage.getItem("token"); // 👈 JWT for auth
-
-  // Fetch seller details
-  useEffect(() => {
-    console.log(sellerId);
-    if (!sellerId) return;
-
-    fetch(
-      `https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/profile/${sellerId}`,
-      // `https://https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/${sellerId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setSeller(data.seller);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching seller:", err);
-        setLoading(false);
-      });
-  }, [sellerId, token]);
-
-  // Fetch messages with this seller
-  useEffect(() => {
-    if (!sellerId || !currentUserId) return;
-
-    fetch(
-      `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/get/all/conversations/${sellerId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        // setMessages(data.messages || []);
-      })
-      .catch((err) => console.error("Error fetching conversation:", err));
-  }, [sellerId, token, currentUserId]);
-
-  // const sendMessage = () => {
-  //   if (!newMessage.trim()) return;
-
-    // fetch(
-    //   `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/send`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({
-    //       senderId: currentUserId,
-    //       receiverId: sellerId,
-    //       text: newMessage,
-    //     }),
-    //   }
-    // )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setMessages((prev) => [...prev, data.message]); // append new message
-  //       setNewMessage("");
-  //     })
-  //     .catch((err) => console.error("Error sending message:", err));
-  // };
-
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (!seller) return <div className="p-6">Seller not found.</div>;
+const SellerProfile: React.FC = () => {
+  const navigate = useNavigate();
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 py-20 bg-yellow-50 min-h-screen">
-      {/* Back button */}
-      <Link to="/sellers" className="text-blue-600 underline mb-6 block">
-        ← Back to Sellers
-      </Link>
+    <div className="p-6">
+      {/* Back Button */}
+      <Button
+        className="flex items-center gap-2 mb-6 bg-gray-100 hover:bg-gray-200"
+        onClick={() => navigate("/products")}
+      >
+        <ArrowLeft size={16} />
+        Back to Products
+      </Button>
 
       {/* Seller Info */}
-      <div className="bg-white p-6 rounded-2xl shadow flex flex-col sm:flex-row gap-6 items-center mb-10">
-        <img
-          src={seller.image}
-          alt={seller.name}
-          className="h-32 w-32 rounded-full object-cover shadow"
-        />
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-800 capitalize">
-            {seller.storeName}
-          </h1>
-          <p className="text-gray-600">📍 {seller?.location?.address}</p>
-          <p className="text-gray-500">📧 {seller.email}</p>
-          <p className="text-gray-500">📞 {seller.phone}</p>
-          <p className="text-gray-500">⭐ 10 Reviews</p>
-          <p className="text-gray-700">{seller.category}</p>
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-orange-600 flex items-center gap-2">
+            {dummySeller.storeName}
+            {dummySeller.verified && (
+              <CheckCircle className="text-green-500" size={20} />
+            )}
+          </h2>
+          <span className="text-sm text-gray-500">
+            Since {new Date(dummySeller.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+
+        <p className="mt-3 text-gray-700">{dummySeller.description}</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <Mail size={16} className="text-orange-500" />
+            {dummySeller.email}
+          </div>
+          <div className="flex items-center gap-2">
+            <Phone size={16} className="text-orange-500" />
+            {dummySeller.phone}
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin size={16} className="text-orange-500" />
+            {dummySeller.location.address}, {dummySeller.location.state}
+          </div>
         </div>
       </div>
 
       {/* Seller Products */}
-      <h2 className="text-xl font-semibold mb-4">
-        Products by {seller.storeName}
-      </h2>
-      {seller?.products?.length === 0 ? (
-        <p className="text-gray-500">This seller has no products yet.</p>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <Briefcase size={18} className="text-orange-500" />
+        Products by {dummySeller.storeName}
+      </h3>
+
+      {dummySeller.products.length === 0 ? (
+        <p className="text-gray-500">No products available.</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {/* {seller?.products?.map((product: any) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {dummySeller.products.map((p) => (
             <div
-              key={product._id}
-              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col"
+              key={p._id}
+              className="border rounded-lg bg-white shadow-sm hover:shadow-lg transition p-4 flex flex-col"
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-28 w-full object-cover rounded mb-3"
-              />
-              <h3 className="font-semibold text-sm text-orange-600">
-                {product.name}
-              </h3>
-              <p className="text-xs text-gray-700">
-                ₦{product.price.toLocaleString()}
+              <div className="relative">
+                <img
+                  src={p.productImg}
+                  alt={p.name}
+                  className="h-48 w-full object-cover rounded mb-3"
+                />
+              </div>
+
+              <h4 className="font-semibold text-base text-orange-600">
+                {p.name}
+              </h4>
+              <p className="text-sm text-gray-700 line-clamp-2">{p.description}</p>
+              <p className="text-xs text-gray-500 mt-1">📂 {p.category}</p>
+              <p className="text-sm font-medium text-gray-900 mt-2">
+                ₦{p.price.toLocaleString()}
               </p>
-              <p className="text-[10px] text-gray-500">
-                Qty: {product.quantity}
-              </p>
+
+              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-sm py-2">
+                View Product
+              </Button>
             </div>
-          ))} */}
+          ))}
         </div>
       )}
-
-      {/* Chat Widget */}
-      <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg flex flex-col overflow-hidden">
-        <div className="bg-[#F89216] text-white px-4 py-2 font-semibold">
-          Chat with {seller.name}
-        </div>
-        <div className="flex-1 p-3 overflow-y-auto max-h-60">
-          {messages.length === 0 ? (
-            <p className="text-gray-500 text-sm">No messages yet.</p>
-          ) : (
-            <p className="text-gray-500 text-sm">No messages yet.</p>
-            // messages?.map((msg, i) => (
-            //   <div
-            //     key={i}
-            //     className={`mb-2 ${
-            //       msg.senderId === currentUserId ? "text-right" : "text-left"
-            //     }`}
-            //   >
-            //     <span
-            //       className={`inline-block px-3 py-2 rounded-lg ${
-            //         msg.senderId === currentUserId
-            //           ? "bg-[#F89216] text-white"
-            //           : "bg-gray-200"
-            //       }`}
-            //     >
-            //       {msg.text}
-            //     </span>
-            //   </div>
-            // ))
-          )}
-        </div>
-        {/* <div className="p-2 flex gap-2 border-t">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-1 border rounded px-3 py-2 text-sm"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <button
-            onClick={sendMessage}
-            className="bg-[#F89216] text-white px-4 py-2 rounded text-sm"
-          >
-            Send
-          </button>
-        </div> */}
-      </div>
     </div>
   );
-}
+};
+
+export default SellerProfile;

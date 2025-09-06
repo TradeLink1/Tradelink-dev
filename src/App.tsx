@@ -44,7 +44,7 @@ const Layout = () => {
   const location = useLocation();
 
   //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register","/categories/products,/categories/products/:id"].includes(
+  const hideHeaderFooter = ["/login", "/register","/categories/products","/categories/products/:id","/categories/sellerprofile"].includes(
     location.pathname.toLowerCase()
   );
 
@@ -74,6 +74,14 @@ const App = () => {
                       <Product />
                     
                   }
+                />
+                <Route
+                  path="/Categories/Products/:id"
+                  element={<ProductDetails />}
+                />
+                <Route
+                  path="/Categories/SellerProfile"
+                  element={<SellerProfile />}
                 />
                 <Route
                   path="/Categories/Services"
