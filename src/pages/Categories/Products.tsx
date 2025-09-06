@@ -1,28 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Search, Home as HomeIcon } from "lucide-react";
+import { Briefcase, Search } from "lucide-react";
 import Button from "../../components/reusable/Button";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useSearch } from "../../context/SearchContext"; // ✅ import
 
-// ✅ Define product type
-type Product = {
-  _id: string;
-  sellerId: string;
-  userId: string;
-  name: string;
-  price: number;
-  category: string;
-  quantity: number;
-  description: string;
-  productImg?: string;
-};
-
 const Products: React.FC = () => {
   const [category, setCategory] = useState("All Categories");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const { query, setQuery } = useSearch(); // ✅ global search
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const { query, setQuery } = useSearch(); // ✅ use global search
   const navigate = useNavigate();
 
   // ✅ Fetch products
@@ -30,16 +17,15 @@ const Products: React.FC = () => {
     api
       .get("/api/v1/products")
       .then((res) => {
-        // products are inside res.data.data
-        const data: Product[] = res.data?.data || [];
-        setProducts(data);
-        setFilteredProducts(data);
+        const data = Array.isArray(res.data) ? res.data : res.data.products;
+        setProducts(data || []);
+        setFilteredProducts(data || []);
         console.log("Fetched products:", data);
       })
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
-  // ✅ Auto-filter when category or search changes
+  // ✅ Auto-filter
   useEffect(() => {
     let filtered = products;
 
@@ -61,7 +47,7 @@ const Products: React.FC = () => {
   }, [category, query, products]);
 
   const handleViewProduct = (productId: string) => {
-    navigate(`/categories/products/${productId}`);
+    navigate(`/products/${productId}`);
   };
 
   return (
@@ -72,8 +58,7 @@ const Products: React.FC = () => {
           <Briefcase className="text-orange-500" size={18} />
           Categories
         </div>
-
-        <ul className="p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <ul className="p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-150px)]">
           <li
             onClick={() => setCategory("All Categories")}
             className={`cursor-pointer px-3 py-2 rounded-lg ${
@@ -100,33 +85,22 @@ const Products: React.FC = () => {
             )
           )}
         </ul>
-
-        {/* Reset Button */}
-        <div className="p-4 space-y-2">
+        <div className="p-4">
           <Button
             className="w-full text-sm"
             onClick={() => {
               setCategory("All Categories");
-              setQuery(""); // reset global search too
+              setQuery(""); // ✅ reset global search too
             }}
           >
             Reset
-          </Button>
-
-          {/* Back to Home Button */}
-          <Button
-            className="w-full flex items-center justify-center gap-2 text-sm bg-orange-500 hover:bg-orange-600 text-white"
-            onClick={() => navigate("/")}
-          >
-            <HomeIcon size={16} />
-            Back to Home
           </Button>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 ml-64 p-6">
-        {/* Search bar */}
+        {/* Search bar (now global) */}
         <div className="mb-6 flex items-center border rounded-lg px-3 py-2 shadow-sm">
           <Search size={18} className="text-gray-500 mr-2" />
           <input
