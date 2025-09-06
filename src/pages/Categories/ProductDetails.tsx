@@ -73,7 +73,7 @@ const ProductDetails = () => {
             <p className="font-semibold">{seller.name}</p>
             <p className="text-sm text-gray-600">{seller.phone}</p>
             <p className="text-xs text-green-600">
-              {seller.verified ? "✅ Verified Seller" : "⚠️ Not Verified"}
+              {seller.verified ? "✅ Verified Seller" : "⚠ Not Verified"}
             </p>
           </div>
         </div>

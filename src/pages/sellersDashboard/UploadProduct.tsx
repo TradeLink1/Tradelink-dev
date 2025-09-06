@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "../../api/axios"; // products
-import axios2 from "../../api/axios2"; // services
 
 const UploadProduct = () => {
   const [uploadType, setUploadType] = useState<"product" | "service">("product");
@@ -102,15 +101,14 @@ const UploadProduct = () => {
         if (sellerId) formDataToSend.append("sellerId", sellerId);
 
         if (serviceData.imageFile) {
-          // Multiple keys to satisfy backend variations
           formDataToSend.append("serviceImg", serviceData.imageFile);
-          // formDataToSend.append("file", serviceData.imageFile);
-          // formDataToSend.append("images[]", serviceData.imageFile);
         }
       }
 
-      const axiosInstance = uploadType === "product" ? api : axios2;
-      const endpoint = uploadType === "product" ? "/api/v1/products" : "api/v1/services/create";
+      // ✅ corrected here
+      const axiosInstance = api;
+      const endpoint =
+        uploadType === "product" ? "/api/v1/products" : "/api/v1/services/create";
 
       const response = await axiosInstance.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -121,9 +119,22 @@ const UploadProduct = () => {
 
       // Reset only the corresponding state
       if (uploadType === "product") {
-        setProductData({ name: "", category: "", price: "", quantity: "", description: "", imageFile: null });
+        setProductData({
+          name: "",
+          category: "",
+          price: "",
+          quantity: "",
+          description: "",
+          imageFile: null,
+        });
       } else {
-        setServiceData({ name: "", category: "", price: "", description: "", imageFile: null });
+        setServiceData({
+          name: "",
+          category: "",
+          price: "",
+          description: "",
+          imageFile: null,
+        });
       }
 
       const fileInput = document.querySelector('input[type="file"]');
@@ -150,7 +161,10 @@ const UploadProduct = () => {
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
             {uploadType === "product" ? "Product" : "Service"} uploaded successfully!
-            <button onClick={() => setSubmitSuccess(false)} className="ml-2 text-green-800 hover:text-green-900">
+            <button
+              onClick={() => setSubmitSuccess(false)}
+              className="ml-2 text-green-800 hover:text-green-900"
+            >
               ×
             </button>
           </div>
@@ -172,13 +186,17 @@ const UploadProduct = () => {
           />
           <button
             onClick={() => setUploadType("product")}
-            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${uploadType === "product" ? "text-white" : "text-gray-600"}`}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "product" ? "text-white" : "text-gray-600"
+            }`}
           >
             Product
           </button>
           <button
             onClick={() => setUploadType("service")}
-            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${uploadType === "service" ? "text-white" : "text-gray-600"}`}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "service" ? "text-white" : "text-gray-600"
+            }`}
           >
             Service
           </button>
@@ -200,7 +218,9 @@ const UploadProduct = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Price
+            </label>
             <input
               type="number"
               name="price"
@@ -212,7 +232,9 @@ const UploadProduct = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
               value={data.category}
@@ -222,17 +244,27 @@ const UploadProduct = () => {
               <option value="">-- Select Category --</option>
               {uploadType === "product" ? (
                 <>
-                  <option value="Groceries & Essentials">Groceries & Essentials</option>
-                  <option value="Fresh & Perishables">Fresh & Perishables</option>
+                  <option value="Groceries & Essentials">
+                    Groceries & Essentials
+                  </option>
+                  <option value="Fresh & Perishables">
+                    Fresh & Perishables
+                  </option>
                   <option value="Fashion & Clothing">Fashion & Clothing</option>
                   <option value="Home & Kitchen">Home & Kitchen</option>
-                  <option value="Building Materials & Hardware">Building Materials & Hardware</option>
-                  <option value="Electronics & Gadgets">Electronics & Gadgets</option>
+                  <option value="Building Materials & Hardware">
+                    Building Materials & Hardware
+                  </option>
+                  <option value="Electronics & Gadgets">
+                    Electronics & Gadgets
+                  </option>
                   <option value="Automobile & Parts">Automobile & Parts</option>
                   <option value="Health & Beauty">Health & Beauty</option>
                   <option value="Toys, Baby & Kids">Toys, Baby & Kids</option>
                   <option value="Sports & Fitness">Sports & Fitness</option>
-                  <option value="Books, Stationery & Office">Books, Stationery & Office</option>
+                  <option value="Books, Stationery & Office">
+                    Books, Stationery & Office
+                  </option>
                 </>
               ) : (
                 <>
@@ -251,12 +283,16 @@ const UploadProduct = () => {
                 </>
               )}
             </select>
-            {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+            )}
           </div>
 
           {uploadType === "product" && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Quantity
+              </label>
               <input
                 type="number"
                 name="quantity"
@@ -264,12 +300,16 @@ const UploadProduct = () => {
                 className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
                 onChange={handleChange}
               />
-              {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
+              {errors.quantity && (
+                <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+              )}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Upload Image
+            </label>
             <input
               type="file"
               name="imageFile"
@@ -277,11 +317,15 @@ const UploadProduct = () => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.imageFile && <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>}
+            {errors.imageFile && (
+              <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
             <textarea
               name="description"
               value={data.description}
@@ -296,10 +340,14 @@ const UploadProduct = () => {
               type="submit"
               disabled={isLoading}
               className={`px-10 py-3 text-lg font-semibold text-white rounded-full shadow transform transition-all ${
-                isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
               }`}
             >
-              {isLoading ? "Uploading..." : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
+              {isLoading
+                ? "Uploading..."
+                : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
             </button>
           </div>
         </form>
