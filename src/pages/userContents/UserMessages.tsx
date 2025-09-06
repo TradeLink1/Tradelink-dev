@@ -46,7 +46,7 @@ const UserMessages = () => {
     } catch (err) {
       console.error("Error fetching conversations:", err);
       setError("Failed to load conversations");
-      setConversations([]); // fallback empty
+      setConversations([]);
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ const UserMessages = () => {
       }));
 
       setMessage("");
-      fetchConversations(); // refresh sidebar
+      fetchConversations();
     } catch (err) {
       console.error("Error sending message:", err);
       alert("Failed to send message");

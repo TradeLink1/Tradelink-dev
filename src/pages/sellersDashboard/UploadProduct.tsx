@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-<<<<<<< HEAD
-import api from "../../api/axios";
-=======
 import api from "../../api/axios"; // products
->>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
 
 const UploadProduct = () => {
   const [uploadType, setUploadType] = useState<"product" | "service">(
@@ -118,17 +114,12 @@ const UploadProduct = () => {
         }
       }
 
-<<<<<<< HEAD
-      const endpoint =
-        uploadType === "product"
-          ? "/api/v1/products"
-          : "api/v1/services/create";
-=======
       // ✅ corrected here
       const axiosInstance = api;
       const endpoint =
-        uploadType === "product" ? "/api/v1/products" : "/api/v1/services/create";
->>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
+        uploadType === "product"
+          ? "/api/v1/products"
+          : "/api/v1/services/create";
 
       const response = await api.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -180,12 +171,8 @@ const UploadProduct = () => {
 
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
-<<<<<<< HEAD
             {uploadType === "product" ? "Product" : "Service"} uploaded
             successfully!
-=======
-            {uploadType === "product" ? "Product" : "Service"} uploaded successfully!
->>>>>>> 257426713d6f127e0d4d1026813dfa60e7b2c07d
             <button
               onClick={() => setSubmitSuccess(false)}
               className="ml-2 text-green-800 hover:text-green-900"

@@ -13,7 +13,7 @@ type User = {
 };
 
 type MyProfileProps = {
-  user: User | null; // allow null
+  user: User | null;
 };
 
 const MyProfile: React.FC<MyProfileProps> = ({ user }) => {
