@@ -4,8 +4,8 @@ import {
   MdMessage,
   MdDashboard,
   MdSettings,
-  MdEdit,
   MdLogout,
+  MdHome,
 } from "react-icons/md";
 import Swal from "sweetalert2";
 
@@ -14,7 +14,6 @@ const Sidebar: React.FC = () => {
 
   const handleMessagesClick = (e: React.MouseEvent) => {
     e.preventDefault();
-
     Swal.fire({
       title: "Loading messages...",
       text: "Please wait while we fetch your conversations",
@@ -23,7 +22,6 @@ const Sidebar: React.FC = () => {
         Swal.showLoading();
       },
     });
-
     setTimeout(() => {
       Swal.close();
       navigate("/userProfile/messages");
@@ -31,6 +29,11 @@ const Sidebar: React.FC = () => {
   };
 
   const menuLinks = [
+    {
+      path: "/",
+      label: "Back to Home",
+      icon: <MdHome size={20} />,
+    },
     {
       path: "/userProfile",
       label: "My Profile",
@@ -41,11 +44,6 @@ const Sidebar: React.FC = () => {
       label: "Messages",
       icon: <MdMessage size={20} />,
       onClick: handleMessagesClick,
-    },
-    {
-      path: "/userProfile/edit-profile",
-      label: "Edit Profile",
-      icon: <MdEdit size={20} />,
     },
     {
       path: "/userProfile/settings",
@@ -60,7 +58,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-[#F8F9FA] p-4 h-full">
+    <nav className="bg-[#F8F9FA] p-4 h-full flex flex-col justify-between">
       <ul className="space-y-4">
         {menuLinks.map((link) => (
           <li key={link.path}>

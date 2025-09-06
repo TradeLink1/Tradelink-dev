@@ -8,7 +8,6 @@ import {
 import Header from "./static/Header";
 import Footer from "./static/Footer";
 import Home from "./pages/Homepage/Home";
-// import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/ContactMain";
@@ -22,6 +21,7 @@ import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
 import Overview from "./pages/sellersDashboard/Overview";
 import MyListings from "./pages/sellersDashboard/MyListings";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
+import UserMessages from "./pages/userContents/UserMessages";
 import Messages from "./pages/sellersDashboard/Messages";
 import Settings from "./pages/sellersDashboard/Settings";
 import AdminLayout from "./pages/adminDashboard/AdminLayout";
@@ -29,31 +29,31 @@ import AdminOverview from "./pages/adminDashboard/AdminOverview";
 import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
-// import ProtectRoute from "./components/routes/ProtectRoute";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
-import AboutUs from "./pages/aboutus/AboutUs.tsx";
-import UserProfile from "./components/userProfile/userProfile.tsx";
-import Logout from "./pages/userContents/Logout.tsx";
-import UserLayout from "./pages/userContents/UserLayout";
-import EditProfile from "./pages/userContents/EditProfile";
-import UserSettings from "./pages/userContents/UserSettings.tsx";
-import ResetPassword from "./pages/Login/ResetPassword.tsx";
+import AboutUs from "./pages/aboutus/AboutUs";
+import UserProfile from "./components/userProfile/userProfile";
 
+import Logout from "./pages/userContents/Logout";
+import UserLayout from "./pages/userContents/UserLayout";
+import UserSettings from "./pages/userContents/UserSettings";
+import ResetPassword from "./pages/Login/ResetPassword";
 
 const Layout = () => {
   const location = useLocation();
 
-  //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register","/categories/products,/categories/products/:id"].includes(
-    location.pathname.toLowerCase()
-  );
+  const hideHeaderFooter = [
+    "/login",
+    "/register",
+    "/categories/products",
+    "/categories/products/:id",
+  ].includes(location.pathname.toLowerCase());
 
   return (
     <>
       {!hideHeaderFooter && <Header />}
-      <Outlet /> {/* This is where nested routes will render */}
+      <Outlet />
       {!hideHeaderFooter && <Footer />}
     </>
   );
@@ -68,36 +68,27 @@ const App = () => {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                {/* <Route path="/Categories" element={<Categories />} /> */}
+                <Route path="/categories/products" element={<Product />} />
                 <Route
-                  path="/Categories/Products"
-                  element={
-                  
-                      <Product />
-                    
-                  }
+                  path="/categories/products/:id"
+                  element={<ProductDetails />}
                 />
-                <Route
-                  path="/Categories/Services"
-                  element={
-                  
-                      <Services />
-              
-                  }
-                />
-                <Route path="/SellWithUs" element={<SellWithUs />} />
+                <Route path="/categories/services" element={<Services />} />
+                <Route path="/sellwithus" element={<SellWithUs />} />
                 <Route
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
-                <Route path="/AboutUs" element={<AboutUs />} />
-                <Route path="/Faq" element={<Faq />} />
-                <Route path="/Contact" element={<Contact />} />
-                <Route path="/Login" element={<Login />} />
-                <Route path="/Register" element={<Register />} />
-                <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-
+                <Route path="/aboutus" element={<AboutUs />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/verifyemail/:token" element={<VerifyEmail />} />
+                <Route
+                  path="/reset-password/:token"
+                  element={<ResetPassword />}
+                />
               </Route>
 
               <Route path="/dashboard" element={<DashboardLayout />}>
@@ -120,9 +111,8 @@ const App = () => {
 
               <Route path="/userProfile" element={<UserLayout />}>
                 <Route index element={<UserProfile />} />
-                <Route path="edit-profile" element={<EditProfile />} />
                 <Route path="settings" element={<UserSettings />} />
-                <Route path="messages" element={<Messages />} />
+                <Route path="messages" element={<UserMessages />} />
               </Route>
 
               <Route path="/logout" element={<Logout />} />

@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import api from "../../api/axios"; // products
-import axios2 from "../../api/axios2"; // services
+import api from "../../api/axios";
 
 const UploadProduct = () => {
-  const [uploadType, setUploadType] = useState<"product" | "service">("product");
+  const [uploadType, setUploadType] = useState<"product" | "service">(
+    "product"
+  );
 
-  // Separate states for product and service to avoid confusion
   const [productData, setProductData] = useState({
     name: "",
     category: "",
@@ -41,7 +41,9 @@ const UploadProduct = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, files } = e.target as HTMLInputElement;
 
@@ -66,13 +68,18 @@ const UploadProduct = () => {
 
     if (!data.name.trim()) newErrors.name = "Name is required";
     if (!data.category) newErrors.category = "Category is required";
-    if (!data.price || isNaN(Number(data.price))) newErrors.price = "Price must be a valid number";
+    if (!data.price || isNaN(Number(data.price)))
+      newErrors.price = "Price must be a valid number";
 
-    if (uploadType === "product" && (!productData.quantity || isNaN(Number(productData.quantity)))) {
+    if (
+      uploadType === "product" &&
+      (!productData.quantity || isNaN(Number(productData.quantity)))
+    ) {
       newErrors.quantity = "Quantity must be a valid number";
     }
 
-    if (!data.imageFile) newErrors.imageFile = `A ${uploadType} image is required`;
+    if (!data.imageFile)
+      newErrors.imageFile = `A ${uploadType} image is required`;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -96,34 +103,46 @@ const UploadProduct = () => {
 
       if (uploadType === "product") {
         formDataToSend.append("quantity", productData.quantity);
-        if (productData.imageFile) formDataToSend.append("productImg", productData.imageFile);
+        if (productData.imageFile)
+          formDataToSend.append("productImg", productData.imageFile);
       } else {
         const sellerId = localStorage.getItem("sellerId") || "";
         if (sellerId) formDataToSend.append("sellerId", sellerId);
 
         if (serviceData.imageFile) {
-          // Multiple keys to satisfy backend variations
           formDataToSend.append("serviceImg", serviceData.imageFile);
-          // formDataToSend.append("file", serviceData.imageFile);
-          // formDataToSend.append("images[]", serviceData.imageFile);
         }
       }
 
-      const axiosInstance = uploadType === "product" ? api : axios2;
-      const endpoint = uploadType === "product" ? "/api/v1/products" : "api/v1/services/create";
+      const endpoint =
+        uploadType === "product"
+          ? "/api/v1/products"
+          : "api/v1/services/create";
 
-      const response = await axiosInstance.post(endpoint, formDataToSend, {
+      const response = await api.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log(`${uploadType} created successfully:`, response.data);
       setSubmitSuccess(true);
 
-      // Reset only the corresponding state
       if (uploadType === "product") {
-        setProductData({ name: "", category: "", price: "", quantity: "", description: "", imageFile: null });
+        setProductData({
+          name: "",
+          category: "",
+          price: "",
+          quantity: "",
+          description: "",
+          imageFile: null,
+        });
       } else {
-        setServiceData({ name: "", category: "", price: "", description: "", imageFile: null });
+        setServiceData({
+          name: "",
+          category: "",
+          price: "",
+          description: "",
+          imageFile: null,
+        });
       }
 
       const fileInput = document.querySelector('input[type="file"]');
@@ -131,7 +150,8 @@ const UploadProduct = () => {
     } catch (error) {
       const err = (error as any)?.response?.data;
       setErrors({
-        submit: err?.message || `Failed to upload ${uploadType}. Please try again.`,
+        submit:
+          err?.message || `Failed to upload ${uploadType}. Please try again.`,
       });
     } finally {
       setIsLoading(false);
@@ -149,8 +169,12 @@ const UploadProduct = () => {
 
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
-            {uploadType === "product" ? "Product" : "Service"} uploaded successfully!
-            <button onClick={() => setSubmitSuccess(false)} className="ml-2 text-green-800 hover:text-green-900">
+            {uploadType === "product" ? "Product" : "Service"} uploaded
+            successfully!
+            <button
+              onClick={() => setSubmitSuccess(false)}
+              className="ml-2 text-green-800 hover:text-green-900"
+            >
               ×
             </button>
           </div>
@@ -172,13 +196,17 @@ const UploadProduct = () => {
           />
           <button
             onClick={() => setUploadType("product")}
-            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${uploadType === "product" ? "text-white" : "text-gray-600"}`}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "product" ? "text-white" : "text-gray-600"
+            }`}
           >
             Product
           </button>
           <button
             onClick={() => setUploadType("service")}
-            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${uploadType === "service" ? "text-white" : "text-gray-600"}`}
+            className={`relative z-10 flex-1 text-center font-semibold py-2 transition-colors ${
+              uploadType === "service" ? "text-white" : "text-gray-600"
+            }`}
           >
             Service
           </button>
@@ -196,11 +224,15 @@ const UploadProduct = () => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Price
+            </label>
             <input
               type="number"
               name="price"
@@ -208,11 +240,15 @@ const UploadProduct = () => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
               value={data.category}
@@ -222,17 +258,27 @@ const UploadProduct = () => {
               <option value="">-- Select Category --</option>
               {uploadType === "product" ? (
                 <>
-                  <option value="Groceries & Essentials">Groceries & Essentials</option>
-                  <option value="Fresh & Perishables">Fresh & Perishables</option>
+                  <option value="Groceries & Essentials">
+                    Groceries & Essentials
+                  </option>
+                  <option value="Fresh & Perishables">
+                    Fresh & Perishables
+                  </option>
                   <option value="Fashion & Clothing">Fashion & Clothing</option>
                   <option value="Home & Kitchen">Home & Kitchen</option>
-                  <option value="Building Materials & Hardware">Building Materials & Hardware</option>
-                  <option value="Electronics & Gadgets">Electronics & Gadgets</option>
+                  <option value="Building Materials & Hardware">
+                    Building Materials & Hardware
+                  </option>
+                  <option value="Electronics & Gadgets">
+                    Electronics & Gadgets
+                  </option>
                   <option value="Automobile & Parts">Automobile & Parts</option>
                   <option value="Health & Beauty">Health & Beauty</option>
                   <option value="Toys, Baby & Kids">Toys, Baby & Kids</option>
                   <option value="Sports & Fitness">Sports & Fitness</option>
-                  <option value="Books, Stationery & Office">Books, Stationery & Office</option>
+                  <option value="Books, Stationery & Office">
+                    Books, Stationery & Office
+                  </option>
                 </>
               ) : (
                 <>
@@ -251,12 +297,16 @@ const UploadProduct = () => {
                 </>
               )}
             </select>
-            {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+            )}
           </div>
 
           {uploadType === "product" && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Quantity
+              </label>
               <input
                 type="number"
                 name="quantity"
@@ -264,12 +314,16 @@ const UploadProduct = () => {
                 className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
                 onChange={handleChange}
               />
-              {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
+              {errors.quantity && (
+                <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+              )}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Upload Image
+            </label>
             <input
               type="file"
               name="imageFile"
@@ -277,11 +331,15 @@ const UploadProduct = () => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.imageFile && <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>}
+            {errors.imageFile && (
+              <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
             <textarea
               name="description"
               value={data.description}
@@ -296,10 +354,14 @@ const UploadProduct = () => {
               type="submit"
               disabled={isLoading}
               className={`px-10 py-3 text-lg font-semibold text-white rounded-full shadow transform transition-all ${
-                isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#f89216] hover:bg-[#333333] hover:scale-105"
               }`}
             >
-              {isLoading ? "Uploading..." : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
+              {isLoading
+                ? "Uploading..."
+                : `Upload ${uploadType === "product" ? "Product" : "Service"}`}
             </button>
           </div>
         </form>
