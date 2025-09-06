@@ -41,14 +41,17 @@ import EditProfile from "./pages/userContents/EditProfile";
 import UserSettings from "./pages/userContents/UserSettings.tsx";
 import ResetPassword from "./pages/Login/ResetPassword.tsx";
 
-
 const Layout = () => {
   const location = useLocation();
 
   //  hide header and footer in some pages //
-  const hideHeaderFooter = ["/login", "/register","/categories/products","/categories/products/:id","/categories/sellerprofile"].includes(
-    location.pathname.toLowerCase()
-  );
+  const hideHeaderFooter = [
+    "/login",
+    "/register",
+    "/categories/products",
+    "/categories/products/:id",
+    "/categories/sellerprofile",
+  ].includes(location.pathname.toLowerCase());
 
   return (
     <>
@@ -69,14 +72,7 @@ const App = () => {
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
                 {/* <Route path="/Categories" element={<Categories />} /> */}
-                <Route
-                  path="/Categories/Products"
-                  element={
-                  
-                      <Product />
-                    
-                  }
-                />
+                <Route path="/Categories/Products" element={<Product />} />
                 <Route
                   path="/Categories/Products/:id"
                   element={<ProductDetails />}
@@ -85,14 +81,7 @@ const App = () => {
                   path="/Categories/SellerProfile"
                   element={<SellerProfile />}
                 />
-                <Route
-                  path="/Categories/Services"
-                  element={
-                  
-                      <Services />
-              
-                  }
-                />
+                <Route path="/Categories/Services" element={<Services />} />
                 <Route path="/SellWithUs" element={<SellWithUs />} />
                 <Route
                   path="/service-provider/:id"
@@ -104,8 +93,10 @@ const App = () => {
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-
+                <Route
+                  path="/reset-password/:token"
+                  element={<ResetPassword />}
+                />
               </Route>
 
               <Route path="/dashboard" element={<DashboardLayout />}>
