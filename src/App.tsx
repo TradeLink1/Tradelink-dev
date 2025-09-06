@@ -120,9 +120,9 @@ const App = () => {
 
               <Route path="/userProfile" element={<UserLayout />}>
                 <Route index element={<UserProfile />} />
-                <Route path="messages" element={<Messages />} />
                 <Route path="edit-profile" element={<EditProfile />} />
                 <Route path="settings" element={<UserSettings />} />
+                <Route path="messages" element={<Messages />} />
               </Route>
 
               <Route path="/logout" element={<Logout />} />

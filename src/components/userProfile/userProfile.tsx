@@ -1,116 +1,74 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, User } from "lucide-react";
-import api from "../../api/axios"; // ✅ use axios instance
+import { getUserProfile } from "../../api/axios";
 import Header from "../../pages/userContents/Header";
 
 const UserProfile: React.FC = () => {
-  const [user, setUser] = useState<null | any>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token"); // ✅ get token
-        const res = await api.get("/api/v1/users/get/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.data?.success) {
-          setUser(res.data.data); // ✅ use schema's "data"
-        } else {
-          setError(res.data.message || "Failed to load user profile");
-        }
-      } catch (err: any) {
-        console.error("API Error:", err?.response?.data || err?.message || err);
-        setError(
-          `Failed to load user profile. ${
-            err?.response?.data?.message || ""
-          }`
-        );
+        const response = await getUserProfile();
+        setUser(response.data);
+      } catch (err) {
+        setError("Failed to load profile. Please try again later.");
+        console.error("Error fetching profile:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchUserProfile();
+
+    fetchUserData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-  if (!user) return <div>No user data available</div>;
+  if (loading) {
+    return <div className="p-6 text-center">Loading profile...</div>;
+  }
 
-  const firstLetter = user.name?.charAt(0).toUpperCase();
+  if (error) {
+    return <div className="p-6 text-center text-red-500">{error}</div>;
+  }
 
-  const formattedName = user.name
-    ?.split(" ")
-    .map((n: string) => n.charAt(0).toUpperCase() + n.slice(1))
-    .join(" ");
+  if (!user) {
+    return <div className="p-6 text-center">No profile data available.</div>;
+  }
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="bg-white shadow px-6 py-4">
-        <Header user={user} firstLetter={firstLetter} />
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-3xl mx-auto p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center gap-4">
+          <img
+            src={user.logo || "https://via.placeholder.com/120"}
+            alt="Profile"
+            className="w-28 h-28 rounded-full object-cover border"
+          />
+          <h2 className="text-2xl font-semibold">{user.fullName}</h2>
+          <p className="text-gray-600">{user.email}</p>
 
-      <div className="p-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">
-          Welcome, <span className="text-[#30AC57]">{formattedName}</span>
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-            <h3 className="text-lg font-semibold mb-6 text-gray-800 border-b pb-3">
-              Account Details
-            </h3>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-gray-700">
-                <User className="w-5 h-5 text-[#30AC57]" />
-                <p>
-                  <span className="font-medium">Name:</span> {formattedName}
-                </p>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <Mail className="w-5 h-5 text-[#30AC57]" />
-                <p>
-                  <span className="font-medium">Email:</span> {user.email}
-                </p>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <Phone className="w-5 h-5 text-[#30AC57]" />
-                <p>
-                  <span className="font-medium">Phone:</span> {user.phone}
-                </p>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <MapPin className="w-5 h-5 text-[#30AC57]" />
-                <p>
-                  <span className="font-medium">Location:</span> {user.address}
-                </p>
-              </div>
-              {/* ✅ Show logo */}
-              <div className="flex items-center gap-3 text-gray-700">
-                <img
-                  src={user.logo || "https://via.placeholder.com/80"}
-                  alt="Profile"
-                  className="w-16 h-16 rounded-full border object-cover"
-                />
-              </div>
+          <div className="mt-6 w-full space-y-4">
+            <div className="flex items-center gap-3">
+              <User className="text-gray-500" />
+              <span>{user.fullName}</span>
             </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-            <h3 className="text-lg font-semibold mb-6 text-gray-800 border-b pb-3">
-              Quick Actions
-            </h3>
-            <div className="space-y-4">
-              <button className="w-full bg-[#30AC57] text-white px-4 py-2 rounded-lg font-medium shadow-md hover:bg-[#28994d] transition transform hover:scale-[1.02]">
-                Edit Profile
-              </button>
-              <button className="w-full bg-[#EC8E1C] text-white px-4 py-2 rounded-lg font-medium shadow-md hover:bg-[#d87b17] transition transform hover:scale-[1.02]">
-                Settings
-              </button>
+            <div className="flex items-center gap-3">
+              <Mail className="text-gray-500" />
+              <span>{user.email}</span>
             </div>
+            {user.phone && (
+              <div className="flex items-center gap-3">
+                <Phone className="text-gray-500" />
+                <span>{user.phone}</span>
+              </div>
+            )}
+            {user.address && (
+              <div className="flex items-center gap-3">
+                <MapPin className="text-gray-500" />
+                <span>{user.address}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
