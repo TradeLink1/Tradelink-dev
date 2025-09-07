@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Mail, Phone, Send, MapPin, ArrowLeft } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowLeft, MessageCircle } from "lucide-react";
+import Messages from "../../components/reusable/Messages"; // ✅ Reusable chat
 
 type Seller = {
   _id: string;
@@ -35,8 +36,7 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -54,44 +54,12 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || !product?.sellerId?._id) return;
-    try {
-      setSending(true);
-
-      // Get auth token
-      const token = localStorage.getItem("token");
-
-      await axios.post(
-        "https://tradelink-be.onrender.com/api/v1/messages/send",
-        {
-          recipientId: product.sellerId._id,
-          content: message,
-          conversationId: "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setMessage("");
-      alert("Message sent ✅");
-    } catch (error) {
-      console.error("Error sending message:", error);
-      alert("Failed to send message ❌");
-    } finally {
-      setSending(false);
-    }
-  };
-
   if (loading) return <p className="p-6 text-center">Loading...</p>;
   if (!product) return <p className="p-6 text-center">Product not found.</p>;
 
   return (
     <div
-      className="min-h-screen p-6 bg-gray-100"
+      className="min-h-screen p-6 bg-gray-100 relative"
       style={{
         backgroundImage: "url('/pat2.png')",
         backgroundSize: "cover",
@@ -193,46 +161,35 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Desktop Message Card */}
-      <div className="hidden md:block max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6 my-6">
-        <h3 className="text-lg font-semibold mb-2">Message Seller</h3>
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <button
-            onClick={handleSendMessage}
-            disabled={sending}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Send className="w-4 h-4" />
-            {sending ? "Sending..." : "Send"}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Sticky Message Box */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white p-4 shadow-t flex items-center gap-2 z-50 border-t">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
+      {/* Floating Chat Icon */}
+      {!isChatOpen && (
         <button
-          onClick={handleSendMessage}
-          disabled={sending}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-6 bg-orange-500 text-white p-4 rounded-full shadow-lg hover:bg-orange-600 transition z-50"
         >
-          <Send className="w-4 h-4" />
-          {sending ? "Sending..." : "Send"}
+          <MessageCircle className="w-6 h-6" />
         </button>
-      </div>
+      )}
+
+      {/* Mini Chatbox */}
+      {isChatOpen && (
+        <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-xl shadow-lg z-50 flex flex-col">
+          <div className="flex justify-between items-center p-3 border-b">
+            <h3 className="font-semibold text-gray-800">
+              Chat with {product.sellerId?.storeName}
+            </h3>
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="text-gray-500 hover:text-red-500"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3">
+            <Messages recipientId={product.sellerId._id} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ import {
 import { HiOutlineMail } from "react-icons/hi";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import api from "../../api/axios2";
+import api from "../../api/axios";
 import Swal from "sweetalert2";
 
 // Define the form data type
