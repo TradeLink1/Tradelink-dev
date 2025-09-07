@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../api/axios";
-
 const VerifyEmail = () => {
   const { token } = useParams<{ token: string }>(); // get token from route
   const navigate = useNavigate();
