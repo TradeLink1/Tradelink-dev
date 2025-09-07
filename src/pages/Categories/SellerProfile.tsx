@@ -1,198 +1,239 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Mail, Phone, MapPin, Send, ArrowLeft } from "lucide-react";
 
-export default function SellerProfile() {
-  const { id: sellerId } = useParams<{ id: string }>();
-  const [seller, setSeller] = useState<any>(null);
-  const [messages] = useState<any[]>([]);
-  // const [newMessage,setNewMessage] = useState("");
-  const [loading,setLoading] = useState(true);
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
+  productImg: string;
+};
 
-  const currentUserId = localStorage.getItem("userId"); // 👈 store buyer's id in localStorage after login
-  const token = localStorage.getItem("token"); // 👈 JWT for auth
+type Seller = {
+  _id: string;
+  storeName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  description?: string;
+  businessCategory?: string;
+  businessLevel?: string;
+  storeLogo?: string;
+  location?: {
+    city?: string;
+    state?: string;
+  };
+};
 
-  // Fetch seller details
+const SellerProfile = () => {
+  const { sellerId } = useParams<{ sellerId: string }>();
+  const navigate = useNavigate();
+
+  const [seller, setSeller] = useState<Seller | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+
   useEffect(() => {
-    console.log(sellerId);
-    if (!sellerId) return;
+    const token = localStorage.getItem("token");
 
-    fetch(
-      `https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/profile/${sellerId}`,
-      // `https://https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/${sellerId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+    const fetchSellerProfile = async () => {
+      try {
+        const res = await axios.get(
+          "https://tradelink-be.onrender.com/api/v1/sellers/get/profile",
+          {
+            params: { sellerId },
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSeller(res.data?.seller || null);
+      } catch (err) {
+        console.error("Error fetching seller profile:", err);
       }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setSeller(data.seller);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching seller:", err);
-        setLoading(false);
-      });
-  }, [sellerId, token]);
+    };
 
-  // Fetch messages with this seller
-  useEffect(() => {
-    if (!sellerId || !currentUserId) return;
-
-    fetch(
-      `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/get/all/conversations/${sellerId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+    const fetchSellerProducts = async () => {
+      try {
+        const res = await axios.get(
+          `https://tradelink-be.onrender.com/api/v1/products/seller/${sellerId}`
+        );
+        setProducts(res.data?.products || []);
+      } catch (err) {
+        console.error("Error fetching seller products:", err);
       }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        // setMessages(data.messages || []);
-      })
-      .catch((err) => console.error("Error fetching conversation:", err));
-  }, [sellerId, token, currentUserId]);
+    };
 
-  // const sendMessage = () => {
-  //   if (!newMessage.trim()) return;
+    Promise.all([fetchSellerProfile(), fetchSellerProducts()]).finally(() =>
+      setLoading(false)
+    );
+  }, [sellerId]);
 
-    // fetch(
-    //   `https://https://tradelink-backend-6z6y.onrender.com/api/v1/messages/send`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({
-    //       senderId: currentUserId,
-    //       receiverId: sellerId,
-    //       text: newMessage,
-    //     }),
-    //   }
-    // )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setMessages((prev) => [...prev, data.message]); // append new message
-  //       setNewMessage("");
-  //     })
-  //     .catch((err) => console.error("Error sending message:", err));
-  // };
+  const handleSendMessage = async () => {
+    if (!message.trim() || !seller?._id) return;
 
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (!seller) return <div className="p-6">Seller not found.</div>;
+    try {
+      setSending(true);
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        "https://tradelink-be.onrender.com/api/v1/messages/send",
+        {
+          recipientId: seller._id,
+          content: message,
+          conversationId: "",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMessage("");
+      alert("Message sent ✅");
+    } catch (err) {
+      console.error("Error sending message:", err);
+      alert("Failed to send message ❌");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading) return <p className="p-6 text-center">Loading...</p>;
+  if (!seller) return <p className="p-6 text-center">Seller not found.</p>;
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 py-20 bg-yellow-50 min-h-screen">
-      {/* Back button */}
-      <Link to="/sellers" className="text-blue-600 underline mb-6 block">
-        ← Back to Sellers
-      </Link>
-
-      {/* Seller Info */}
-      <div className="bg-white p-6 rounded-2xl shadow flex flex-col sm:flex-row gap-6 items-center mb-10">
-        <img
-          src={seller.image}
-          alt={seller.name}
-          className="h-32 w-32 rounded-full object-cover shadow"
-        />
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-800 capitalize">
-            {seller.storeName}
-          </h1>
-          <p className="text-gray-600">📍 {seller?.location?.address}</p>
-          <p className="text-gray-500">📧 {seller.email}</p>
-          <p className="text-gray-500">📞 {seller.phone}</p>
-          <p className="text-gray-500">⭐ 10 Reviews</p>
-          <p className="text-gray-700">{seller.category}</p>
-        </div>
+    <div className="min-h-screen bg-[#fef6e1] ">
+      {/* Back Button */}
+      <div className="p-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
       </div>
 
-      {/* Seller Products */}
-      <h2 className="text-xl font-semibold mb-4">
-        Products by {seller.storeName}
-      </h2>
-      {seller?.products?.length === 0 ? (
-        <p className="text-gray-500">This seller has no products yet.</p>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {/* {seller?.products?.map((product: any) => (
-            <div
-              key={product._id}
-              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-28 w-full object-cover rounded mb-3"
-              />
-              <h3 className="font-semibold text-sm text-orange-600">
-                {product.name}
-              </h3>
-              <p className="text-xs text-gray-700">
-                ₦{product.price.toLocaleString()}
-              </p>
-              <p className="text-[10px] text-gray-500">
-                Qty: {product.quantity}
-              </p>
-            </div>
-          ))} */}
-        </div>
-      )}
+      {/* Seller Hero Section */}
+      <header className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl max-[510px]:max-w-110 shadow-xl max-w-6xl max-tablet:max-w-190 max-mobile:max-w-90 mx-auto p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+        {/* Logo */}
+        {seller.storeLogo ? (
+          <img
+            src={seller.storeLogo}
+            alt={seller.storeName || "Seller"}
+            className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
+          />
+        ) : (
+          <div className="w-36 h-36 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-4xl shadow-lg">
+            {(seller.storeName?.[0] || "S").toUpperCase()}
+          </div>
+        )}
 
-      {/* Chat Widget */}
-      <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg flex flex-col overflow-hidden">
-        <div className="bg-[#F89216] text-white px-4 py-2 font-semibold">
-          Chat with {seller.name}
-        </div>
-        <div className="flex-1 p-3 overflow-y-auto max-h-60">
-          {messages.length === 0 ? (
-            <p className="text-gray-500 text-sm">No messages yet.</p>
-          ) : (
-            <p className="text-gray-500 text-sm">No messages yet.</p>
-            // messages?.map((msg, i) => (
-            //   <div
-            //     key={i}
-            //     className={`mb-2 ${
-            //       msg.senderId === currentUserId ? "text-right" : "text-left"
-            //     }`}
-            //   >
-            //     <span
-            //       className={`inline-block px-3 py-2 rounded-lg ${
-            //         msg.senderId === currentUserId
-            //           ? "bg-[#F89216] text-white"
-            //           : "bg-gray-200"
-            //       }`}
-            //     >
-            //       {msg.text}
-            //     </span>
-            //   </div>
-            // ))
+        {/* Info */}
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-4xl font-bold">{seller.storeName || "Seller"}</h1>
+          <p className="mt-2 text-lg">
+            {seller.businessCategory || "Category"} •{" "}
+            {seller.businessLevel || "Level"}
+          </p>
+          <p className="flex items-center justify-center md:justify-start gap-1 mt-2 text-sm">
+            <MapPin className="w-4 h-4" />
+            {seller.location
+              ? `${seller.location.city || ""}, ${seller.location.state || ""}`
+              : "Location not found"}
+          </p>
+          {seller.description && (
+            <p className="mt-4 max-w-xl text-sm md:text-base">
+              {seller.description}
+            </p>
           )}
+
+          {/* Contact Buttons */}
+          <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
+            {seller.email && (
+              <a
+                href={`mailto:${seller.email}`}
+                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
+              >
+                <Mail className="w-4 h-4" /> Email
+              </a>
+            )}
+            {seller.phone && (
+              <a
+                href={`tel:${seller.phone}`}
+                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
+              >
+                <Phone className="w-4 h-4" /> Call
+              </a>
+            )}
+          </div>
         </div>
-        {/* <div className="p-2 flex gap-2 border-t">
+      </header>
+
+      {/* Products Section */}
+      <main className="max-w-6xl mx-auto p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Products by {seller.storeName}
+        </h2>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => navigate(`/products/${product.id}`)}
+                className="bg-white shadow-md rounded-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition transform"
+              >
+                <img
+                  src={product.productImg}
+                  alt={product.name}
+                  className="h-52 w-full object-cover"
+                />
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{product.category}</p>
+                  <p className="text-orange-600 font-bold mt-2 text-lg">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Qty: {product.quantity}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No products available</p>
+        )}
+      </main>
+
+      {/* Floating Message Widget */}
+      <div className="fixed bottom-6 right-6 bg-white shadow-2xl rounded-2xl p-4 w-80 z-50 border border-orange-200">
+        <h3 className="text-lg font-semibold mb-2 text-gray-800">
+          Message Seller
+        </h3>
+        <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Type a message..."
-            className="flex-1 border rounded px-3 py-2 text-sm"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <button
-            onClick={sendMessage}
-            className="bg-[#F89216] text-white px-4 py-2 rounded text-sm"
+            type="button"
+            onClick={handleSendMessage}
+            disabled={sending}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md text-sm font-medium"
           >
-            Send
+            <Send className="w-4 h-4" />
+            {sending ? "..." : "Send"}
           </button>
-        </div> */}
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default SellerProfile;

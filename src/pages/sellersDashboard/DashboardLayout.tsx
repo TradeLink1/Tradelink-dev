@@ -27,7 +27,7 @@ const DashboardLayout = () => {
   const navItems = [
     { name: "Overview", path: "/dashboard", icon: <FiHome size={18} /> },
     {
-      name: "Upload Products",
+      name: "Upload Listings",
       path: "/dashboard/upload",
       icon: <FiUpload size={18} />,
     },
@@ -53,7 +53,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <aside
         className={`
-          bg-[#1e1e1e]  p-10
+          bg-[#151515]  p-10
           w-70 transition-transform duration-300 ease-in-out
           md:translate-x-0 h-full
           ${isOpen ? "translate-x-0" : "-translate-x-full"}

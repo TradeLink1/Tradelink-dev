@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import api from "../../api/axios";
 
 interface Listing {
-  _id: string;
+  id: string | undefined;
+  _id: string; // ✅ backend usually sends _id
   name: string;
   category: string;
   price: number;
@@ -13,15 +14,14 @@ interface Listing {
   serviceImg?: string;
 }
 
-interface MyListingsProps{
-  sellerId:string
+interface MyListingsProps {
+  sellerId: string;
 }
 
-const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
+const MyListings: React.FC<MyListingsProps> = ({ sellerId }) => {
   const [activeTab, setActiveTab] = useState<"products" | "services">(
     "products"
   );
-
 
   const [products, setProducts] = useState<Listing[]>([]);
   const [services, setServices] = useState<Listing[]>([]);
@@ -41,11 +41,11 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
           return;
         }
 
-        // Fetch products
+        // ✅ Fetch seller products (corrected endpoint)
         const productRes = await api.get(`/api/v1/products/seller/${sellerId}`);
         setProducts(productRes.data.products || []);
 
-        // Fetch services
+        // ✅ Fetch seller services (leave as is if backend supports it)
         const serviceRes = await api.get(`/api/v1/services/seller/${sellerId}`);
         setServices(serviceRes.data.services || []);
       } catch (err: any) {
@@ -59,16 +59,66 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
     fetchListings();
   }, [sellerId]);
 
-  const handleDelete = async (id: string, type: "products" | "services") => {
+  // const handleDelete = async (id: string, type: "products" | "services") => {
+  //   try {
+  //     await api.delete(`/api/v1/${type}/${id}`);
+  //     if (type === "products") {
+  //       setProducts((prev) => prev.filter((p) => p._id !== id));
+  //     } else {
+  //       setServices((prev) => prev.filter((s) => s._id !== id));
+  //     }
+  //   } catch (err) {
+  //     console.error(`Failed to delete ${type}:`, err);
+  //   }
+  // };
+
+  // const handleDelete = async (id: string, type: "products" | "services") => {
+  //   if (!confirm(`Are you sure you want to delete this ${type.slice(0, -1)}?`)) return;
+
+  //   try {
+  //     // Map to correct route with productId / serviceId
+  //     const endpoint =
+  //       type === "products"
+  //         ? `/api/v1/products/${id}?productId=${id}`
+  //         : `/api/v1/services/${id}?serviceId=${id}`;
+
+  //     await api.get(endpoint); // ✅ using GET because backend expects it
+
+  //     // Update local state
+  //     if (type === "products") {
+  //       setProducts((prev) => prev.filter((p) => p._id !== id));
+  //     } else {
+  //       setServices((prev) => prev.filter((s) => s._id !== id));
+  //     }
+
+  //     alert(`${type.slice(0, -1)} deleted successfully.`);
+  //   } catch (err: any) {
+  //     console.error(`Failed to delete ${type}:`, err);
+  //     alert(`Failed to delete ${type.slice(0, -1)}. Please try again.`);
+  //   }
+  // };
+  const handleDelete = async (productId?: string, category?: string) => {
+    console.log("do you want me to delete");
+    if (!confirm("Are you sure you want to delete this item?")) return;
+    console.log("i am going to delete now");
     try {
-      await api.delete(`/api/v1/${type}/${id}`);
-      if (type === "products") {
-        setProducts((prev) => prev.filter((p) => p._id !== id));
-      } else {
-        setServices((prev) => prev.filter((s) => s._id !== id));
+      if (category == "product") {
+        // Delete product
+        console.log("deleting product", productId);
+        await api.delete(`/api/v1/products/${productId}`);
+        setProducts((prev) => prev.filter((p) => p.id !== productId));
+        alert("Product deleted successfully.");
       }
-    } catch (err) {
-      console.error(`Failed to delete ${type}:, err`);
+      console.log(productId);
+      if (category == "service") {
+        // Delete service
+        await api.delete(`/api/v1/services/${productId}`);
+        setServices((prev) => prev.filter((s) => s.id !== productId));
+        alert("Service deleted successfully.");
+      }
+    } catch (err: any) {
+      console.error("Failed to delete:", err);
+      alert("Failed to delete item. Please try again.");
     }
   };
 
@@ -81,7 +131,7 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div
-            key={item._id}
+            key={item.id}
             className="bg-white rounded-[30px] shadow-md hover:shadow-xl transition overflow-hidden"
           >
             <div className="relative">
@@ -109,7 +159,9 @@ const MyListings:React.FC<MyListingsProps>=({sellerId})  => {
                   <FiEdit size={16} /> Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(item._id, type)}
+                  onClick={() =>
+                    handleDelete(item.id, item.quantity ? "product" : "service")
+                  }
                   className="flex items-center gap-1 bg-[#333333] hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm transition cursor-pointer"
                 >
                   <FiTrash2 size={16} /> Delete

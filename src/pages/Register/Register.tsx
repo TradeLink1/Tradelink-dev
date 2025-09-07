@@ -38,7 +38,7 @@ const Register = () => {
 
   const password = watch("password", "");
 
-  //  SweetAlert2 Toast config
+  // SweetAlert2 Toast config
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -47,51 +47,42 @@ const Register = () => {
     timerProgressBar: true,
   });
 
-  //  Submit handler
+  // Submit handler
   const onSubmit = async (data: UserData) => {
     try {
       setLoading(true);
 
-      // Combine first + last name into a single "name"
       const payload = {
         name: `${data.firstName} ${data.lastName}`.trim(),
         email: data.email,
         password: data.password,
       };
 
-      await api.post("api/v1/auth/register", payload);
+      await api.post("/api/v1/auth/register", payload);
 
-      //  Show success toast
+      // Success message
       Toast.fire({
         icon: "success",
         title: "Account created successfully 🎉",
       });
 
-      Swal.fire({
-        toast: true,
-        icon: "success",
-        title:
-          "Registration successful! Please check your email to verify your account.",
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 4000,
-        timerProgressBar: true,
-      });
-
       // redirect after short delay
       setTimeout(() => navigate("/login"), 1200);
     } catch (error: any) {
-      //  Show error toast
+      console.error(error);
       Toast.fire({
         icon: "error",
-        title: error.response?.data?.message || "Registration failed ❌",
+        title:
+          error.response?.data?.message ||
+          error.message ||
+          "Registration failed ❌",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 Go back fix (same as login)
+  // Go back handler
   const handleGoBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -118,7 +109,7 @@ const Register = () => {
         <button
           type="button"
           onClick={handleGoBack}
-          className="flex items-center max-w-fit align-center justify-center text-[#333333] hover:bg-[#50ac57] hover:rounded-full hover:text-white py-2 px-4 rounded-md transition-colors mb-4"
+          className="flex items-center max-w-fit justify-center text-[#333333] hover:bg-[#50ac57] hover:rounded-full hover:text-white py-2 px-4 rounded-md transition-colors mb-4"
         >
           <IoArrowBackSharp className="mr-2" />
           <span className="font-semibold text-[14px]">
@@ -127,7 +118,7 @@ const Register = () => {
         </button>
 
         <motion.div
-          className="bg-[#FFFFFF] h-max w-[450px] max-mobile:w-[335px] mx-auto p-8 min-h-fit rounded-[30px] shadow-md border border-gray-200"
+          className="bg-[#FFFFFF] max-w-[370px]  mx-auto p-8 rounded-[30px] shadow-md border border-gray-200"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}

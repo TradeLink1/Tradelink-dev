@@ -1,27 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
 
 const UploadProduct = () => {
-  const [uploadType, setUploadType] = useState("product");
+  const [uploadType, setUploadType] = useState<"product" | "service">(
+    "product"
+  );
 
-  const [formData, setFormData] = useState<{
-    name: string;
-    category: string;
-    price: string;
-    quantity: string;
-    description: string;
-    imageFile: File | null; // Unified state for the image file
-  }>
-  ({
+  const [productData, setProductData] = useState({
     name: "",
     category: "",
     price: "",
     quantity: "",
     description: "",
-    imageFile: null,
+    imageFile: null as File | null,
+  });
+
+  const [serviceData, setServiceData] = useState({
+    name: "",
+    category: "",
+    price: "",
+    description: "",
+    imageFile: null as File | null,
   });
 
   type ErrorFields = {
@@ -37,88 +39,129 @@ const UploadProduct = () => {
   const [errors, setErrors] = useState<ErrorFields>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
 
-  // Corrected the type of 'e'
+  const sellerId = localStorage.getItem("sellerId") || "";
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Fetch Products
+  const fetchProducts = async () => {
+    if (!sellerId) return;
+    try {
+      const res = await api.get(`/api/v1/products/seller/${sellerId}`);
+      setProducts(res.data.products || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
+
+  // Fetch Services
+  const fetchServices = async () => {
+    if (!sellerId) return;
+    try {
+      const res = await api.get(`/api/v1/services/seller/${sellerId}`);
+      setServices(res.data.services || []);
+    } catch (err) {
+      console.error("Error fetching services:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchServices();
+  }, [sellerId]);
+
+  // Handle Form Input Change
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value, files } = e.target as HTMLInputElement;
-    if (files) {
-      setFormData({ ...formData, imageFile: files[0] });
+
+    if (uploadType === "product") {
+      if (files) {
+        setProductData({ ...productData, imageFile: files[0] });
+      } else {
+        setProductData({ ...productData, [name]: value });
+      }
     } else {
-      setFormData({ ...formData, [name]: value });
+      if (files) {
+        setServiceData({ ...serviceData, imageFile: files[0] });
+      } else {
+        setServiceData({ ...serviceData, [name]: value });
+      }
     }
   };
 
-  // Form validation function moved above handleSubmit
+  // Validate Form
   const validateForm = () => {
     const newErrors: ErrorFields = {};
+    const data = uploadType === "product" ? productData : serviceData;
 
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.category) newErrors.category = "Category is required";
-    if (!formData.price || isNaN(Number(formData.price)))
+    if (!data.name.trim()) newErrors.name = "Name is required";
+    if (!data.category) newErrors.category = "Category is required";
+    if (!data.price || isNaN(Number(data.price)))
       newErrors.price = "Price must be a valid number";
 
     if (
       uploadType === "product" &&
-      (!formData.quantity || isNaN(Number(formData.quantity)))
+      (!productData.quantity || isNaN(Number(productData.quantity)))
     ) {
       newErrors.quantity = "Quantity must be a valid number";
     }
 
-    // Now uses a single imageFile state variable for validation
-    if (!formData.imageFile) {
+    if (!data.imageFile)
       newErrors.imageFile = `A ${uploadType} image is required`;
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Corrected the type of 'e'
+  // Handle Form Submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
-      setIsLoading(true);
-      setErrors({});
+    if (!validateForm()) return;
 
-      try {
-        const formDataToSend = new FormData();
-        formDataToSend.append("name", formData.name);
-        formDataToSend.append("category", formData.category);
-        formDataToSend.append("price", formData.price);
-        formDataToSend.append("description", formData.description);
+    setIsLoading(true);
+    setErrors({});
 
-        if (uploadType === "product") {
-          formDataToSend.append("quantity", formData.quantity);
-          // For products, the backend expects the field name "image"
-          if (formData.imageFile) {
-            formDataToSend.append("image", formData.imageFile);
-          }
-        } else {
-          // For services, the backend expects the field name "serviceImg"
-          if (formData.imageFile) {
-            formDataToSend.append("serviceImg", formData.imageFile);
-          }
-        }
+    try {
+      const formDataToSend = new FormData();
+      const data = uploadType === "product" ? productData : serviceData;
 
-        const endpoint =
-          uploadType === "product"
-            ? "/api/v1/products/create"
-            : "/api/v1/services/create";
+      formDataToSend.append("name", data.name);
+      formDataToSend.append("category", data.category);
+      formDataToSend.append("price", data.price);
+      formDataToSend.append("description", data.description);
 
-        const response = await api.post(endpoint, formDataToSend, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+      if (uploadType === "product") {
+        formDataToSend.append("quantity", productData.quantity);
+        if (productData.imageFile)
+          formDataToSend.append("productImg", productData.imageFile);
+      } else {
+        if (serviceData.imageFile)
+          formDataToSend.append("serviceImg", serviceData.imageFile);
+      }
 
-        console.log(`${uploadType} created successfully:`, response.data);
-        setSubmitSuccess(true);
+      if (sellerId) formDataToSend.append("sellerId", sellerId);
 
-        setFormData({
+      const endpoint =
+        uploadType === "product"
+          ? "/api/v1/products/create"
+          : "/api/v1/services/create";
+
+      const response = await api.post(endpoint, formDataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log(`${uploadType} created successfully:`, response.data);
+      setSubmitSuccess(true);
+
+      // Reset form
+      if (uploadType === "product") {
+        setProductData({
           name: "",
           category: "",
           price: "",
@@ -126,41 +169,36 @@ const UploadProduct = () => {
           description: "",
           imageFile: null,
         });
-
-        const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput) (fileInput as HTMLInputElement).value = "";
-      } catch (error) {
-        if (typeof error === "object" && error !== null) {
-          const err = error as {
-            message?: string;
-            response?: { status?: number; data?: any };
-          };
-          console.error("Error creating " + uploadType, {
-            message: err.message,
-            status: err.response?.status,
-            data: err.response?.data,
-          });
-
-          if (err.response?.data?.errors) {
-            setErrors(err.response.data.errors);
-          } else {
-            setErrors({
-              submit:
-                err.response?.data?.message ||
-                `Failed to upload ${uploadType}. Please try again.`,
-            });
-          }
-        } else {
-          console.error("Error creating " + uploadType, error);
-          setErrors({
-            submit: `Failed to upload ${uploadType}. Please try again.`,
-          });
-        }
-      } finally {
-        setIsLoading(false);
+      } else {
+        setServiceData({
+          name: "",
+          category: "",
+          price: "",
+          description: "",
+          imageFile: null,
+        });
       }
+
+      if (fileInputRef.current) fileInputRef.current.value = "";
+
+      // Refresh data
+      if (uploadType === "product") {
+        fetchProducts();
+      } else {
+        fetchServices();
+      }
+    } catch (error) {
+      const err = (error as any)?.response?.data;
+      setErrors({
+        submit:
+          err?.message || `Failed to upload ${uploadType}. Please try again.`,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const data = uploadType === "product" ? productData : serviceData;
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -168,6 +206,7 @@ const UploadProduct = () => {
         <h2 className="text-[30px] leading-8 font-bold text-center text-[#f89216] max-mobile:text-[25px] mb-8">
           Upload {uploadType === "product" ? "Product" : "Service"}
         </h2>
+
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
             {uploadType === "product" ? "Product" : "Service"} uploaded
@@ -180,20 +219,20 @@ const UploadProduct = () => {
             </button>
           </div>
         )}
+
         {errors.submit && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
             {errors.submit}
           </div>
         )}
 
-        <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1">
+        {/* Toggle */}
+        <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1 overflow-hidden">
           <motion.div
             layout
             className="absolute top-1 bottom-1 w-1/2 bg-[#f89216] rounded-full"
             initial={false}
-            animate={{
-              x: uploadType === "product" ? 0 : "100%",
-            }}
+            animate={{ x: uploadType === "product" ? 0 : 144 }} // 🔥 Fixed: 144px = half of 288px container
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           />
           <button
@@ -214,7 +253,9 @@ const UploadProduct = () => {
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               {uploadType === "product" ? "Product Name" : "Service Name"}
@@ -222,7 +263,7 @@ const UploadProduct = () => {
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={data.name}
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
@@ -230,6 +271,8 @@ const UploadProduct = () => {
               <p className="text-red-500 text-sm mt-1">{errors.name}</p>
             )}
           </div>
+
+          {/* Price */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Price
@@ -237,7 +280,7 @@ const UploadProduct = () => {
             <input
               type="number"
               name="price"
-              value={formData.price}
+              value={data.price}
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
@@ -245,13 +288,15 @@ const UploadProduct = () => {
               <p className="text-red-500 text-sm mt-1">{errors.price}</p>
             )}
           </div>
+
+          {/* Category */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Category
             </label>
             <select
               name="category"
-              value={formData.category}
+              value={data.category}
               className="w-full border border-gray-300 rounded-full p-3 bg-white focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             >
@@ -301,6 +346,8 @@ const UploadProduct = () => {
               <p className="text-red-500 text-sm mt-1">{errors.category}</p>
             )}
           </div>
+
+          {/* Quantity (Only Product) */}
           {uploadType === "product" && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -309,7 +356,7 @@ const UploadProduct = () => {
               <input
                 type="number"
                 name="quantity"
-                value={formData.quantity}
+                value={productData.quantity}
                 className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
                 onChange={handleChange}
               />
@@ -318,14 +365,15 @@ const UploadProduct = () => {
               )}
             </div>
           )}
+
+          {/* Image Upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Upload Image
             </label>
             <input
+              ref={fileInputRef}
               type="file"
-              // The name attribute here is not important for the form data,
-              // as we are manually appending the correct field name in handleSubmit
               name="imageFile"
               accept="image/*"
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
@@ -335,18 +383,22 @@ const UploadProduct = () => {
               <p className="text-red-500 text-sm mt-1">{errors.imageFile}</p>
             )}
           </div>
+
+          {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Description
             </label>
             <textarea
               name="description"
-              value={formData.description}
+              value={data.description}
               rows={4}
               className="w-full border border-gray-300 rounded-2xl p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             ></textarea>
           </div>
+
+          {/* Submit */}
           <div className="flex justify-center pt-6">
             <button
               type="submit"

@@ -1,49 +1,34 @@
-// src/components/UserProfile/UserProfile.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getUserProfile } from "../../api/axios";
+import MyProfile from "../../pages/userContents/MyProfile";
 
-interface UserProfileProps {
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  onMessageClick?: () => void; // callback when "Message Seller" is clicked
-}
+const UserProfile: React.FC = () => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const UserProfile: React.FC<UserProfileProps> = ({
-  name,
-  email,
-  avatarUrl,
-  onMessageClick,
-}) => {
-  return (
-    <div className="flex items-center gap-4 border p-4 rounded-lg shadow-md bg-white max-w-md">
-      {/* Avatar */}
-      {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt="avatar"
-          className="w-14 h-14 rounded-full object-cover"
-        />
-      ) : (
-        <div className="w-14 h-14 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-700">
-          {name[0].toUpperCase()}
-        </div>
-      )}
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserProfile();
+        setUser(response.data);
+      } catch (err) {
+        setError("Failed to load profile. Please try again later.");
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      {/* Seller Info */}
-      <div className="flex-1">
-        <p className="text-lg font-semibold">{name}</p>
-        <p className="text-sm text-gray-500">{email}</p>
-      </div>
+    fetchUserData();
+  }, []);
 
-      {/* Message Button */}
-      <button
-        onClick={onMessageClick}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-      >
-        Message Seller
-      </button>
-    </div>
-  );
+  if (loading) return <div className="p-6 text-center">Loading profile...</div>;
+  if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
+  if (!user)
+    return <div className="p-6 text-center">No profile data available.</div>;
+
+  return <MyProfile user={user} />;
 };
 
 export default UserProfile;

@@ -8,47 +8,53 @@ import {
 import Header from "./static/Header";
 import Footer from "./static/Footer";
 import Home from "./pages/Homepage/Home";
-// import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Product from "./pages/Categories/Products";
+import ProductDetails from "./pages/Categories/ProductDetails";
 import Services from "./pages/Categories/Services";
 import { SearchProvider } from "./context/SearchContext";
 import DashboardLayout from "./pages/sellersDashboard/DashboardLayout";
 import Overview from "./pages/sellersDashboard/Overview";
 import MyListings from "./pages/sellersDashboard/MyListings";
-import Messages from "./pages/sellersDashboard/Messages";
 import UploadProduct from "./pages/sellersDashboard/UploadProduct";
+import UserMessages from "./pages/userContents/UserMessages";
+import Messages from "./pages/sellersDashboard/Messages";
 import Settings from "./pages/sellersDashboard/Settings";
 import AdminLayout from "./pages/adminDashboard/AdminLayout";
 import AdminOverview from "./pages/adminDashboard/AdminOverview";
 import AdminSellers from "./pages/adminDashboard/AdminSellers";
 import AdminKyc from "./pages/adminDashboard/AdminKyc";
 import AdminSellersReport from "./pages/adminDashboard/AdminReports";
-// import ProtectRoute from "./components/routes/ProtectRoute";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
-import AboutUs from "./pages/aboutus/AboutUs.tsx";
 
-//  new imports
+// new imports
 import ScrollToTop from "./components/settings/ScrollToTop.tsx";
+import AboutUs from "./pages/aboutus/AboutUs";
+import UserProfile from "./components/userProfile/userProfile";
+import Logout from "./pages/userContents/Logout";
+import UserLayout from "./pages/userContents/UserLayout";
+import UserSettings from "./pages/userContents/UserSettings";
+import ResetPassword from "./pages/Login/ResetPassword";
 
 const Layout = () => {
-  const location = useLocation();
+  const location = useLocation(); // ✅ Fix: now using the hook
+  const currentPath = location.pathname.toLowerCase();
 
-  // hide header and footer in some pages
-  const hideHeaderFooter = ["/login", "/register"].includes(
-    location.pathname.toLowerCase()
-  );
+  const hideHeaderFooter =
+    ["/login", "/register", "/categories/products", "/seller-profile"].some(
+      (path) => currentPath.startsWith(path)
+    ) || currentPath.startsWith("/products/");
 
   return (
     <>
       {!hideHeaderFooter && <Header />}
-      <Outlet /> {/* This is where nested routes will render */}
+      <Outlet />
       {!hideHeaderFooter && <Footer />}
     </>
   );
@@ -66,9 +72,15 @@ const App = () => {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                {/* <Route path="/Categories" element={<Categories />} /> */}
+                <Route path="/categories/products" element={<Product />} />
                 <Route path="/Categories/Products" element={<Product />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
+                <Route
+                  path="/seller-profile/:sellerId"
+                  element={<SellerProfile />}
+                />
                 <Route path="/Categories/Services" element={<Services />} />
+
                 <Route path="/SellWithUs" element={<SellWithUs />} />
                 <Route
                   path="/service-provider/:id"
@@ -80,6 +92,10 @@ const App = () => {
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/VerifyEmail/:token" element={<VerifyEmail />} />
+                <Route
+                  path="/reset-password/:token"
+                  element={<ResetPassword />}
+                />
               </Route>
 
               {/* Nested dashboard routes */}
@@ -100,6 +116,14 @@ const App = () => {
                 <Route path="reports" element={<AdminSellersReport />} />
                 <Route path="kyc" element={<AdminKyc />} />
               </Route>
+
+              <Route path="/userProfile" element={<UserLayout />}>
+                <Route index element={<UserProfile />} />
+                <Route path="settings" element={<UserSettings />} />
+                <Route path="messages" element={<UserMessages />} />
+              </Route>
+
+              <Route path="/logout" element={<Logout />} />
             </Routes>
           </SearchProvider>
         </BrowserRouter>

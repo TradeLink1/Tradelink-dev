@@ -1,148 +1,249 @@
-import React, { useState, useEffect } from "react";
-import {   Briefcase } from "lucide-react";
-//  search MapPin
-import Button from "../../components/reusable/Button";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { User, Menu, X, ArrowLeft, Search } from "lucide-react";
 
-const Products: React.FC = () => {
-  // const [query, setQuery] = useState("");
-  // const [location, setLocation] = useState("All Locations");
-  const [service, setService] = useState("All Categories");
-  const [sellers, setSellers] = useState<any[]>([]);
-  const [filteredSellers, setFilteredSellers] = useState<any[]>([]);
+type Product = {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
+  description: string;
+  productImg: string;
+};
+
+const Products = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Fetch sellers from API
+  // Fetch products
   useEffect(() => {
-    fetch(
-      "https://tradelink-backend-6z6y.onrender.com/api/v1/sellers/get/all/sellers",
-      {
-        headers: {
-          "Content-Type": "application/json",
-          // 🔑 If auth is required, add token here:
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          "https://tradelink-be.onrender.com/api/v1/products"
+        );
+        const fetchedProducts: Product[] = res.data.data;
+        setProducts(fetchedProducts);
+
+        // Extract unique categories
+        const uniqueCats: string[] = [
+          ...new Set(fetchedProducts.map((item) => item.category)),
+        ];
+        setCategories(uniqueCats);
+      } catch (error) {
+        console.error("Error fetching products:", error);
       }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setSellers(data.sellers || []);
-        console.log(data.sellers);
-        console.log(data);
-        setFilteredSellers(data.sellers || []);
-      })
-      .catch((error) => console.error("Error fetching sellers:", error));
+    };
+
+    fetchProducts();
   }, []);
 
-  // 🔍 Filter sellers
-  const handleFilterChange = () => {
-    // const filtered = sellers.filter(
-    //   (s) =>
-    //     (query === "" ||
-    //       s.name.toLowerCase().includes(query.toLowerCase()) ||
-    //       s.category.toLowerCase().includes(query.toLowerCase())) &&
-    //     (location === "All Locations" || s.location === location) &&
-    //     (service === "All Categories" || s.category === service)
-    // );
-    // setFilteredSellers(filtered);
-  };
-
-  const handleViewProfile = (sellerId: string) => {
-    navigate(`/sellers/${sellerId}`); // ✅ Route to SellerProfile
-  };
+  // Filter products
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory = selectedCategory
+      ? p.category === selectedCategory
+      : true;
+    const matchesSearch = p.name.toLowerCase().includes(query.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <div className="max-w-[1280px] mt-20 mx-auto px-4 py-6">
-      {/* Filters */}
-      <div className="bg-white p-4 rounded-2xl shadow mb-6 grid gap-4 md:grid-cols-4">
-        {/* Search */}
-        {/* <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <Search size={16} className="text-gray-500" />
-          <input
-            placeholder="Search sellers..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full text-sm outline-none"
-          />
-        </div> */}
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundImage: "url('/pat2.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#f89216",
+      }}
+    >
+      {/* Top Bar */}
+      <div className="flex justify-between items-center p-4 border-b bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+        {/* Left: Burger (mobile only) */}
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+        >
+          <Menu className="w-6 h-6 text-gray-700" />
+        </button>
 
-        {/* Location */}
-        {/* <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <MapPin size={16} className="text-gray-500" />
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full text-sm outline-none"
-          >
-            <option>All Locations</option>
-            {[...new Set(sellers.map((s) => s.location))].map((loc) => (
-              <option key={loc}>{loc}</option>
-            ))}
-          </select>
-        </div> */}
-
-        {/* Category */}
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <Briefcase size={16} className="text-gray-500" />
-          <select
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-            className="w-full text-sm outline-none"
-          >
-            <option>All Categories</option>
-            {[...new Set(sellers.map((s) => s.category))].map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
-          </select>
+        {/* Center: Search Bar */}
+        <div className="flex-1 flex justify-center">
+          <div className="relative w-full sm:w-2/3 lg:w-1/2">
+            <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products..."
+              className="w-full pl-10 pr-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+            />
+          </div>
         </div>
 
-        {/* Apply Filters */}
-        <Button
-          className="flex items-center justify-center gap-2 text-sm"
-          onClick={handleFilterChange}
+        {/* Right: Avatar */}
+        <div
+          onClick={() => navigate("/userProfile")}
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-white cursor-pointer hover:scale-110 transition ml-4 shadow-md"
         >
-          Apply Filters
-        </Button>
+          <User className="w-6 h-6" />
+        </div>
       </div>
 
-      {/* Sellers Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-4">
-        {filteredSellers.length === 0 ? (
-          <p className="text-center text-gray-500 col-span-full">
-            No sellers found.
-          </p>
-        ) : (
-          filteredSellers?.map((s, ) => (
-            // index
-            <div
-              key={s._id}
-              className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
-              onClick={() => handleViewProfile(s._id)}
+      <div className="flex">
+        {/* Sidebar - Desktop */}
+        <div className="hidden lg:block w-1/4 bg-white/90 backdrop-blur-md shadow-md p-6 rounded-xl m-4">
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">
+            Categories
+          </h2>
+          <ul className="space-y-3">
+            <li
+              onClick={() => setSelectedCategory(null)}
+              className={`cursor-pointer transition ${
+                selectedCategory === null
+                  ? "font-semibold text-orange-600"
+                  : "text-gray-600 hover:text-orange-500"
+              }`}
             >
-              <div className="relative">
-                <img
-                  src={s.image}
-                  alt={s.name}
-                  className="h-28 w-full object-cover rounded mb-3"
-                />
-              </div>
+              All
+            </li>
+            {categories.map((cat) => (
+              <li
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`cursor-pointer transition ${
+                  selectedCategory === cat
+                    ? "font-semibold text-orange-600"
+                    : "text-gray-600 hover:text-orange-500"
+                }`}
+              >
+                {cat}
+              </li>
+            ))}
+          </ul>
 
-              <h3 className="font-semibold text-lg sm:text-sm text-orange-600">
-                {s.category}
-              </h3>
-              <p className="font-medium capitalize text-[11px] sm:text-xs text-gray-800">
-                {s.storeName}
-              </p>
-              <p className="text-[10px] sm:text-xs text-gray-500">
-                {s?.location?.address}
-              </p>
-              {/* <p className="text-[20px] text-yellow-600">⭐ {s.reviews}</p> */}
-              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
-                View Profile
-              </Button>
+          {/* Back to Home */}
+          <div
+            onClick={() => navigate("/")}
+            className="flex items-center mt-10 cursor-pointer text-gray-600 hover:text-orange-500 transition"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </div>
+        </div>
+
+        {/* Sidebar - Mobile Drawer */}
+        {menuOpen && (
+          <div className="fixed inset-0 z-50 flex">
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 bg-[#ffffff9f]  backdrop-blur-sm "
+              onClick={() => setMenuOpen(false)}
+            ></div>
+
+            {/* Drawer */}
+            <div className="relative w-3/4 max-w-xs bg-white p-6 z-50 rounded-r-xl shadow-lg">
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="absolute top-4 right-4"
+              >
+                <X className="w-6 h-6 text-gray-700" />
+              </button>
+
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">
+                Categories
+              </h2>
+              <ul className="space-y-3">
+                <li
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setMenuOpen(false);
+                  }}
+                  className={`cursor-pointer transition ${
+                    selectedCategory === null
+                      ? "font-semibold text-orange-600"
+                      : "text-gray-600 hover:text-orange-500"
+                  }`}
+                >
+                  All
+                </li>
+                {categories.map((cat) => (
+                  <li
+                    key={cat}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setMenuOpen(false);
+                    }}
+                    className={`cursor-pointer transition ${
+                      selectedCategory === cat
+                        ? "font-semibold text-orange-600"
+                        : "text-gray-600 hover:text-orange-500"
+                    }`}
+                  >
+                    {cat}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Back to Home */}
+              <div
+                onClick={() => {
+                  navigate("/");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center mt-10 cursor-pointer text-gray-600 hover:text-orange-500 transition"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </div>
             </div>
-          ))
+          </div>
         )}
+
+        {/* Product List */}
+        <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <div
+                key={product._id}
+                onClick={() => navigate(`/products/${product._id}`)}
+                className="bg-white/90 backdrop-blur-sm shadow-md rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <img
+                  src={product.productImg}
+                  alt={product.name}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{product.category}</p>
+                  <p className="text-orange-600 font-bold mt-2 text-lg">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                    {product.description}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Qty: {product.quantity}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500 mt-10">
+              No products available
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -79,12 +79,13 @@ const Header = () => {
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("name"); // remove name too
       setIsLoggedIn(false);
       setRole(null);
 
       window.dispatchEvent(new Event("storage"));
 
-      window.location.href = "/";
+      window.location.href = "/Login";
     }
   };
 
@@ -171,20 +172,28 @@ const Header = () => {
                   </a>
                 )}
 
-                {/* Buyer/User */}
-                {role === "user" && (
+                {/* Non-seller users */}
+                {role !== "seller" && (
                   <>
-                    <span className="text-[#333333] font-semibold px-3 py-1 rounded-md border border-[#f89216] bg-[#fef9f0]">
-                      Welcome back, {localStorage.getItem("name") || "User"}!
-                    </span>
-                    <a href="/SellWithUs" rel="noopener noreferrer">
+                    <a href="/userProfile" rel="noopener noreferrer">
+                      <Button
+                        name={`${
+                          localStorage.getItem("name") || "User"
+                        } Profile`}
+                        bgColor="#f89216"
+                        hoverBgColor="#333333"
+                        hoverTextColor="white"
+                      />
+                    </a>
+
+                    <Link to="/SellWithUs" rel="noopener noreferrer">
                       <Button
                         name="Sell With Us"
                         bgColor="#f89216"
                         hoverBgColor="#333333"
                         hoverTextColor="white"
                       />
-                    </a>
+                    </Link>
                   </>
                 )}
 

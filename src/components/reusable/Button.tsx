@@ -6,6 +6,7 @@ const Button = (props: any) => {
   return (
     <div>
       <button
+        onClick={props.onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{

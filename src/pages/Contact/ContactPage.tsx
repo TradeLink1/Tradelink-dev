@@ -115,16 +115,19 @@ const ContactPage: React.FC = () => {
               textColor="white"
             />
           </Link>
-          <Link to="/ReportIssue">
-            <Button
-              name="Report an Issue"
-              className="w-full"
-              bgColor="#30ac57"
-              hoverBgColor="#f89216"
-              hoverTextColor="#333333"
-              textColor="white"
-            />
-          </Link>
+          <Button
+            name="Report an Issue"
+            className="w-full"
+            bgColor="#30ac57"
+            hoverBgColor="#f89216"
+            hoverTextColor="#333333"
+            textColor="white"
+            onClick={() => {
+              const form = document.getElementById("contact-form");
+              console.log(form);
+              form?.scrollIntoView({ behavior: "smooth" });
+            }}
+          />
         </div>
       ),
     },

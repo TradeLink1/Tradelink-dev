@@ -1,15 +1,14 @@
 import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../api/axios"; // your axios instance
 
 const VerifyEmail = () => {
-  const [searchParams] = useSearchParams();
+  const { token } = useParams<{ token: string }>(); // get token from route
   const navigate = useNavigate();
 
   useEffect(() => {
     const verifyEmail = async () => {
-      const token = searchParams.get("token");
       if (!token) {
         Swal.fire({
           icon: "error",
@@ -19,8 +18,8 @@ const VerifyEmail = () => {
       }
 
       try {
-        // adjust endpoint to match backend
-        await api.post("/api/v1/auth/verify-email", { token });
+        // match backend format: /verify-email/:token
+        await api.get(`/api/v1/auth/verify-email/${token}`);
 
         Swal.fire({
           icon: "success",
@@ -39,7 +38,7 @@ const VerifyEmail = () => {
     };
 
     verifyEmail();
-  }, [searchParams, navigate]);
+  }, [token, navigate]);
 
   return <div>Verifying your email...</div>;
 };

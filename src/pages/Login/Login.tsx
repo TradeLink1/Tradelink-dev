@@ -1,18 +1,16 @@
-"use client";
-
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // ✅ removed useLocation
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
 import { GoLock } from "react-icons/go";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../api/axios";
+import { Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -98,7 +96,7 @@ const Login: React.FC = () => {
         title: "Login successful 🎉",
       });
 
-      // ✅ Redirect based on role
+      //  Redirect based on role
       if (backendRole === "seller") {
         navigate("/dashboard");
       } else {
@@ -113,7 +111,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Forgot Password Modal
+  //  Forgot Password Modal
   const handleForgotPassword = async () => {
     const { value: email } = await Swal.fire({
       title: "Forgot Password",
@@ -169,7 +167,7 @@ const Login: React.FC = () => {
     }
   };
 
-  // ✅ Resend Verification Handlers
+  //  Resend Verification Handlers
   const handleResendVerification = () => {
     setShowResendModal(true);
     setResendEmail(email); // default to current email if typed
@@ -316,7 +314,7 @@ const Login: React.FC = () => {
               Sign In
             </motion.button>
 
-            {/* ✅ Resend Verification Button */}
+            {/*  Resend Verification Button */}
             <p className="mt-4 text-center text-sm text-gray-600">
               Didn't get the verification email?{" "}
               <button
@@ -328,6 +326,20 @@ const Login: React.FC = () => {
               </button>
             </p>
           </form>
+          <div className="mt-4 text-center">
+            <p className="text-gray-600 text-[14px]">
+              Dont have an account yet?{" "}
+              <Link to="/register" className="text-[#F89216] hover:underline">
+                Register
+              </Link>
+            </p>
+            <p className="text-gray-600 mt-1 text-[14px]">
+              Want to sell instead?{" "}
+              <Link to="/sellwithus" className="text-[#F89216] hover:underline">
+                Join as Seller
+              </Link>
+            </p>
+          </div>
         </motion.div>
       </div>
 
