@@ -1,4 +1,3 @@
-
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -7,7 +6,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { GoLock } from "react-icons/go";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import api from "../../api/axios2";
+import api from "../../api/axios";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
