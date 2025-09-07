@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Mail, Phone, MapPin, ArrowLeft, MessageCircle, Send, X } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  ArrowLeft,
+  MessageCircle,
+  Send,
+  X,
+} from "lucide-react";
 
 type Seller = {
   _id: string;
@@ -154,7 +162,6 @@ const ProductDetails = () => {
   return (
     <div
       className="min-h-screen p-6 bg-[#f89216]"
-
       style={{
         backgroundImage: "url('/pat2.png')",
         backgroundSize: "cover",
@@ -272,8 +279,8 @@ const ProductDetails = () => {
         <div className="flex items-center gap-2">
           <input
             type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
             className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
           />
@@ -281,12 +288,21 @@ const ProductDetails = () => {
             onClick={handleSendMessage}
             disabled={sending}
             className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg flex items-center gap-2 shadow-md transition"
+          >
+            <Send className="w-4 h-4" />
+            {sending ? "Sending..." : "Send"}
+          </button>
+        </div>
+      </div>
+
       {/* Floating Chat */}
       <div className="fixed bottom-6 right-6 z-50">
         {isChatOpen ? (
           <div className="w-80 h-96 bg-white shadow-xl rounded-xl border flex flex-col">
             <div className="flex justify-between items-center p-3 border-b bg-orange-500 text-white rounded-t-xl">
-              <h3 className="font-semibold">Chat with {product.sellerId.storeName}</h3>
+              <h3 className="font-semibold">
+                Chat with {product.sellerId.storeName}
+              </h3>
               <button
                 onClick={() => setIsChatOpen(false)}
                 className="hover:text-red-300"
@@ -339,15 +355,15 @@ const ProductDetails = () => {
           >
             <MessageCircle className="w-6 h-6" />
           </button>
-        </div>
+        )}
       </div>
 
       {/* Mobile Sticky Message Box */}
       <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-blur-sm p-4 border-t shadow-md flex items-center gap-2 z-50">
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type your message..."
           className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
         />
@@ -359,7 +375,6 @@ const ProductDetails = () => {
           <Send className="w-4 h-4" />
           {sending ? "Sending..." : "Send"}
         </button>
-        )}
       </div>
     </div>
   );

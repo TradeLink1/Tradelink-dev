@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "../../components/reusable/Button";
-import { Star, Phone, Mail, MapPin, Clock, Send, Loader2, BellOff, Bell } from "lucide-react";
+import {
+  Star,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  Send,
+  Loader2,
+  BellOff,
+  Bell,
+} from "lucide-react";
 
 interface ServiceProviderDetailsProps {
   provider: any;
@@ -17,16 +27,19 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 }) => {
   const getImage = (item: any) => {
     const src =
-
-//       (item?.serviceImg &&
-//         String(item.serviceImg).trim() !== "" &&
-//         item.serviceImg) ||
-//       (item?.productImg &&
-//         String(item.productImg).trim() !== "" &&
-//         item.productImg) ||
+      //       (item?.serviceImg &&
+      //         String(item.serviceImg).trim() !== "" &&
+      //         item.serviceImg) ||
+      //       (item?.productImg &&
+      //         String(item.productImg).trim() !== "" &&
+      //         item.productImg) ||
       (item?.logo && String(item.logo).trim() !== "" && item.logo) ||
-      (item?.serviceImg && String(item.serviceImg).trim() !== "" && item.serviceImg) ||
-      (item?.productImg && String(item.productImg).trim() !== "" && item.productImg) ||
+      (item?.serviceImg &&
+        String(item.serviceImg).trim() !== "" &&
+        item.serviceImg) ||
+      (item?.productImg &&
+        String(item.productImg).trim() !== "" &&
+        item.productImg) ||
       (item?.image && String(item.image).trim() !== "" && item.image) ||
       null;
     return (
@@ -36,7 +49,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
       )}`
     );
   };
-
 
   // State
   const [currentProvider, setCurrentProvider] = useState(provider);
@@ -68,10 +80,16 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await fetch(`https://tradelink-be.onrender.com/api/v1/services/${currentProvider._id}`);
+        const res = await fetch(
+          `https://tradelink-be.onrender.com/api/v1/services/${currentProvider._id}`
+        );
         const data = await res.json();
-        setServicesOffered(Array.isArray(data.servicesOffered) ? data.servicesOffered : []);
-        setWorkingHours(Array.isArray(data.workingHours) ? data.workingHours : []);
+        setServicesOffered(
+          Array.isArray(data.servicesOffered) ? data.servicesOffered : []
+        );
+        setWorkingHours(
+          Array.isArray(data.workingHours) ? data.workingHours : []
+        );
         setReviews(Array.isArray(data.reviews) ? data.reviews : []);
       } catch (e) {
         console.error("Failed to fetch service details", e);
@@ -88,10 +106,14 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
           setOtherListingsState([]);
           return;
         }
-        const res = await fetch(`https://tradelink-be.onrender.com/api/v1/products/seller/${currentProvider.sellerId}`);
+        const res = await fetch(
+          `https://tradelink-be.onrender.com/api/v1/products/seller/${currentProvider.sellerId}`
+        );
         const data = await res.json();
         // Remove current provider from other listings if present
-        const filtered = Array.isArray(data) ? data.filter((p) => p._id !== currentProvider._id) : [];
+        const filtered = Array.isArray(data)
+          ? data.filter((p) => p._id !== currentProvider._id)
+          : [];
         setOtherListingsState(filtered);
       } catch (e) {
         setOtherListingsState([]);
@@ -103,26 +125,29 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   useEffect(() => {
     const run = async () => {
       try {
-        const category = currentProvider?.businessCategory || currentProvider?.category;
+        const category =
+          currentProvider?.businessCategory || currentProvider?.category;
         if (!category) {
           setSimilarServicesState([]);
           return;
         }
-        const res = await fetch("https://tradelink-be.onrender.com/api/v1/services/all");
+        const res = await fetch(
+          "https://tradelink-be.onrender.com/api/v1/services/all"
+        );
         const data = await res.json();
         if (Array.isArray(data)) {
           const cleaned = data.filter(
+            //             (s: any) => s.category === category && s._id !== provider._id
+            //           );
+            //           if (cleaned.length > 0) {
+            //             setSimilarServicesState(cleaned);
+            //             return;
+            //           }
+            //         }
+            //         setSimilarServicesState([]);
 
-//             (s: any) => s.category === category && s._id !== provider._id
-//           );
-//           if (cleaned.length > 0) {
-//             setSimilarServicesState(cleaned);
-//             return;
-//           }
-//         }
-//         setSimilarServicesState([]);
-
-            (s: any) => s.businessCategory === category && s._id !== currentProvider._id
+            (s: any) =>
+              s.businessCategory === category && s._id !== currentProvider._id
           );
           setSimilarServicesState(cleaned);
         }
@@ -147,7 +172,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: user.name, userId: user.id, rating, comment: newReview }),
+          body: JSON.stringify({
+            name: user.name,
+            userId: user.id,
+            rating,
+            comment: newReview,
+          }),
         }
       );
       const updated = await res.json();
@@ -178,7 +208,10 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { from: "provider", text: "Thanks for your message. We’ll get back shortly!" },
+        {
+          from: "provider",
+          text: "Thanks for your message. We’ll get back shortly!",
+        },
       ]);
       setIsTyping(false);
     }, 900);
@@ -189,7 +222,8 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   const displayPhone = rawPhone || "";
   const telPhone = rawPhone.replace(/[^+\d]/g, "");
   const handleCallProvider = async () => {
-    if (!telPhone) return alert("Phone number not available for this provider.");
+    if (!telPhone)
+      return alert("Phone number not available for this provider.");
     const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
     if (isMobile) return void (window.location.href = `tel:${telPhone}`);
     try {
@@ -211,7 +245,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   const handleSelectProvider = (selected: any) => {
     if (!selected) return;
     setOtherListingsState((prev) => {
-      const filtered = prev.filter((p) => p._id !== selected._id && p.id !== selected.id);
+      const filtered = prev.filter(
+        (p) => p._id !== selected._id && p.id !== selected.id
+      );
       return [...filtered, currentProvider];
     });
     setCurrentProvider(selected);
@@ -219,18 +255,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   };
 
   return (
-//     <div className="max-w-[1280px] mb-20 mt-25 mx-auto px-4 py-10">
-//       {/* Back Button */}
-//       <div className="mb-6">
-//         <Button
-//           name="← Back to Providers"
-//           bgColor="#F97316"
-//           textColor="#fff"
-//           borderColor="#F97316"
-//           hoverBgColor="#EA580C"
-//           onClick={onBack}
-//         />
-//       </div>
     <div className="max-w-[1280px] mx-auto px-4 py-8 mt-20">
       <Button
         name="← Back to Providers"
@@ -258,45 +282,7 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
         </div>
       </div>
 
-
-<!--       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* ABOUT */}
-          <div className="bg-white shadow-lg rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">
-              About the Provider
-            </h2>
-            <p className="text-gray-700 mb-2">
-              {provider.description ||
-                "We provide reliable services with guaranteed quality."}
-            </p>
-            <div className="grid sm:grid-cols-2 gap-3 text-gray-700 mt-4">
-              <p className="flex items-center gap-2">
-                <Phone size={18} /> {provider.phone || "—"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail size={18} /> {provider.email || "—"}
-              </p>
-              <p className="flex items-center gap-2">
-                <MapPin size={18} /> {provider.location || "—"}
-              </p>
-            </div>
-          </div>
-
-          {/* SERVICES */}
-          <div className="bg-white shadow-lg rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">
-              Services Offered
-            </h2>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-700">
-              {services.map((s, i) => (
-                <li key={i} className="bg-gray-50 px-3 py-2 rounded-lg">
-                  {s}
-                </li>
-              ))}
-            </ul> -->
-      
+      {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
@@ -305,7 +291,11 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
             <div className="flex flex-col md:flex-row gap-6">
               <img
                 src={getImage(currentProvider)}
-                alt={currentProvider?.name || currentProvider?.storeName || "Provider"}
+                alt={
+                  currentProvider?.name ||
+                  currentProvider?.storeName ||
+                  "Provider"
+                }
                 className="w-full md:w-60 h-60 object-cover rounded"
               />
               <div>
@@ -313,9 +303,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                   {currentProvider?.storeName || currentProvider?.name || "—"}
                 </h1>
                 <p className="text-gray-700 mb-1">
-                  Category: <strong>{currentProvider?.businessCategory || "—"}</strong>
+                  Category:{" "}
+                  <strong>{currentProvider?.businessCategory || "—"}</strong>
                 </p>
-                <p className="text-gray-700 mb-1">Owner: {currentProvider?.name || "—"}</p>
+                <p className="text-gray-700 mb-1">
+                  Owner: {currentProvider?.name || "—"}
+                </p>
                 <p className="text-gray-700 mb-1 flex items-center gap-2">
                   <Phone size={16} /> {displayPhone || "—"}
                 </p>
@@ -335,7 +328,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 
           {/* Services Offered */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">Services Offered</h2>
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              Services Offered
+            </h2>
             {servicesOffered.length > 0 ? (
               <ul className="list-disc list-inside text-gray-700 space-y-1">
                 {servicesOffered.map((s, i) => (
@@ -353,19 +348,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               Customer Reviews
             </h2>
             <div className="space-y-4">
-
-<!--               {reviews.map((r) => (
-                <div key={r.id} className="bg-gray-50 p-3 rounded-lg shadow-sm">
-                  <div className="flex justify-between items-center">
-                    <p className="font-medium">{r.name}</p>
-                    <div className="flex text-yellow-400">
-                      {Array.from({ length: r.rating }).map((_, i) => (
-                        <Star key={i} size={16} fill="currentColor" />
-                      ))} -->
-              
               {reviews.length > 0 ? (
                 reviews.map((r: any, idx: number) => (
-                  <div key={idx} className="border-b pb-3 last:border-none last:pb-0">
+                  <div
+                    key={idx}
+                    className="border-b pb-3 last:border-none last:pb-0"
+                  >
                     <div className="flex items-center justify-between">
                       <p className="font-medium">{r.name}</p>
                       <div className="flex text-yellow-500">
@@ -373,11 +361,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                           <Star key={i} size={16} fill="currentColor" />
                         ))}
                       </div>
-
                     </div>
                     <p className="text-gray-600 text-sm mt-1">{r.comment}</p>
                   </div>
-
                 ))
               ) : (
                 <p className="text-gray-500 text-sm">No reviews yet.</p>
@@ -392,7 +378,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                     key={star}
                     size={24}
                     className={`cursor-pointer transition-colors ${
-                      (hoverRating || rating) >= star ? "text-yellow-500" : "text-gray-300"
+                      (hoverRating || rating) >= star
+                        ? "text-yellow-500"
+                        : "text-gray-300"
                     }`}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
@@ -403,32 +391,10 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               </div>
 
               <textarea
-<!--                 className="w-full h-24 border rounded-lg p-2 text-sm focus:ring-2 focus:ring-orange-500"
-                placeholder="Write your review..."
-                value={newReview}
-                onChange={(e) => setNewReview(e.target.value)}
-              />
-              <div className="mt-2">
-                <Button
-                  onClick={handleAddReview}
-                  name="Submit Review"
-                  bgColor="#F97316"
-                  textColor="#fff"
-                  borderColor="#F97316"
-                  hoverBgColor="#EA580C"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* OTHER LISTINGS */}
-          <div className="bg-white shadow-lg rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">
-              Other Listings
-            </h2> -->
-              
                 className="w-full h-32 border rounded p-2 text-sm mb-2"
-                placeholder={user ? "Write your review..." : "Login to submit a review"}
+                placeholder={
+                  user ? "Write your review..." : "Login to submit a review"
+                }
                 value={newReview}
                 onChange={(e) => setNewReview(e.target.value)}
               />
@@ -445,8 +411,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 
           {/* Other Listings */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">Other Listings</h2>
-
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              Other Listings
+            </h2>
             {otherListingsState.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {otherListingsState.map((o: any) => (
@@ -460,10 +427,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                       alt={o.storeName || o.name}
                       className="w-full h-28 object-cover rounded-xl group-hover:scale-105 transition"
                     />
-
-                    <p className="text-sm font-medium text-gray-800">{o.storeName || o.name}</p>
-                    <p className="text-xs text-gray-500">{o.businessCategory || o.category}</p>
-
+                    <p className="text-sm font-medium text-gray-800">
+                      {o.storeName || o.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {o.businessCategory || o.category}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -483,43 +452,16 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               alt="Map"
               className="w-full rounded-xl mb-2"
             />
-            
-<!--             <p className="text-gray-600">{provider.location || "—"}</p>
-          </div>
-
-          {/* HOURS */}
-          <div className="bg-white shadow-lg rounded-2xl p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-3">
-              Working Hours
-            </h2>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li className="flex items-center gap-2">
-                <Clock size={16} /> Mon - Fri: 8am - 6pm
-              </li>
-              <li className="flex items-center gap-2">
-                <Clock size={16} /> Sat: 9am - 4pm
-              </li>
-              <li className="flex items-center gap-2">
-                <Clock size={16} /> Sun: Closed
-              </li>
-            </ul>
-          </div>
-
-          {/* CONTACT */}
-          <div className="bg-white shadow-lg rounded-2xl p-6 text-center">
-            <h2 className="text-lg font-bold text-orange-600 mb-4">
-              Get in Touch
-            </h2>
-            <div className="space-y-3">
-              <Button
-                name="📞 Contact Provider" -->
-
-            <p className="text-gray-600 mt-2">{currentProvider?.location || "—"}</p>
+            <p className="text-gray-600 mt-2">
+              {currentProvider?.location || "—"}
+            </p>
           </div>
 
           {/* Working Hours */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-2">Working Hours</h2>
+            <h2 className="text-lg font-bold text-orange-600 mb-2">
+              Working Hours
+            </h2>
             {workingHours.length > 0 ? (
               <ul className="text-gray-700 text-sm space-y-1">
                 {workingHours.map((wh, i) => (
@@ -529,31 +471,26 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-500 text-sm">No working hours provided.</p>
+              <p className="text-gray-500 text-sm">
+                No working hours provided.
+              </p>
             )}
           </div>
 
           {/* Contact + Chat */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-4 text-center">Get in Touch</h2>
+            <h2 className="text-lg font-bold text-orange-600 mb-4 text-center">
+              Get in Touch
+            </h2>
             <div className="flex justify-center mb-4">
               <Button
-                name={displayPhone ? `Call ${displayPhone}` : "Contact Provider"}
-
+                name={
+                  displayPhone ? `Call ${displayPhone}` : "Contact Provider"
+                }
                 bgColor="#F97316"
                 textColor="#fff"
                 borderColor="#F97316"
                 hoverBgColor="#EA580C"
-
-<!--                 onClick={() => alert("Calling provider...")}
-              />
-              <Button
-                name="💬 Send Message"
-                bgColor="#fff"
-                textColor="#F97316"
-                borderColor="#F97316"
-                hoverBgColor="#FFEDD5"
-                onClick={() => alert("Opening chat...")} -->
                 onClick={handleCallProvider}
               />
             </div>
@@ -561,7 +498,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
             {/* Chat box */}
             <div className="border rounded-lg">
               <div className="flex items-center justify-between px-3 py-2 border-b">
-                <p className="text-sm font-medium text-gray-700">Chat with Provider</p>
+                <p className="text-sm font-medium text-gray-700">
+                  Chat with Provider
+                </p>
                 <button
                   onClick={() => setIsMuted((prev) => !prev)}
                   className="text-gray-500 hover:text-orange-500"
@@ -603,10 +542,14 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                       : "focus:ring-2 focus:ring-orange-300"
                   }`}
-                  placeholder={isMuted ? "Chat is muted…" : "Type your message..."}
+                  placeholder={
+                    isMuted ? "Chat is muted…" : "Type your message..."
+                  }
                   value={newMessage}
                   onChange={(e) => !isMuted && setNewMessage(e.target.value)}
-                  onKeyDown={(e) => !isMuted && e.key === "Enter" && handleSendMessage()}
+                  onKeyDown={(e) =>
+                    !isMuted && e.key === "Enter" && handleSendMessage()
+                  }
                   disabled={isMuted}
                 />
                 <button
