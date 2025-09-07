@@ -6,14 +6,15 @@ interface ServiceProviderDetailsProps {
   provider: any;
   onBack?: () => void;
   onSelectProvider: (provider: any) => void;
+  user?: { id: string; name: string }; // logged-in user
 }
 
 const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   provider,
   onBack,
   onSelectProvider,
+  user,
 }) => {
-  // Safe image getter
   const getImage = (item: any) => {
     const src =
       (item?.logo && String(item.logo).trim() !== "" && item.logo) ||
@@ -21,7 +22,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
       (item?.productImg && String(item.productImg).trim() !== "" && item.productImg) ||
       (item?.image && String(item.image).trim() !== "" && item.image) ||
       null;
-
     return (
       src ||
       `https://via.placeholder.com/300x200.png?text=${encodeURIComponent(
@@ -31,114 +31,18 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   };
 
   // State
+  const [currentProvider, setCurrentProvider] = useState(provider);
   const [servicesOffered, setServicesOffered] = useState<string[]>([]);
   const [workingHours, setWorkingHours] = useState<string[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [newReview, setNewReview] = useState("");
+  const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
   const [otherListingsState, setOtherListingsState] = useState<any[]>([]);
   const [similarServicesState, setSimilarServicesState] = useState<any[]>([]);
   const [loadingReview, setLoadingReview] = useState(false);
 
-  // Fetch provider details (servicesOffered, workingHours, reviews)
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const res = await fetch(
-          `https://tradelink-be.onrender.com/api/v1/services/${provider._id}`
-        );
-        const data = await res.json();
-        setServicesOffered(Array.isArray(data.servicesOffered) ? data.servicesOffered : []);
-        setWorkingHours(Array.isArray(data.workingHours) ? data.workingHours : []);
-        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
-      } catch (e) {
-        console.error("Failed to fetch service details", e);
-      }
-    };
-    if (provider?._id) run();
-  }, [provider]);
-
-  // Fetch other listings by same seller
-  useEffect(() => {
-    const run = async () => {
-      try {
-        if (!provider?.sellerId) {
-          setOtherListingsState([]);
-          return;
-        }
-        const res = await fetch(
-          `https://tradelink-be.onrender.com/api/v1/products/seller/${provider.sellerId}`
-        );
-        const data = await res.json();
-        setOtherListingsState(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error("Other listings fetch failed", e);
-        setOtherListingsState([]);
-      }
-    };
-    run();
-  }, [provider]);
-
-  // Fetch similar services (same category, excluding current)
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const category = provider?.businessCategory || provider?.category;
-        if (!category) {
-          setSimilarServicesState([]);
-          return;
-        }
-        const res = await fetch("https://tradelink-be.onrender.com/api/v1/services/all");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          const cleaned = data.filter(
-            (s: any) => s.businessCategory === category && s._id !== provider._id
-          );
-          setSimilarServicesState(cleaned);
-        }
-      } catch (e) {
-        console.error("Similar services fetch failed", e);
-        setSimilarServicesState([]);
-      }
-    };
-    run();
-  }, [provider]);
-
-  // Reviews - add review (PATCH API)
-  const handleAddReview = async () => {
-    if (newReview.trim() === "") return;
-    try {
-      setLoadingReview(true);
-      const res = await fetch(
-        `https://tradelink-be.onrender.com/api/v1/services/${provider._id}/reviews`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: "Anonymous User",
-            rating: 5,
-            comment: newReview,
-          }),
-        }
-      );
-      const updated = await res.json();
-      if (Array.isArray(updated.reviews)) {
-        setReviews(updated.reviews);
-      } else {
-        // fallback append
-        setReviews((prev) => [
-          ...prev,
-          { id: prev.length + 1, name: "Anonymous User", rating: 5, comment: newReview },
-        ]);
-      }
-      setNewReview("");
-    } catch (e) {
-      console.error("Add review failed", e);
-    } finally {
-      setLoadingReview(false);
-    }
-  };
-
-  // Chatbox
+  // Chatbox state
   type Msg = { from: "user" | "provider"; text: string };
   const [messages, setMessages] = useState<Msg[]>([
     { from: "provider", text: "Hello 👋 How can I help you today?" },
@@ -149,18 +53,113 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (chatScrollRef.current) {
+    if (chatScrollRef.current)
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-    }
   }, [messages, isTyping]);
 
+  // Fetch provider details
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const res = await fetch(`https://tradelink-be.onrender.com/api/v1/services/${currentProvider._id}`);
+        const data = await res.json();
+        setServicesOffered(Array.isArray(data.servicesOffered) ? data.servicesOffered : []);
+        setWorkingHours(Array.isArray(data.workingHours) ? data.workingHours : []);
+        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
+      } catch (e) {
+        console.error("Failed to fetch service details", e);
+      }
+    };
+    if (currentProvider?._id) run();
+  }, [currentProvider]);
+
+  // Fetch other listings
+  useEffect(() => {
+    const run = async () => {
+      try {
+        if (!currentProvider?.sellerId) {
+          setOtherListingsState([]);
+          return;
+        }
+        const res = await fetch(`https://tradelink-be.onrender.com/api/v1/products/seller/${currentProvider.sellerId}`);
+        const data = await res.json();
+        // Remove current provider from other listings if present
+        const filtered = Array.isArray(data) ? data.filter((p) => p._id !== currentProvider._id) : [];
+        setOtherListingsState(filtered);
+      } catch (e) {
+        console.error("Other listings fetch failed", e);
+        setOtherListingsState([]);
+      }
+    };
+    run();
+  }, [currentProvider]);
+
+  // Fetch similar services
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const category = currentProvider?.businessCategory || currentProvider?.category;
+        if (!category) {
+          setSimilarServicesState([]);
+          return;
+        }
+        const res = await fetch("https://tradelink-be.onrender.com/api/v1/services/all");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const cleaned = data.filter(
+            (s: any) => s.businessCategory === category && s._id !== currentProvider._id
+          );
+          setSimilarServicesState(cleaned);
+        }
+      } catch (e) {
+        console.error("Similar services fetch failed", e);
+        setSimilarServicesState([]);
+      }
+    };
+    run();
+  }, [currentProvider]);
+
+  // Add review
+  const handleAddReview = async () => {
+    if (!user) {
+      alert("Only logged-in users can submit reviews.");
+      return;
+    }
+    if (newReview.trim() === "") return;
+    try {
+      setLoadingReview(true);
+      const res = await fetch(
+        `https://tradelink-be.onrender.com/api/v1/services/${currentProvider._id}/reviews`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: user.name, userId: user.id, rating, comment: newReview }),
+        }
+      );
+      const updated = await res.json();
+      if (Array.isArray(updated.reviews)) setReviews(updated.reviews);
+      else
+        setReviews((prev) => [
+          ...prev,
+          { id: prev.length + 1, name: user.name, rating, comment: newReview },
+        ]);
+      setNewReview("");
+      setRating(5);
+    } catch (e) {
+      console.error("Add review failed", e);
+      alert("Failed to submit review. Try again.");
+    } finally {
+      setLoadingReview(false);
+    }
+  };
+
+  // Chat send
   const handleSendMessage = () => {
     if (isMuted) return;
     const text = newMessage.trim();
     if (!text) return;
     setMessages((prev) => [...prev, { from: "user", text }]);
     setNewMessage("");
-
     setIsTyping(true);
     setTimeout(() => {
       setMessages((prev) => [
@@ -171,48 +170,42 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
     }, 900);
   };
 
-  // Contact / Call handling
-  const rawPhone = String(provider?.phone || "").trim();
+  // Call provider
+  const rawPhone = String(currentProvider?.phone || "").trim();
   const displayPhone = rawPhone || "";
   const telPhone = rawPhone.replace(/[^+\d]/g, "");
-
   const handleCallProvider = async () => {
-    if (!telPhone) {
-      alert("Phone number not available for this provider.");
-      return;
-    }
+    if (!telPhone) return alert("Phone number not available for this provider.");
     const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
-      window.location.href = `tel:${telPhone}`;
-      return;
-    }
+    if (isMobile) return void (window.location.href = `tel:${telPhone}`);
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(displayPhone || telPhone);
         alert(`Provider phone copied: ${displayPhone || telPhone}`);
-      } else {
-        alert(`Please call this provider: ${displayPhone || telPhone}`);
-      }
+      } else alert(`Please call this provider: ${displayPhone || telPhone}`);
     } catch {
       alert(`Please call this provider: ${displayPhone || telPhone}`);
     }
   };
 
-  // Back: call onBack, then open /services if not already there
   const handleBack = () => {
-    try {
-      onBack?.();
-    } catch {
-      // ignore
-    }
-    if (typeof window !== "undefined" && window.location.pathname !== "/services") {
-      window.location.href = "/services";
-    }
+    if (onBack) return onBack();
+    window.history.back();
+  };
+
+  // Swap provider logic
+  const handleSelectProvider = (selected: any) => {
+    if (!selected) return;
+    setOtherListingsState((prev) => {
+      const filtered = prev.filter((p) => p._id !== selected._id && p.id !== selected.id);
+      return [...filtered, currentProvider];
+    });
+    setCurrentProvider(selected);
+    onSelectProvider(selected);
   };
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-8 mt-20">
-      {/* Back button */}
       <Button
         name="← Back to Providers"
         bgColor="#F97316"
@@ -233,31 +226,29 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex flex-col md:flex-row gap-6">
               <img
-                src={getImage(provider)}
-                alt={provider?.name || provider?.storeName || "Provider"}
+                src={getImage(currentProvider)}
+                alt={currentProvider?.name || currentProvider?.storeName || "Provider"}
                 className="w-full md:w-60 h-60 object-cover rounded"
               />
               <div>
                 <h1 className="text-2xl font-bold text-orange-600 mb-2">
-                  {provider?.storeName || provider?.name || "—"}
+                  {currentProvider?.storeName || currentProvider?.name || "—"}
                 </h1>
                 <p className="text-gray-700 mb-1">
-                  Category: <strong>{provider?.businessCategory || "—"}</strong>
+                  Category: <strong>{currentProvider?.businessCategory || "—"}</strong>
                 </p>
-                <p className="text-gray-700 mb-1">Owner: {provider?.name || "—"}</p>
-
+                <p className="text-gray-700 mb-1">Owner: {currentProvider?.name || "—"}</p>
                 <p className="text-gray-700 mb-1 flex items-center gap-2">
                   <Phone size={16} /> {displayPhone || "—"}
                 </p>
                 <p className="text-gray-700 mb-1 flex items-center gap-2">
-                  <Mail size={16} /> {provider?.email || "—"}
+                  <Mail size={16} /> {currentProvider?.email || "—"}
                 </p>
                 <p className="text-gray-700 mb-1 flex items-center gap-2">
-                  <MapPin size={16} /> {provider?.location || "—"}
+                  <MapPin size={16} /> {currentProvider?.location || "—"}
                 </p>
-
                 <p className="text-gray-600 mt-4">
-                  {provider?.description ||
+                  {currentProvider?.description ||
                     "We provide top-notch services with a guarantee of quality and reliability."}
                 </p>
               </div>
@@ -301,24 +292,38 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               )}
             </div>
 
-            {/* Add Review Box */}
+            {/* Add Review */}
             <div className="mt-4">
+              <div className="flex items-center mb-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={24}
+                    className={`cursor-pointer transition-colors ${
+                      (hoverRating || rating) >= star ? "text-yellow-500" : "text-gray-300"
+                    }`}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => setRating(star)}
+                  />
+                ))}
+                <span className="ml-2 text-sm text-gray-600">{rating} / 5</span>
+              </div>
+
               <textarea
-                className="w-1/2 h-32 border rounded p-2 text-sm"
-                placeholder="Write your review..."
+                className="w-full h-32 border rounded p-2 text-sm mb-2"
+                placeholder={user ? "Write your review..." : "Login to submit a review"}
                 value={newReview}
                 onChange={(e) => setNewReview(e.target.value)}
               />
-              <div>
-                <Button
-                  onClick={handleAddReview}
-                  name={loadingReview ? "Submitting..." : "Submit Review"}
-                  bgColor="#F97316"
-                  textColor="#fff"
-                  borderColor="#F97316"
-                  hoverBgColor="#EA580C"
-                />
-              </div>
+              <Button
+                onClick={handleAddReview}
+                name={loadingReview ? "Submitting..." : "Submit Review"}
+                bgColor="#F97316"
+                textColor="#fff"
+                borderColor="#F97316"
+                hoverBgColor="#EA580C"
+              />
             </div>
           </div>
 
@@ -331,19 +336,15 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                   <div
                     key={o._id || o.id}
                     className="cursor-pointer"
-                    onClick={() => onSelectProvider(o)}
+                    onClick={() => handleSelectProvider(o)}
                   >
                     <img
                       src={getImage(o)}
                       alt={o.storeName || o.name}
                       className="w-full h-28 object-cover rounded border mb-2"
                     />
-                    <p className="text-sm font-medium text-gray-800">
-                      {o.storeName || o.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {o.businessCategory || o.category}
-                    </p>
+                    <p className="text-sm font-medium text-gray-800">{o.storeName || o.name}</p>
+                    <p className="text-xs text-gray-500">{o.businessCategory || o.category}</p>
                   </div>
                 ))}
               </div>
@@ -363,7 +364,7 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               alt="Map"
               className="w-full rounded"
             />
-            <p className="text-gray-600 mt-2">{provider?.location || "—"}</p>
+            <p className="text-gray-600 mt-2">{currentProvider?.location || "—"}</p>
           </div>
 
           {/* Working Hours */}
@@ -384,11 +385,7 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 
           {/* Contact + Chat */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-4 text-center">
-              Get in Touch
-            </h2>
-
-            {/* Contact */}
+            <h2 className="text-lg font-bold text-orange-600 mb-4 text-center">Get in Touch</h2>
             <div className="flex justify-center mb-4">
               <Button
                 name={displayPhone ? `Call ${displayPhone}` : "Contact Provider"}
@@ -402,7 +399,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 
             {/* Chat box */}
             <div className="border rounded-lg">
-              {/* Chat header with mute toggle */}
               <div className="flex items-center justify-between px-3 py-2 border-b">
                 <p className="text-sm font-medium text-gray-700">Chat with Provider</p>
                 <button
@@ -430,7 +426,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                     {msg.text}
                   </div>
                 ))}
-
                 {isTyping && (
                   <div className="flex items-center gap-2 text-gray-600 text-xs">
                     <Loader2 className="animate-spin" size={14} />
@@ -479,7 +474,7 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                   <div
                     key={s._id || s.id}
                     className="cursor-pointer"
-                    onClick={() => onSelectProvider(s)}
+                    onClick={() => handleSelectProvider(s)}
                   >
                     <img
                       src={getImage(s)}
