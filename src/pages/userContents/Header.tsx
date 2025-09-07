@@ -3,7 +3,7 @@ import React from "react";
 type HeaderProps = {
   user: {
     name: string;
-    logo?: string;
+    logo: string;
   };
 };
 
