@@ -11,6 +11,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
 import Swal from "sweetalert2";
+import api from "../../api/axios";
 
 // Define the form data type
 interface UserData {
@@ -66,6 +67,16 @@ const Register = () => {
         title: "Account created successfully 🎉",
       });
 
+      Swal.fire({
+        toast: true,
+        icon: "success",
+        title:
+          "Registration successful! Please check your email to verify your account.",
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+      });
       // redirect after short delay
       setTimeout(() => navigate("/login"), 1200);
     } catch (error: any) {
