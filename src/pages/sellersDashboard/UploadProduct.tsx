@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import api from "../../api/axios"; // 
 
 const UploadProduct = () => {
-  const [uploadType, setUploadType] = useState<"product" | "service">("product");
+  const [uploadType, setUploadType] = useState<"product" | "service">(
+    "product"
+  );
 
-  // Separate states for product and service to avoid confusion
   const [productData, setProductData] = useState({
     name: "",
     category: "",
@@ -45,7 +46,9 @@ const UploadProduct = () => {
 
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, files } = e.target as HTMLInputElement;
 
@@ -96,13 +99,18 @@ useEffect(() => {
 
     if (!data.name.trim()) newErrors.name = "Name is required";
     if (!data.category) newErrors.category = "Category is required";
-    if (!data.price || isNaN(Number(data.price))) newErrors.price = "Price must be a valid number";
+    if (!data.price || isNaN(Number(data.price)))
+      newErrors.price = "Price must be a valid number";
 
-    if (uploadType === "product" && (!productData.quantity || isNaN(Number(productData.quantity)))) {
+    if (
+      uploadType === "product" &&
+      (!productData.quantity || isNaN(Number(productData.quantity)))
+    ) {
       newErrors.quantity = "Quantity must be a valid number";
     }
 
-    if (!data.imageFile) newErrors.imageFile = `A ${uploadType} image is required`;
+    if (!data.imageFile)
+      newErrors.imageFile = `A ${uploadType} image is required`;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -143,14 +151,13 @@ useEffect(() => {
       const endpoint =
         uploadType === "product" ? "/api/v1/products/" : "/api/v1/services/create";
 
-      const response = await axiosInstance.post(endpoint, formDataToSend, {
+      const response = await api.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log(`${uploadType} created successfully:`, response.data);
       setSubmitSuccess(true);
 
-      // Reset only the corresponding state
       if (uploadType === "product") {
         setProductData({
           name: "",
@@ -175,7 +182,8 @@ useEffect(() => {
     } catch (error) {
       const err = (error as any)?.response?.data;
       setErrors({
-        submit: err?.message || `Failed to upload ${uploadType}. Please try again.`,
+        submit:
+          err?.message || `Failed to upload ${uploadType}. Please try again.`,
       });
     } finally {
       setIsLoading(false);
@@ -193,7 +201,8 @@ useEffect(() => {
 
         {submitSuccess && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
-            {uploadType === "product" ? "Product" : "Service"} uploaded successfully!
+            {uploadType === "product" ? "Product" : "Service"} uploaded
+            successfully!
             <button
               onClick={() => setSubmitSuccess(false)}
               className="ml-2 text-green-800 hover:text-green-900"
@@ -247,7 +256,9 @@ useEffect(() => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div>
@@ -261,7 +272,9 @@ useEffect(() => {
               className="w-full border border-gray-300 rounded-full p-3 focus:ring-2 focus:ring-[#f89216] outline-none"
               onChange={handleChange}
             />
-            {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
 
           <div>
