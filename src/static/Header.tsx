@@ -72,7 +72,7 @@ const Header = () => {
   // Logout handler
   const handleLogout = async () => {
     try {
-      await api.post("api/v1/auth/logout"); 
+      await api.post("/api/v1/auth/logout"); 
     } catch (error) {
       console.error("Logout failed on server, clearing local anyway", error);
     } finally {
@@ -84,7 +84,7 @@ const Header = () => {
 
       window.dispatchEvent(new Event("storage"));
 
-      window.location.href = "/";
+      window.location.href = "/Login";
     }
   };
 

@@ -59,7 +59,7 @@ const Register = () => {
         password: data.password,
       };
 
-      await api.post("api/v1/auth/register", payload);
+      await api.post("/api/v1/auth/register", payload);
 
       // ✅ Show success toast
       Toast.fire({
