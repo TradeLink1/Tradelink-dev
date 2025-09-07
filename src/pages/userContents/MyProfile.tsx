@@ -31,6 +31,7 @@ const MyProfile: React.FC<MyProfileProps> = ({ user }) => {
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           Account Information
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
           <div>
             <p className="font-medium">Full Name</p>
@@ -51,18 +52,6 @@ const MyProfile: React.FC<MyProfileProps> = ({ user }) => {
           <div>
             <p className="font-medium">Address</p>
             <p className="text-sm text-gray-500">{user.address || "-"}</p>
-          </div>
-          <div>
-            <p className="font-medium">Logo</p>
-            {user.logo ? (
-              <img
-                src={user.logo}
-                alt="User Logo"
-                className="w-20 h-20 object-contain rounded-md border"
-              />
-            ) : (
-              <p className="text-sm text-gray-500">No logo uploaded</p>
-            )}
           </div>
         </div>
 
