@@ -8,9 +8,9 @@ import {
 } from "react-icons/io5";
 import { HiOutlineMail } from "react-icons/hi";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import api from "../../api/axios2";
+import { motion } from "framer-motion"
 import Swal from "sweetalert2";
+import api from "../../api/axios";
 
 // Define the form data type
 interface UserData {
