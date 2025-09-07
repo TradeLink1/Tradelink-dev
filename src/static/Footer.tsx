@@ -59,10 +59,10 @@ const Footer = () => {
         </div>
         <div>
           <h3 className="mb-3 font-semibold text-[#f89216]">Resources</h3>
-          <Link to="/HelpCenter">
+          <Link to="Resources/HelpCenter">
             <h4 className="text-[14px]  hover:text-[#f89216]">Help Center</h4>
           </Link>
-          <Link to="/SellerGuide">
+          <Link to="Resources/SellerGuide">
             <h4 className="text-[14px]  hover:text-[#f89216]">Seller Guide</h4>
           </Link>
           <Link to="/PrivacyPolicy">
