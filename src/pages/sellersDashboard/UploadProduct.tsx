@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { motion } from "framer-motion";
-import api from "../../api/axios"; // products
+import api from "../../api/axios"; // 
 
 const UploadProduct = () => {
   const [uploadType, setUploadType] = useState<"product" | "service">(
@@ -39,6 +39,11 @@ const UploadProduct = () => {
   const [errors, setErrors] = useState<ErrorFields>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [products, setProducts] =useState<any[]>([]);
+    const [services, setServices] =useState<any[]>([]);
+
+    const sellerId =localStorage.getItem("sellerId") || ""
+
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -61,6 +66,32 @@ const UploadProduct = () => {
       }
     }
   };
+
+  const fetchProducts = async () => {
+  if (!sellerId) return;
+  try {
+    const res = await api.get(`/api/v1/products/seller/${sellerId}`);
+    setProducts(res.data.products || []);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+  }
+};
+
+const fetchServices = async () => {
+  if (!sellerId) return;
+  try {
+    const res = await api.get(`/api/v1/services/seller/${sellerId}`);
+    setServices(res.data.services || []);
+  } catch (err) {
+    console.error("Error fetching services:", err);
+  }
+};
+
+useEffect(() => {
+  fetchProducts();
+  fetchServices();
+}, [sellerId]);
+  
 
   const validateForm = () => {
     const newErrors: ErrorFields = {};
@@ -101,11 +132,12 @@ const UploadProduct = () => {
       formDataToSend.append("price", data.price);
       formDataToSend.append("description", data.description);
 
-      if (uploadType === "product") {
-        formDataToSend.append("quantity", productData.quantity);
-        if (productData.imageFile)
-          formDataToSend.append("productImg", productData.imageFile);
-      } else {
+     if (uploadType === "product") {
+    formDataToSend.append("quantity", productData.quantity);
+    if (productData.imageFile) formDataToSend.append("productImg", productData.imageFile);
+    if (sellerId) formDataToSend.append("sellerId", sellerId);
+}
+      else {
         const sellerId = localStorage.getItem("sellerId") || "";
         if (sellerId) formDataToSend.append("sellerId", sellerId);
 
@@ -117,9 +149,7 @@ const UploadProduct = () => {
       // ✅ corrected here
       const axiosInstance = api;
       const endpoint =
-        uploadType === "product"
-          ? "/api/v1/products"
-          : "/api/v1/services/create";
+        uploadType === "product" ? "/api/v1/products/" : "/api/v1/services/create";
 
       const response = await api.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },

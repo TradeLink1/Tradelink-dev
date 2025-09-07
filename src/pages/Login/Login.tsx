@@ -335,7 +335,8 @@ const Login: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-          >
+          > 
+            
             <h3 className="text-2xl font-bold text-[#333333] mb-4 text-center">
               Resend Verification Email
             </h3>
@@ -376,6 +377,7 @@ const Login: React.FC = () => {
                   {resendLoading ? "Sending..." : "Send Email"}
                 </motion.button>
               </div>
+            
             </form>
           </motion.div>
         </div>

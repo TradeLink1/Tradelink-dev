@@ -1,3 +1,4 @@
+// ServiceProviders.tsx
 import React, { useState, useEffect } from "react";
 import {
   Search,
@@ -28,12 +29,12 @@ const ServiceProviders: React.FC = () => {
     { icon: <Wrench size={16} />, label: "Plumber", location: "All Areas" },
   ];
 
-  // ✅ Fetch all providers from API
+  // ✅ Fetch providers from correct API
   useEffect(() => {
     const fetchProviders = async () => {
       try {
         const res = await fetch(
-          "https://backend-dev-ltev.onrender.com/api/v1/services/all"
+          "https://tradelink-be.onrender.com/api/v1/services/all"
         );
         const data = await res.json();
         setProviders(data || []);
@@ -48,17 +49,12 @@ const ServiceProviders: React.FC = () => {
   // ✅ Apply search + filters
   useEffect(() => {
     const lowerQuery = query.toLowerCase();
-
     const filtered = providers.filter((p) => {
       const matchesQuery =
         !query ||
-        p.storeName?.toLowerCase().includes(lowerQuery) || // business name
-        p.businessCategory?.toLowerCase().includes(lowerQuery) || // category
-        p.name?.toLowerCase().includes(lowerQuery) || // owner
-        (p.servicesOffered && // ✅ if API doesn’t provide, fallback to dummy
-          p.servicesOffered.some((s: string) =>
-            s.toLowerCase().includes(lowerQuery)
-          ));
+        p.storeName?.toLowerCase().includes(lowerQuery) ||
+        p.businessCategory?.toLowerCase().includes(lowerQuery) ||
+        p.name?.toLowerCase().includes(lowerQuery);
 
       const matchesLocation =
         location === "All Locations" || p.location === location;
@@ -89,6 +85,7 @@ const ServiceProviders: React.FC = () => {
         Popular Services
       </h2>
       <div className="bg-[#FFF7E8] px-4 py-6 rounded-lg">
+        {/* Popular Services Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
           {popularServices.map((item) => (
             <div
@@ -107,8 +104,9 @@ const ServiceProviders: React.FC = () => {
           ))}
         </div>
 
-        {/* Search and Filters */}
+        {/* Search + Filters */}
         <div className="flex flex-col md:flex-row items-center gap-4 bg-white p-4 rounded-lg shadow-sm">
+          {/* Search */}
           <div className="flex items-center w-full md:w-1/3 border rounded-lg px-3 py-2">
             <Search size={16} className="text-gray-500 mr-2" />
             <input
@@ -119,6 +117,8 @@ const ServiceProviders: React.FC = () => {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
+
+          {/* Location Filter */}
           <div className="flex items-center w-full md:w-1/4 border rounded-lg px-3 py-2">
             <MapPin size={16} className="text-gray-500 mr-2" />
             <select
@@ -138,6 +138,8 @@ const ServiceProviders: React.FC = () => {
               <option>Benin City</option>
             </select>
           </div>
+
+          {/* Service Filter */}
           <div className="flex items-center w-full md:w-1/4 border rounded-lg px-3 py-2">
             <Briefcase size={16} className="text-gray-500 mr-2" />
             <select
@@ -156,6 +158,7 @@ const ServiceProviders: React.FC = () => {
               <option>Caterer</option>
             </select>
           </div>
+
           <Button className="text-orange-600 border border-orange-400 px-4 py-2 rounded-md text-sm hover:bg-orange-100 transition">
             More Filters
           </Button>
@@ -170,7 +173,7 @@ const ServiceProviders: React.FC = () => {
         Showing {filteredProviders.length} of {providers.length} services
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
         {filteredProviders.length === 0 ? (
           <p className="text-center text-gray-500 col-span-full">
             No providers found.
@@ -182,21 +185,33 @@ const ServiceProviders: React.FC = () => {
               className="border rounded-lg bg-white shadow-sm hover:shadow-md transition p-3 flex flex-col cursor-pointer"
               onClick={() => setSelectedProvider(p)}
             >
+              {/* Large Image */}
               <img
-                src={p.image || "https://via.placeholder.com/300x200.png?text=Service"}
-                alt={p.name}
-                className="h-28 w-full object-cover border border-gray-300 mb-3"
+                src={
+                  p.logo ||
+                  p.serviceImg ||
+                  p.image ||
+                  "https://via.placeholder.com/300x200.png?text=Service"
+                }
+                alt={p.storeName}
+                className="h-40 w-full object-cover border border-gray-200 rounded mb-3"
               />
-              <h3 className="font-semibold text-lg sm:text-sm text-orange-600">
-                {p.businessCategory}
+
+              {/* Title */}
+              <h3 className="font-semibold text-sm text-orange-600 truncate">
+                {p.storeName || "Untitled Service"}
               </h3>
-              <p className="font-medium text-[11px] sm:text-xs text-gray-800">
-                {p.storeName}
+
+              {/* Description */}
+              <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                {p.description || "No description provided."}
               </p>
-              <p className="text-[10px] sm:text-xs text-gray-500">{p.email}</p>
-              <Button className="mt-auto w-full bg-orange-500 text-white hover:bg-orange-600 text-xs py-1.5">
-                View Profile
-              </Button>
+
+              {/* Category */}
+              <p className="text-[11px] text-gray-500 flex items-center gap-1">
+                <Briefcase size={12} className="text-gray-400" />
+                {p.businessCategory || "General"}
+              </p>
             </div>
           ))
         )}
@@ -206,3 +221,4 @@ const ServiceProviders: React.FC = () => {
 };
 
 export default ServiceProviders;
+

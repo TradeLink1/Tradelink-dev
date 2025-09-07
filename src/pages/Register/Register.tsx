@@ -11,6 +11,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
 import Swal from "sweetalert2";
+import api from "../../api/axios";
 
 // Define the form data type
 interface UserData {
@@ -59,7 +60,7 @@ const Register = () => {
         password: data.password,
       };
 
-      await api.post("api/v1/auth/register", payload);
+      await api.post("/api/v1/auth/register", payload);
 
       // ✅ Show success toast
       Toast.fire({
