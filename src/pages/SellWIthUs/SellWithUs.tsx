@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { IoIosPeople } from "react-icons/io"
@@ -31,7 +29,6 @@ const benefits = [
 
 const SellWithUs = () => {
   const navigate = useNavigate()
-
   const [formData, setFormData] = useState({
     businessName: "",
     ownerName: "",
@@ -41,20 +38,13 @@ const SellWithUs = () => {
     category: "",
     address: "",
     description: "",
-    // sampleImage: null as File | null, // ❌ commented out upload image
     password: "",
     confirmPassword: "",
   })
-
   const [errors, setErrors] = useState<any>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  // ❌ Commented out resend verification states
-  // const [showResendModal, setShowResendModal] = useState(false)
-  // const [resendEmail, setResendEmail] = useState("")
-  // const [resendLoading, setResendLoading] = useState(false)
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target
@@ -74,7 +64,6 @@ const SellWithUs = () => {
     if (!formData.category) newErrors.category = "Select a category"
     if (!formData.password.trim()) newErrors.password = "Password is required"
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match"
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -83,10 +72,8 @@ const SellWithUs = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault()
     if (!validateForm()) return
-
     try {
       setLoading(true)
-
       const payload = {
         name: formData.ownerName,
         email: formData.email,
@@ -97,20 +84,15 @@ const SellWithUs = () => {
         category: formData.category,
         address: formData.address,
         description: formData.description,
-        // sampleImage: formData.sampleImage, // ❌ commented out upload image
-        
       }
-
+      // ✅ Correct endpoint
       await api.post("/api/v1/auth/register", payload)
-
       Swal.fire({
         icon: "success",
         title: "Registration Successful 🎉",
         text: "Please check your email to verify your account.",
         confirmButtonColor: "#30ac57",
       })
-
-      // Don’t log them in yet → wait for verification
       navigate("/login")
     } catch (error: any) {
       Swal.fire({
@@ -122,43 +104,6 @@ const SellWithUs = () => {
       setLoading(false)
     }
   }
-
-  // ❌ Commented out resend verification handlers
-  // const handleResendVerification = () => {
-  //   setShowResendModal(true)
-  //   setResendEmail("")
-  // }
-
-  // const handleResendSubmit = async (e: any) => {
-  //   e.preventDefault()
-  //   if (!resendEmail.trim()) {
-  //     return Swal.fire("Error", "Please enter your email address", "error")
-  //   }
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  //   if (!emailRegex.test(resendEmail)) {
-  //     return Swal.fire("Error", "Please enter a valid email address", "error")
-  //   }
-  //   try {
-  //     setResendLoading(true)
-  //     await api.post("/api/v1/auth/resend-verification", { email: resendEmail })
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Email Sent 📧",
-  //       text: "Verification link has been resent to your email.",
-  //       confirmButtonColor: "#30ac57",
-  //     })
-  //     setShowResendModal(false)
-  //     setResendEmail("")
-  //   } catch (error: any) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: error?.response?.data?.message || "Failed to resend verification email",
-  //     })
-  //   } finally {
-  //     setResendLoading(false)
-  //   }
-  // }
 
   return (
     <section className="max-w-[1200px] mx-auto">
@@ -292,34 +237,10 @@ const SellWithUs = () => {
               ></textarea>
             </div>
 
-            {/* Upload Sample - Commented Out */}
-            {/*
-            <div className="md:col-span-2">
-              <label className="block font-medium mb-2 text-[#333333]">Upload Sample (Optional)</label>
-              <input
-                type="file"
-                name="sampleImage"
-                accept="image/*"
-                className="border-2 border-gray-300 focus:border-[#30ac57] focus:ring-4 focus:ring-[#30ac57]/30 p-3 w-full rounded-full outline-none transition-all duration-200"
-                onChange={handleChange}
-              />
-            </div>
-            */}
-
             {/* Passwords */}
             {[
-              {
-                name: "password",
-                label: "Password",
-                show: showPassword,
-                setShow: setShowPassword,
-              },
-              {
-                name: "confirmPassword",
-                label: "Confirm Password",
-                show: showConfirmPassword,
-                setShow: setShowConfirmPassword,
-              },
+              { name: "password", label: "Password", show: showPassword, setShow: setShowPassword },
+              { name: "confirmPassword", label: "Confirm Password", show: showConfirmPassword, setShow: setShowConfirmPassword },
             ].map(({ name, label, show, setShow }) => (
               <div key={name} className="relative">
                 <label className="block font-medium mb-2 text-[#333333]">{label}</label>
@@ -351,75 +272,10 @@ const SellWithUs = () => {
               >
                 {loading ? "Registering..." : "Register as Seller"}
               </motion.button>
-
-              {/* ❌ Commented out resend verification link */}
-              {/*
-              <p className="mt-4 text-gray-600">
-                Didn't get the email?{" "}
-                <button
-                  type="button"
-                  onClick={handleResendVerification}
-                  className="text-[#30ac57] font-semibold hover:underline"
-                >
-                  Resend Verification
-                </button>
-              </p>
-              */}
             </div>
           </form>
         </motion.section>
       </div>
-
-      {/* ❌ Commented out Resend Modal */}
-      {/*
-      {showResendModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-          >
-            <h3 className="text-2xl font-bold text-[#333333] mb-4 text-center">Resend Verification Email</h3>
-            <p className="text-gray-600 mb-6 text-center">
-              Enter your email address to receive a new verification link.
-            </p>
-
-            <form onSubmit={handleResendSubmit}>
-              <div className="mb-6">
-                <label className="block font-medium mb-2 text-[#333333]">Email Address</label>
-                <input
-                  type="email"
-                  value={resendEmail}
-                  onChange={(e) => setResendEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="border-2 border-gray-300 focus:border-[#30ac57] focus:ring-4 focus:ring-[#30ac57]/30 p-3 w-full rounded-full outline-none transition-all duration-200"
-                  required
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowResendModal(false)}
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all"
-                >
-                  Cancel
-                </button>
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  disabled={resendLoading}
-                  className="flex-1 bg-[#30ac57] text-white py-3 rounded-full font-semibold hover:bg-[#2a9b4f] transition-all disabled:opacity-50"
-                >
-                  {resendLoading ? "Sending..." : "Send Email"}
-                </motion.button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
-      */}
     </section>
   )
 }
