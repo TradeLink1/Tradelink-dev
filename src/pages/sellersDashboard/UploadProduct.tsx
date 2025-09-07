@@ -1,8 +1,8 @@
 "use client";
 
-import { useState,useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import api from "../../api/axios"; // 
+import api from "../../api/axios";
 
 const UploadProduct = () => {
   const [uploadType, setUploadType] = useState<"product" | "service">(
@@ -39,12 +39,40 @@ const UploadProduct = () => {
   const [errors, setErrors] = useState<ErrorFields>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [products, setProducts] =useState<any[]>([]);
-    const [services, setServices] =useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
 
-    const sellerId =localStorage.getItem("sellerId") || ""
+  const sellerId = localStorage.getItem("sellerId") || "";
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Fetch Products
+  const fetchProducts = async () => {
+    if (!sellerId) return;
+    try {
+      const res = await api.get(`/api/v1/products/seller/${sellerId}`);
+      setProducts(res.data.products || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
 
+  // Fetch Services
+  const fetchServices = async () => {
+    if (!sellerId) return;
+    try {
+      const res = await api.get(`/api/v1/services/seller/${sellerId}`);
+      setServices(res.data.services || []);
+    } catch (err) {
+      console.error("Error fetching services:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchServices();
+  }, [sellerId]);
+
+  // Handle Form Input Change
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -67,32 +95,7 @@ const UploadProduct = () => {
     }
   };
 
-  const fetchProducts = async () => {
-  if (!sellerId) return;
-  try {
-    const res = await api.get(`/api/v1/products/seller/${sellerId}`);
-    setProducts(res.data.products || []);
-  } catch (err) {
-    console.error("Error fetching products:", err);
-  }
-};
-
-const fetchServices = async () => {
-  if (!sellerId) return;
-  try {
-    const res = await api.get(`/api/v1/services/seller/${sellerId}`);
-    setServices(res.data.services || []);
-  } catch (err) {
-    console.error("Error fetching services:", err);
-  }
-};
-
-useEffect(() => {
-  fetchProducts();
-  fetchServices();
-}, [sellerId]);
-  
-
+  // Validate Form
   const validateForm = () => {
     const newErrors: ErrorFields = {};
     const data = uploadType === "product" ? productData : serviceData;
@@ -116,6 +119,7 @@ useEffect(() => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle Form Submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -132,24 +136,21 @@ useEffect(() => {
       formDataToSend.append("price", data.price);
       formDataToSend.append("description", data.description);
 
-     if (uploadType === "product") {
-    formDataToSend.append("quantity", productData.quantity);
-    if (productData.imageFile) formDataToSend.append("productImg", productData.imageFile);
-    if (sellerId) formDataToSend.append("sellerId", sellerId);
-}
-      else {
-        const sellerId = localStorage.getItem("sellerId") || "";
-        if (sellerId) formDataToSend.append("sellerId", sellerId);
-
-        if (serviceData.imageFile) {
+      if (uploadType === "product") {
+        formDataToSend.append("quantity", productData.quantity);
+        if (productData.imageFile)
+          formDataToSend.append("productImg", productData.imageFile);
+      } else {
+        if (serviceData.imageFile)
           formDataToSend.append("serviceImg", serviceData.imageFile);
-        }
       }
 
-      // ✅ corrected here
-      const axiosInstance = api;
+      if (sellerId) formDataToSend.append("sellerId", sellerId);
+
       const endpoint =
-        uploadType === "product" ? "/api/v1/products/" : "/api/v1/services/create";
+        uploadType === "product"
+          ? "/api/v1/products/create"
+          : "/api/v1/services/create";
 
       const response = await api.post(endpoint, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -158,6 +159,7 @@ useEffect(() => {
       console.log(`${uploadType} created successfully:`, response.data);
       setSubmitSuccess(true);
 
+      // Reset form
       if (uploadType === "product") {
         setProductData({
           name: "",
@@ -177,8 +179,14 @@ useEffect(() => {
         });
       }
 
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) (fileInput as HTMLInputElement).value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
+
+      // Refresh data
+      if (uploadType === "product") {
+        fetchProducts();
+      } else {
+        fetchServices();
+      }
     } catch (error) {
       const err = (error as any)?.response?.data;
       setErrors({
@@ -218,12 +226,13 @@ useEffect(() => {
           </div>
         )}
 
-        <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1">
+        {/* Toggle */}
+        <div className="relative flex w-72 mx-auto mb-8 bg-[#f8921651] rounded-full p-1 overflow-hidden">
           <motion.div
             layout
             className="absolute top-1 bottom-1 w-1/2 bg-[#f89216] rounded-full"
             initial={false}
-            animate={{ x: uploadType === "product" ? 0 : "100%" }}
+            animate={{ x: uploadType === "product" ? 0 : 144 }} // 🔥 Fixed: 144px = half of 288px container
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           />
           <button
@@ -244,7 +253,9 @@ useEffect(() => {
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               {uploadType === "product" ? "Product Name" : "Service Name"}
@@ -261,6 +272,7 @@ useEffect(() => {
             )}
           </div>
 
+          {/* Price */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Price
@@ -277,6 +289,7 @@ useEffect(() => {
             )}
           </div>
 
+          {/* Category */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Category
@@ -334,6 +347,7 @@ useEffect(() => {
             )}
           </div>
 
+          {/* Quantity (Only Product) */}
           {uploadType === "product" && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -352,11 +366,13 @@ useEffect(() => {
             </div>
           )}
 
+          {/* Image Upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Upload Image
             </label>
             <input
+              ref={fileInputRef}
               type="file"
               name="imageFile"
               accept="image/*"
@@ -368,6 +384,7 @@ useEffect(() => {
             )}
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Description
@@ -381,6 +398,7 @@ useEffect(() => {
             ></textarea>
           </div>
 
+          {/* Submit */}
           <div className="flex justify-center pt-6">
             <button
               type="submit"

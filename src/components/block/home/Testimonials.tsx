@@ -38,7 +38,7 @@ const cardData2 = [
   {
     icon: seller2,
     title:
-      "Uploading my voice note on TradeLink helped customers trust me more. They say it feels like they know me before calling!.",
+      "Uploading my products on TradeLink helped me reached out to more customers than usual. Thanks to TradeLink...",
     description: "⇾ Tunde, Furniture Maker.",
   },
   {

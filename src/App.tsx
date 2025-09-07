@@ -32,19 +32,25 @@ import AdminSellersReport from "./pages/adminDashboard/AdminReports";
 import { AuthProvider } from "./context/AuthContext";
 import VerifyEmail from "./pages/Register/VerifyEmail";
 import SellerProfile from "./pages/Categories/SellerProfile";
+
+// new imports
+import ScrollToTop from "./components/settings/ScrollToTop.tsx";
 import AboutUs from "./pages/aboutus/AboutUs";
 import UserProfile from "./components/userProfile/userProfile";
-
 import Logout from "./pages/userContents/Logout";
 import UserLayout from "./pages/userContents/UserLayout";
 import UserSettings from "./pages/userContents/UserSettings";
 import ResetPassword from "./pages/Login/ResetPassword";
 
 const Layout = () => {
+  const location = useLocation(); // ✅ Fix: now using the hook
+  const currentPath = location.pathname.toLowerCase();
+
   const hideHeaderFooter =
     ["/login", "/register", "/categories/products", "/seller-profile"].some(
-      (path) => location.pathname.toLowerCase().startsWith(path)
-    ) || location.pathname.toLowerCase().startsWith("/products/");
+      (path) => currentPath.startsWith(path)
+    ) || currentPath.startsWith("/products/");
+
   return (
     <>
       {!hideHeaderFooter && <Header />}
@@ -58,8 +64,11 @@ const App = () => {
   return (
     <div className="mx-auto">
       <AuthProvider>
-        <SearchProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          {/* Wrap SearchProvider here so every component inside Router can use it */}
+          <SearchProvider>
+            <ScrollToTop />
+
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
@@ -77,7 +86,6 @@ const App = () => {
                   path="/service-provider/:id"
                   element={<SellerProfile />}
                 />
-
                 <Route path="/AboutUs" element={<AboutUs />} />
                 <Route path="/Faq" element={<Faq />} />
                 <Route path="/Contact" element={<Contact />} />
@@ -90,6 +98,7 @@ const App = () => {
                 />
               </Route>
 
+              {/* Nested dashboard routes */}
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
@@ -116,8 +125,8 @@ const App = () => {
 
               <Route path="/logout" element={<Logout />} />
             </Routes>
-          </BrowserRouter>
-        </SearchProvider>
+          </SearchProvider>
+        </BrowserRouter>
       </AuthProvider>
     </div>
   );

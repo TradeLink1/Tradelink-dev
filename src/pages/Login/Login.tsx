@@ -1,16 +1,16 @@
 import type React from "react";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // ✅ removed useLocation
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
 import { GoLock } from "react-icons/go";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../api/axios";
+import { Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -29,8 +29,9 @@ const Login: React.FC = () => {
     timerProgressBar: true,
   });
 
+  //   Navigation
   const handleGoBack = () => {
-    if (window.history.length > 1) {
+    if (window.history.state && window.history.length > 1) {
       navigate(-1);
     } else {
       navigate("/");
@@ -325,6 +326,20 @@ const Login: React.FC = () => {
               </button>
             </p>
           </form>
+          <div className="mt-4 text-center">
+            <p className="text-gray-600 text-[14px]">
+              Dont have an account yet?{" "}
+              <Link to="/register" className="text-[#F89216] hover:underline">
+                Register
+              </Link>
+            </p>
+            <p className="text-gray-600 mt-1 text-[14px]">
+              Want to sell instead?{" "}
+              <Link to="/sellwithus" className="text-[#F89216] hover:underline">
+                Join as Seller
+              </Link>
+            </p>
+          </div>
         </motion.div>
       </div>
 
@@ -335,8 +350,7 @@ const Login: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-          > 
-            
+          >
             <h3 className="text-2xl font-bold text-[#333333] mb-4 text-center">
               Resend Verification Email
             </h3>
@@ -377,7 +391,6 @@ const Login: React.FC = () => {
                   {resendLoading ? "Sending..." : "Send Email"}
                 </motion.button>
               </div>
-            
             </form>
           </motion.div>
         </div>
