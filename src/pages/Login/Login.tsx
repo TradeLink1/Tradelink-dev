@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
 import { GoLock } from "react-icons/go";
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Resend Verification State
+  //  Resend Verification State
   const [showResendModal, setShowResendModal] = useState(false);
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
@@ -31,15 +31,16 @@ const Login: React.FC = () => {
     timerProgressBar: true,
   });
 
+  //   Navigation
   const handleGoBack = () => {
-    if (window.history.length > 1) {
+    if (window.history.state && window.history.length > 1) {
       navigate(-1);
     } else {
       navigate("/");
     }
   };
 
-  // ✅ Show modal if user just verified email via link
+  //  Show modal if user just verified email via link
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const verified = params.get("verified");
@@ -56,7 +57,7 @@ const Login: React.FC = () => {
     }
   }, []);
 
-  // ✅ Login Handler
+  //  Login Handler
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -77,7 +78,7 @@ const Login: React.FC = () => {
 
       const { token, role: backendRole, userId, sellerId, name } = res.data;
 
-      // ✅ Store everything in localStorage
+      //  Store everything in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", backendRole);
       localStorage.setItem(
@@ -206,7 +207,9 @@ const Login: React.FC = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error?.response?.data?.message || "Failed to resend verification email",
+        text:
+          error?.response?.data?.message ||
+          "Failed to resend verification email",
       });
     } finally {
       setResendLoading(false);

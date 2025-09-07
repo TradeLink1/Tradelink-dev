@@ -225,7 +225,7 @@ function Faq() {
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <h1 className="text-[42px] max-[510px]:text-[35px] text-[#333333] font-extrabold max-mobile:text-[25px] mb-2">
+        <h1 className="text-[42px] max-[510px]:text-[35px] text-[#333333] font-bold max-mobile:text-[25px] mb-2">
           Frequently Asked Questions{" "}
           <span className="text-[#30ac57]">(FAQs)</span>
         </h1>

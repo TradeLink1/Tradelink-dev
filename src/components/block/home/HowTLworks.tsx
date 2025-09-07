@@ -41,7 +41,7 @@ const HowTLworks = () => {
         viewport={{ once: true }}
         className="flex max-w-[1200px] mx-auto items-center justify-center mb-10 text-center"
       >
-        <h1 className="text-[42px] text-[#333333] font-extrabold max-[510px]:text-[35px] max-mobile:text-[25px]">
+        <h1 className="text-[42px] text-[#333333] font-bold max-[510px]:text-[35px] max-mobile:text-[25px]">
           How TradeLinks Works
         </h1>
       </motion.div>

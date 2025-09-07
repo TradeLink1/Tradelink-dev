@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  IoIosArrowDropleftCircle,
+  IoIosArrowDroprightCircle,
+} from "react-icons/io";
+import { FiSearch } from "react-icons/fi";
+
+import { useSearch } from "../../../context/SearchContext";
 
 import hero1 from "../../../assets/images/hero-images/hero1.jpeg";
 import hero2 from "../../../assets/images/hero-images/hero2.jpg";
@@ -11,12 +18,6 @@ import hero7 from "../../../assets/images/hero-images/hero7.png";
 import hero8 from "../../../assets/images/hero-images/hero8.jpeg";
 import hero9 from "../../../assets/images/hero-images/hero9.jpg";
 import hero10 from "../../../assets/images/hero-images/hero10.jpeg";
-import { useSearch } from "../../../context/SearchContext";
-import {
-  IoIosArrowDropleftCircle,
-  IoIosArrowDroprightCircle,
-} from "react-icons/io";
-import { FiSearch } from "react-icons/fi";
 
 const slides = [
   {
@@ -60,7 +61,7 @@ const slides = [
 
 const HeroSection = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const { query, setQuery } = useSearch();
+  const { query, setQuery, setResults, setLoading } = useSearch();
 
   const goToNextSlide = () => {
     setCurrentSlideIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -70,18 +71,29 @@ const HeroSection = () => {
     setCurrentSlideIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const triggerSearch = () => {
-    if (query.trim()) {
-      console.log("Search triggered:", query);
-    } else {
+  const triggerSearch = async () => {
+    if (!query.trim()) {
       console.log("Search query is empty.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/v1/sellers/search?query=${query}`);
+      const data = await res.json();
+      setResults(data);
+      console.log("Search results:", data);
+    } catch (err) {
+      console.error("Error fetching sellers:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       goToNextSlide();
-    }, 4000); // faster switch
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -115,7 +127,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -30 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-[60px] max-w-[800px] leading-16 font-extrabold text-orange-100 mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
+          className="text-[60px] max-w-[800px] leading-16 font-bold text-orange-100 mb-8 max-tablet:text-[43px] max-tablet:leading-12 max-mobile:text-[29px] max-mobile:w-[280px] max-mobile:leading-8 max-[510px]:text-[37px] max-[510px]:w-[380px] max-tablet:w-[420px]"
         >
           {slides[currentSlideIndex].title}
         </motion.h1>

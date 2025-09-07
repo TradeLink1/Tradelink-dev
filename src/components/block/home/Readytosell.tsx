@@ -16,7 +16,7 @@ const Readytosell = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-extrabold max-mobile:text-[25px]"
+          className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-bold max-mobile:text-[25px]"
         >
           Ready to Start Selling?
         </motion.h1>

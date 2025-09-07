@@ -91,6 +91,7 @@ const Register = () => {
     }
   };
 
+  // 🔥 Go back fix (same as login)
   const handleGoBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -120,7 +121,9 @@ const Register = () => {
           className="flex items-center max-w-fit align-center justify-center text-[#333333] hover:bg-[#50ac57] hover:rounded-full hover:text-white py-2 px-4 rounded-md transition-colors mb-4"
         >
           <IoArrowBackSharp className="mr-2" />
-          <span className="font-semibold text-[14px]">Back to Home</span>
+          <span className="font-semibold text-[14px]">
+            {window.history.length > 1 ? "Go Back" : "Back to Home"}
+          </span>
         </button>
 
         <motion.div

@@ -11,7 +11,6 @@ import Home from "./pages/Homepage/Home";
 // import Categories from "./pages/Categories/Categories";
 import SellWithUs from "./pages/SellWIthUs/SellWithUs";
 import Faq from "./pages/Faq/Faq";
-
 import Contact from "./pages/Contact/ContactMain";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -36,13 +35,12 @@ import SellerProfile from "./pages/Categories/SellerProfile";
 import AboutUs from "./pages/aboutus/AboutUs.tsx";
 
 //  new imports
-
 import ScrollToTop from "./components/settings/ScrollToTop.tsx";
 
 const Layout = () => {
   const location = useLocation();
 
-  //  hide header and footer in some pages //
+  // hide header and footer in some pages
   const hideHeaderFooter = ["/login", "/register"].includes(
     location.pathname.toLowerCase()
   );
@@ -58,12 +56,11 @@ const Layout = () => {
 
 const App = () => {
   return (
-    <div className=" mx-auto">
+    <div className="mx-auto">
       <AuthProvider>
-        <SearchProvider>
-          <BrowserRouter>
-            {/*  Add SmoothScroll + ScrollToTop */}
-
+        <BrowserRouter>
+          {/* Wrap SearchProvider here so every component inside Router can use it */}
+          <SearchProvider>
             <ScrollToTop />
 
             <Routes>
@@ -104,8 +101,8 @@ const App = () => {
                 <Route path="kyc" element={<AdminKyc />} />
               </Route>
             </Routes>
-          </BrowserRouter>
-        </SearchProvider>
+          </SearchProvider>
+        </BrowserRouter>
       </AuthProvider>
     </div>
   );

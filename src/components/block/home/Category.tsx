@@ -141,7 +141,7 @@ const Category = () => {
       {/* Header */}
       <div className="flex flex-col justify-center text-center max-w-[1200px] mx-auto px-4">
         <motion.h1
-          className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-extrabold max-mobile:text-[25px]"
+          className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-bold max-mobile:text-[25px]"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -237,7 +237,7 @@ const Category = () => {
         viewport={{ once: true }}
       >
         <div>
-          <h1 className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-extrabold max-mobile:text-[25px]">
+          <h1 className="text-[42px] max-[510px]:text-[35px] text-[#fef6e1] font-bold max-mobile:text-[25px]">
             Connect with Local Sellers{" "}
           </h1>
           <p className="text-[23px] max-tablet:text-[20px] font-medium max-w-[900px] leading-6 mx-auto text-[#333333] max-mobile:text-[17px]">
