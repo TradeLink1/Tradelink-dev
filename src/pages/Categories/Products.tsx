@@ -61,10 +61,11 @@ const Products = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        backgroundColor: "#f89216",
       }}
     >
       {/* Top Bar */}
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center p-4 border-b bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
         {/* Left: Burger (mobile only) */}
         <button
           onClick={() => setMenuOpen(true)}
@@ -82,7 +83,7 @@ const Products = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
             />
           </div>
         </div>
@@ -90,21 +91,25 @@ const Products = () => {
         {/* Right: Avatar */}
         <div
           onClick={() => navigate("/userProfile")}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 cursor-pointer hover:scale-110 transition ml-4"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-white cursor-pointer hover:scale-110 transition ml-4 shadow-md"
         >
-          <User className="w-6 h-6 text-gray-700" />
+          <User className="w-6 h-6" />
         </div>
       </div>
 
       <div className="flex">
         {/* Sidebar - Desktop */}
-        <div className="hidden lg:block w-1/4 bg-gray-100 p-4 rounded-lg m-4">
-          <h2 className="text-lg font-semibold mb-4">Categories</h2>
-          <ul className="space-y-2">
+        <div className="hidden lg:block w-1/4 bg-white/90 backdrop-blur-md shadow-md p-6 rounded-xl m-4">
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">
+            Categories
+          </h2>
+          <ul className="space-y-3">
             <li
               onClick={() => setSelectedCategory(null)}
-              className={`cursor-pointer ${
-                selectedCategory === null ? "font-bold text-orange-500" : ""
+              className={`cursor-pointer transition ${
+                selectedCategory === null
+                  ? "font-semibold text-orange-600"
+                  : "text-gray-600 hover:text-orange-500"
               }`}
             >
               All
@@ -113,8 +118,10 @@ const Products = () => {
               <li
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`cursor-pointer ${
-                  selectedCategory === cat ? "font-bold text-orange-500" : ""
+                className={`cursor-pointer transition ${
+                  selectedCategory === cat
+                    ? "font-semibold text-orange-600"
+                    : "text-gray-600 hover:text-orange-500"
                 }`}
               >
                 {cat}
@@ -125,7 +132,7 @@ const Products = () => {
           {/* Back to Home */}
           <div
             onClick={() => navigate("/")}
-            className="flex items-center mt-8 cursor-pointer text-gray-700 hover:text-orange-500"
+            className="flex items-center mt-10 cursor-pointer text-gray-600 hover:text-orange-500 transition"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -137,12 +144,12 @@ const Products = () => {
           <div className="fixed inset-0 z-50 flex">
             {/* Overlay */}
             <div
-              className="fixed inset-0 bg-black bg-opacity-50"
+              className="fixed inset-0 bg-[#ffffff9f]  backdrop-blur-sm "
               onClick={() => setMenuOpen(false)}
             ></div>
 
             {/* Drawer */}
-            <div className="relative w-3/4 max-w-xs bg-white p-6 z-50">
+            <div className="relative w-3/4 max-w-xs bg-white p-6 z-50 rounded-r-xl shadow-lg">
               <button
                 onClick={() => setMenuOpen(false)}
                 className="absolute top-4 right-4"
@@ -150,15 +157,19 @@ const Products = () => {
                 <X className="w-6 h-6 text-gray-700" />
               </button>
 
-              <h2 className="text-lg font-semibold mb-4">Categories</h2>
-              <ul className="space-y-2">
+              <h2 className="text-lg font-semibold mb-4 text-gray-700">
+                Categories
+              </h2>
+              <ul className="space-y-3">
                 <li
                   onClick={() => {
                     setSelectedCategory(null);
                     setMenuOpen(false);
                   }}
-                  className={`cursor-pointer ${
-                    selectedCategory === null ? "font-bold text-orange-500" : ""
+                  className={`cursor-pointer transition ${
+                    selectedCategory === null
+                      ? "font-semibold text-orange-600"
+                      : "text-gray-600 hover:text-orange-500"
                   }`}
                 >
                   All
@@ -170,8 +181,10 @@ const Products = () => {
                       setSelectedCategory(cat);
                       setMenuOpen(false);
                     }}
-                    className={`cursor-pointer ${
-                      selectedCategory === cat ? "font-bold text-orange-500" : ""
+                    className={`cursor-pointer transition ${
+                      selectedCategory === cat
+                        ? "font-semibold text-orange-600"
+                        : "text-gray-600 hover:text-orange-500"
                     }`}
                   >
                     {cat}
@@ -185,7 +198,7 @@ const Products = () => {
                   navigate("/");
                   setMenuOpen(false);
                 }}
-                className="flex items-center mt-8 cursor-pointer text-gray-700 hover:text-orange-500"
+                className="flex items-center mt-10 cursor-pointer text-gray-600 hover:text-orange-500 transition"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
@@ -195,36 +208,40 @@ const Products = () => {
         )}
 
         {/* Product List */}
-        <div className="flex-1 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <div
                 key={product._id}
                 onClick={() => navigate(`/products/${product._id}`)}
-                className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition"
+                className="bg-white/90 backdrop-blur-sm shadow-md rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <img
                   src={product.productImg}
                   alt={product.name}
                   className="h-48 w-full object-cover"
                 />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
                   <p className="text-sm text-gray-500">{product.category}</p>
-                  <p className="text-orange-600 font-bold mt-2">
+                  <p className="text-orange-600 font-bold mt-2 text-lg">
                     ₦{product.price.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
                     {product.description}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 mt-2">
                     Qty: {product.quantity}
                   </p>
                 </div>
               </div>
             ))
           ) : (
-            <p>No products available</p>
+            <p className="col-span-full text-center text-gray-500 mt-10">
+              No products available
+            </p>
           )}
         </div>
       </div>

@@ -67,7 +67,7 @@ const HowTLworks = () => {
                 transition: { duration: 0.25 },
               }}
               whileTap={{ scale: 0.98 }}
-              className="w-[320px] p-8 bg-white rounded-3xl shadow-md cursor-pointer hover:shadow-lg"
+              className="w-[320px] p-8 bg-white rounded-3xl hover:border-1 shadow-md cursor-pointer hover:shadow-lg"
             >
               <motion.img
                 src={card.icon}

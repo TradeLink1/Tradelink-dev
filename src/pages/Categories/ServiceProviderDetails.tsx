@@ -17,6 +17,13 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
 }) => {
   const getImage = (item: any) => {
     const src =
+
+//       (item?.serviceImg &&
+//         String(item.serviceImg).trim() !== "" &&
+//         item.serviceImg) ||
+//       (item?.productImg &&
+//         String(item.productImg).trim() !== "" &&
+//         item.productImg) ||
       (item?.logo && String(item.logo).trim() !== "" && item.logo) ||
       (item?.serviceImg && String(item.serviceImg).trim() !== "" && item.serviceImg) ||
       (item?.productImg && String(item.productImg).trim() !== "" && item.productImg) ||
@@ -24,11 +31,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
       null;
     return (
       src ||
-      `https://via.placeholder.com/300x200.png?text=${encodeURIComponent(
+      `https://via.placeholder.com/400x300.png?text=${encodeURIComponent(
         item?.name || item?.storeName || "No Image"
       )}`
     );
   };
+
 
   // State
   const [currentProvider, setCurrentProvider] = useState(provider);
@@ -51,7 +59,6 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     if (chatScrollRef.current)
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
@@ -87,14 +94,12 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
         const filtered = Array.isArray(data) ? data.filter((p) => p._id !== currentProvider._id) : [];
         setOtherListingsState(filtered);
       } catch (e) {
-        console.error("Other listings fetch failed", e);
         setOtherListingsState([]);
       }
     };
     run();
   }, [currentProvider]);
 
-  // Fetch similar services
   useEffect(() => {
     const run = async () => {
       try {
@@ -107,12 +112,21 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
         const data = await res.json();
         if (Array.isArray(data)) {
           const cleaned = data.filter(
+
+//             (s: any) => s.category === category && s._id !== provider._id
+//           );
+//           if (cleaned.length > 0) {
+//             setSimilarServicesState(cleaned);
+//             return;
+//           }
+//         }
+//         setSimilarServicesState([]);
+
             (s: any) => s.businessCategory === category && s._id !== currentProvider._id
           );
           setSimilarServicesState(cleaned);
         }
       } catch (e) {
-        console.error("Similar services fetch failed", e);
         setSimilarServicesState([]);
       }
     };
@@ -205,6 +219,18 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
   };
 
   return (
+//     <div className="max-w-[1280px] mb-20 mt-25 mx-auto px-4 py-10">
+//       {/* Back Button */}
+//       <div className="mb-6">
+//         <Button
+//           name="← Back to Providers"
+//           bgColor="#F97316"
+//           textColor="#fff"
+//           borderColor="#F97316"
+//           hoverBgColor="#EA580C"
+//           onClick={onBack}
+//         />
+//       </div>
     <div className="max-w-[1280px] mx-auto px-4 py-8 mt-20">
       <Button
         name="← Back to Providers"
@@ -215,10 +241,62 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
         onClick={handleBack}
       />
 
-      <h2 className="text-2xl font-bold text-orange-600 mb-6">
-        Service Provider Information
-      </h2>
+      {/* HERO */}
+      <div className="relative w-full h-64 rounded-2xl overflow-hidden shadow-lg mb-10">
+        <img
+          src={getImage(provider)}
+          alt={provider.storeName || provider.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+          <h1 className="text-3xl font-bold text-white">
+            {provider.storeName || provider.name}
+          </h1>
+          <p className="text-orange-300 font-medium">
+            {provider.businessCategory || provider.category}
+          </p>
+        </div>
+      </div>
 
+
+<!--       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT COLUMN */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* ABOUT */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              About the Provider
+            </h2>
+            <p className="text-gray-700 mb-2">
+              {provider.description ||
+                "We provide reliable services with guaranteed quality."}
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3 text-gray-700 mt-4">
+              <p className="flex items-center gap-2">
+                <Phone size={18} /> {provider.phone || "—"}
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail size={18} /> {provider.email || "—"}
+              </p>
+              <p className="flex items-center gap-2">
+                <MapPin size={18} /> {provider.location || "—"}
+              </p>
+            </div>
+          </div>
+
+          {/* SERVICES */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              Services Offered
+            </h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-700">
+              {services.map((s, i) => (
+                <li key={i} className="bg-gray-50 px-3 py-2 rounded-lg">
+                  {s}
+                </li>
+              ))}
+            </ul> -->
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
@@ -269,10 +347,22 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
             )}
           </div>
 
-          {/* Reviews */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold text-orange-600 mb-4">Reviews</h2>
+          {/* REVIEWS */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              Customer Reviews
+            </h2>
             <div className="space-y-4">
+
+<!--               {reviews.map((r) => (
+                <div key={r.id} className="bg-gray-50 p-3 rounded-lg shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <p className="font-medium">{r.name}</p>
+                    <div className="flex text-yellow-400">
+                      {Array.from({ length: r.rating }).map((_, i) => (
+                        <Star key={i} size={16} fill="currentColor" />
+                      ))} -->
+              
               {reviews.length > 0 ? (
                 reviews.map((r: any, idx: number) => (
                   <div key={idx} className="border-b pb-3 last:border-none last:pb-0">
@@ -283,9 +373,11 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                           <Star key={i} size={16} fill="currentColor" />
                         ))}
                       </div>
+
                     </div>
                     <p className="text-gray-600 text-sm mt-1">{r.comment}</p>
                   </div>
+
                 ))
               ) : (
                 <p className="text-gray-500 text-sm">No reviews yet.</p>
@@ -311,6 +403,30 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               </div>
 
               <textarea
+<!--                 className="w-full h-24 border rounded-lg p-2 text-sm focus:ring-2 focus:ring-orange-500"
+                placeholder="Write your review..."
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+              />
+              <div className="mt-2">
+                <Button
+                  onClick={handleAddReview}
+                  name="Submit Review"
+                  bgColor="#F97316"
+                  textColor="#fff"
+                  borderColor="#F97316"
+                  hoverBgColor="#EA580C"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* OTHER LISTINGS */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-orange-600 mb-4">
+              Other Listings
+            </h2> -->
+              
                 className="w-full h-32 border rounded p-2 text-sm mb-2"
                 placeholder={user ? "Write your review..." : "Login to submit a review"}
                 value={newReview}
@@ -330,6 +446,7 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
           {/* Other Listings */}
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold text-orange-600 mb-4">Other Listings</h2>
+
             {otherListingsState.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {otherListingsState.map((o: any) => (
@@ -341,29 +458,62 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                     <img
                       src={getImage(o)}
                       alt={o.storeName || o.name}
-                      className="w-full h-28 object-cover rounded border mb-2"
+                      className="w-full h-28 object-cover rounded-xl group-hover:scale-105 transition"
                     />
+
                     <p className="text-sm font-medium text-gray-800">{o.storeName || o.name}</p>
                     <p className="text-xs text-gray-500">{o.businessCategory || o.category}</p>
+
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No other listings found.</p>
+              <p className="text-gray-500">No other listings found.</p>
             )}
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-6">
-          {/* Location */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-2">Location</h2>
+        {/* RIGHT COLUMN */}
+        <div className="space-y-8">
+          {/* LOCATION */}
+          <div className="bg-white shadow-lg rounded-2xl p-6  top-20">
+            <h2 className="text-lg font-bold text-orange-600 mb-3">Location</h2>
             <img
               src="https://via.placeholder.com/400x200.png?text=Map+Preview"
               alt="Map"
-              className="w-full rounded"
+              className="w-full rounded-xl mb-2"
             />
+            
+<!--             <p className="text-gray-600">{provider.location || "—"}</p>
+          </div>
+
+          {/* HOURS */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-lg font-bold text-orange-600 mb-3">
+              Working Hours
+            </h2>
+            <ul className="text-sm text-gray-700 space-y-1">
+              <li className="flex items-center gap-2">
+                <Clock size={16} /> Mon - Fri: 8am - 6pm
+              </li>
+              <li className="flex items-center gap-2">
+                <Clock size={16} /> Sat: 9am - 4pm
+              </li>
+              <li className="flex items-center gap-2">
+                <Clock size={16} /> Sun: Closed
+              </li>
+            </ul>
+          </div>
+
+          {/* CONTACT */}
+          <div className="bg-white shadow-lg rounded-2xl p-6 text-center">
+            <h2 className="text-lg font-bold text-orange-600 mb-4">
+              Get in Touch
+            </h2>
+            <div className="space-y-3">
+              <Button
+                name="📞 Contact Provider" -->
+
             <p className="text-gray-600 mt-2">{currentProvider?.location || "—"}</p>
           </div>
 
@@ -389,10 +539,21 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
             <div className="flex justify-center mb-4">
               <Button
                 name={displayPhone ? `Call ${displayPhone}` : "Contact Provider"}
+
                 bgColor="#F97316"
                 textColor="#fff"
                 borderColor="#F97316"
                 hoverBgColor="#EA580C"
+
+<!--                 onClick={() => alert("Calling provider...")}
+              />
+              <Button
+                name="💬 Send Message"
+                bgColor="#fff"
+                textColor="#F97316"
+                borderColor="#F97316"
+                hoverBgColor="#FFEDD5"
+                onClick={() => alert("Opening chat...")} -->
                 onClick={handleCallProvider}
               />
             </div>
@@ -464,24 +625,25 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Similar Services */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-bold text-orange-600 mb-4">Similar Services</h2>
+          {/* SIMILAR SERVICES */}
+          <div className="bg-white shadow-lg rounded-2xl p-6">
+            <h2 className="text-lg font-bold text-orange-600 mb-4">
+              Similar Services
+            </h2>
             {similarServicesState.length > 0 ? (
               <div className="grid grid-cols-2 gap-4">
                 {similarServicesState.map((s: any) => (
                   <div
                     key={s._id || s.id}
-                    className="cursor-pointer"
-                    onClick={() => handleSelectProvider(s)}
+                    onClick={() => onSelectProvider(s)}
+                    className="cursor-pointer group"
                   >
                     <img
                       src={getImage(s)}
                       alt={s.storeName || s.name}
-                      className="w-full h-24 object-cover rounded border mb-2"
+                      className="w-full h-24 object-cover rounded-xl group-hover:scale-105 transition"
                     />
-                    <p className="text-sm font-medium text-gray-800">
+                    <p className="text-xs font-medium text-gray-800 truncate mt-1">
                       {s.storeName || s.name}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -491,7 +653,9 @@ const ServiceProviderDetails: React.FC<ServiceProviderDetailsProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No similar services found.</p>
+              <p className="text-gray-500 text-sm">
+                No similar services available.
+              </p>
             )}
           </div>
         </div>

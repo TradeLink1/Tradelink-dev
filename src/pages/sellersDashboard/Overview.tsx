@@ -4,7 +4,7 @@ import {
   ShoppingBag,
   MessageSquare,
   Star,
-  Activity, // ✅ Account Status
+  Activity,
   PlusCircle,
   Edit,
   Mail,
@@ -16,7 +16,7 @@ interface Stats {
   totalProducts: number;
   totalMessages: number;
   totalCustomerReviews: number;
-  accountStatus: string; // ✅ frontend only
+  accountStatus: string;
 }
 
 interface Message {
@@ -43,7 +43,7 @@ const Overview = () => {
     totalProducts: 0,
     totalMessages: 0,
     totalCustomerReviews: 0,
-    accountStatus: "Active", // ✅ hardcoded default
+    accountStatus: "Active", //
   });
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
   const [customerReviews, setCustomerReviews] = useState<Review[]>([]);
@@ -55,7 +55,7 @@ const Overview = () => {
       return;
     }
 
-    // ✅ Fetch seller profile (storeName only)
+    //  Fetch seller profile (storeName only)
     const fetchSellerProfile = async () => {
       try {
         const res = await api.get("/api/v1/sellers/only/profile", {
@@ -72,7 +72,7 @@ const Overview = () => {
       }
     };
 
-    // ✅ Fetch dashboard stats/messages/reviews
+    //  Fetch dashboard stats/messages/reviews
     const fetchDashboardData = async () => {
       try {
         const res = await api.get("/api/v1/sellers/dashboard", {
@@ -100,7 +100,7 @@ const Overview = () => {
     fetchDashboardData();
   }, []);
 
-  // ✅ Stat Cards
+  //  Stat Cards
   const statCards = useMemo(
     () => [
       {
@@ -112,19 +112,19 @@ const Overview = () => {
       {
         title: "Total Messages",
         value: stats.totalMessages,
-        color: "from-blue-400 to-blue-600",
+        color: "from-green-400 to-green-600",
         icon: MessageSquare,
       },
       {
         title: "Customer Reviews",
         value: stats.totalCustomerReviews,
-        color: "from-green-400 to-green-600",
+        color: "from-blue-400 to-blue-600",
         icon: Star,
       },
       {
         title: "Account Status",
         value: stats.accountStatus,
-        color: "from-purple-400 to-purple-600",
+        color: "from-gray-800 to-gray-500",
         icon: Activity,
       },
     ],
@@ -153,7 +153,7 @@ const Overview = () => {
                   <Icon size={26} />
                 </div>
               </div>
-              <div className="text-4xl font-bold">{card.value}</div>
+              <div className="text-3xl font-bold">{card.value}</div>
             </div>
           );
         })}
@@ -165,25 +165,25 @@ const Overview = () => {
         <div className="flex flex-wrap gap-4">
           <button
             onClick={() => navigate("/dashboard/upload")}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow-md"
+            className="flex items-center gap-2  bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             <PlusCircle size={20} /> Add Listing
           </button>
           <button
             onClick={() => navigate("/dashboard/listings")}
-            className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg shadow-md"
+            className="flex items-center gap-2  bg-[#333333] hover:bg-teal-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             <List size={20} /> View Listings
           </button>
           <button
             onClick={() => navigate("/dashboard/settings")}
-            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md"
+            className="flex items-center gap-2 bg-green-600 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             <Edit size={20} /> Edit Profile
           </button>
           <button
             onClick={() => navigate("/dashboard/messages")}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md"
+            className="flex items-center gap-2 bg-gray-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             <Mail size={20} /> View Messages
           </button>
@@ -192,7 +192,9 @@ const Overview = () => {
 
       {/* Recent Messages */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Recent Messages</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">
+          Recent Messages
+        </h2>
         {recentMessages.length > 0 ? (
           <ul className="space-y-4">
             {recentMessages.map((msg) => (

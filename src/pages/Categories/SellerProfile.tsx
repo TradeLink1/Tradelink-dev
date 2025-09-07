@@ -702,6 +702,28 @@ const SellerProfile = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
+      </div>
+
+
+<!--       {/* Seller Hero Section */}
+      <header className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl max-[510px]:max-w-110 shadow-xl max-w-6xl max-tablet:max-w-190 max-mobile:max-w-90 mx-auto p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+        {/* Logo */}
+        {seller.storeLogo ? (
+          <img
+            src={seller.storeLogo}
+            alt={seller.storeName || "Seller"}
+            className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
+          />
+        ) : (
+          <div className="w-36 h-36 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-4xl shadow-lg">
+            {(seller.storeName?.[0] || "S").toUpperCase()}
+          </div>
+        )}
+
+        {/* Info */}
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-4xl font-bold">{seller.storeName || "Seller"}</h1>
+          <p className="mt-2 text-lg"> -->
 
         <div className="flex flex-col items-center gap-4">
           {seller.storeLogo ? (
@@ -718,16 +740,40 @@ const SellerProfile = () => {
 
           <h1 className="text-2xl font-bold text-center">{seller.storeName}</h1>
           <p className="text-sm text-gray-600 text-center">
+
             {seller.businessCategory || "Category"} •{" "}
             {seller.businessLevel || "Level"}
           </p>
-          <p className="text-sm text-gray-600 flex items-center justify-center gap-1 mt-1">
+          <p className="flex items-center justify-center md:justify-start gap-1 mt-2 text-sm">
             <MapPin className="w-4 h-4" />
             {seller.location
               ? `${seller.location.city || ""}, ${seller.location.state || ""}`
               : "Location not found"}
           </p>
           {seller.description && (
+<!--             <p className="mt-4 max-w-xl text-sm md:text-base">
+              {seller.description}
+            </p>
+          )}
+
+          {/* Contact Buttons */}
+          <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
+            {seller.email && (
+              <a
+                href={`mailto:${seller.email}`}
+                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
+              >
+                <Mail className="w-4 h-4" /> Email
+              </a>
+            )}
+            {seller.phone && (
+              <a
+                href={`tel:${seller.phone}`}
+                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
+              >
+                <Phone className="w-4 h-4" /> Call
+              </a> -->
+
             <p className="text-sm text-gray-700 mt-2 text-center">
               {seller.description}
             </p>
@@ -790,27 +836,33 @@ const SellerProfile = () => {
             )}
           </div>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 md:ml-[25%] lg:ml-[20%]">
+
+      {/* Products Section */}
+      <main className="max-w-6xl mx-auto p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Products by {seller.storeName}
+        </h2>
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
               <div
                 key={product.id}
                 onClick={() => navigate(`/products/${product.id}`)}
-                className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition"
+                className="bg-white shadow-md rounded-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition transform"
               >
                 <img
                   src={product.productImg}
                   alt={product.name}
-                  className="h-48 w-full object-cover"
+                  className="h-52 w-full object-cover"
                 />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
                   <p className="text-sm text-gray-500">{product.category}</p>
-                  <p className="text-orange-600 font-bold mt-2">
+                  <p className="text-orange-600 font-bold mt-2 text-lg">
                     ₦{product.price.toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
@@ -825,6 +877,30 @@ const SellerProfile = () => {
         )}
       </main>
 
+
+<!--       {/* Floating Message Widget */}
+      <div className="fixed bottom-6 right-6 bg-white shadow-2xl rounded-2xl p-4 w-80 z-50 border border-orange-200">
+        <h3 className="text-lg font-semibold mb-2 text-gray-800">
+          Message Seller
+        </h3>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          <button
+            type="button"
+            onClick={handleSendMessage}
+            disabled={sending}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md text-sm font-medium"
+          >
+            <Send className="w-4 h-4" />
+            {sending ? "..." : "Send"}
+          </button>
+        </div> -->
       {/* Floating Chat */}
       <div className="fixed bottom-6 right-6 z-50">
         {chatOpen ? (
@@ -892,5 +968,4 @@ const SellerProfile = () => {
   );
 };
 
-export default SellerProfile;
-
+export default SellerProfile

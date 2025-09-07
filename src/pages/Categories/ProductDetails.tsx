@@ -153,7 +153,8 @@ const ProductDetails = () => {
 
   return (
     <div
-      className="min-h-screen p-6 bg-gray-100 relative"
+      className="min-h-screen p-6 bg-[#f89216]"
+
       style={{
         backgroundImage: "url('/pat2.png')",
         backgroundSize: "cover",
@@ -164,15 +165,15 @@ const ProductDetails = () => {
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 mb-4 text-gray-700 hover:text-orange-500"
+        className="flex items-center gap-2 mb-6 text-gray-700 hover:text-white transition"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
       </button>
 
-      <div className="max-w-6xl mx-auto space-y-6 pb-24 md:pb-0">
+      <div className="max-w-6xl mx-auto space-y-8 pb-28 md:pb-0">
         {/* Product Card */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row hover:shadow-lg transition">
           {/* Image */}
           <div className="md:w-1/2 bg-gray-100 flex items-center justify-center">
             <img
@@ -183,50 +184,55 @@ const ProductDetails = () => {
           </div>
 
           {/* Product Info */}
-          <div className="md:w-1/2 p-6 flex flex-col justify-between">
+          <div className="md:w-1/2 p-8 flex flex-col justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{product.name}</h1>
-              <p className="text-sm text-gray-500">{product.category}</p>
-              <p className="text-orange-600 font-bold text-xl mt-2">
+              <h1 className="text-3xl font-bold text-gray-800">
+                {product.name}
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">{product.category}</p>
+              <p className="text-orange-600 font-extrabold text-2xl mt-4">
                 ₦{product.price.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-600 mt-2">{product.description}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                Qty available: {product.quantity}
+              <p className="text-base text-gray-700 mt-4 leading-relaxed">
+                {product.description}
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                Qty available:{" "}
+                <span className="font-medium">{product.quantity}</span>
               </p>
             </div>
           </div>
         </div>
 
         {/* Seller Card */}
-        <div className="bg-white rounded-xl shadow-md p-6 cursor-pointer">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6 hover:shadow-lg transition">
           <div className="flex items-center space-x-4">
             {product.sellerId?.storeLogo ? (
               <img
                 src={product.sellerId.storeLogo}
                 alt={product.sellerId.storeName}
-                className="w-16 h-16 rounded-full object-cover border"
+                className="w-16 h-16 rounded-full object-cover border shadow-sm"
               />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">
+              <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-xl">
                 {product.sellerId?.storeName?.charAt(0) || "S"}
               </div>
             )}
 
             <div>
               <h2
-                className="text-lg font-semibold hover:text-orange-500"
+                className="text-xl font-semibold text-gray-800 hover:text-orange-500 cursor-pointer"
                 onClick={() =>
                   navigate(`/seller-profile/${product.sellerId._id}`)
                 }
               >
                 {product.sellerId?.storeName}
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mt-1">
                 {product.sellerId?.businessCategory} •{" "}
                 {product.sellerId?.businessLevel}
               </p>
-              <p className="text-sm text-gray-600 flex items-center gap-1">
+              <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 {product.sellerId?.location
                   ? `${product.sellerId.location.city}, ${product.sellerId.location.state}`
@@ -235,21 +241,21 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="mt-4 space-y-1">
-            <p className="text-sm text-gray-700 flex items-center gap-1">
+          <div className="mt-6 space-y-2">
+            <p className="text-sm text-gray-700 flex items-center gap-2">
               <Mail className="w-4 h-4" />
               <a
                 href={`mailto:${product.sellerId?.email}`}
-                className="text-blue-600"
+                className="text-blue-600 hover:underline"
               >
                 {product.sellerId?.email}
               </a>
             </p>
-            <p className="text-sm text-gray-700 flex items-center gap-1">
+            <p className="text-sm text-gray-700 flex items-center gap-2">
               <Phone className="w-4 h-4" />
               <a
                 href={`tel:${product.sellerId?.phone}`}
-                className="text-blue-600"
+                className="text-blue-600 hover:underline"
               >
                 {product.sellerId?.phone}
               </a>
@@ -258,6 +264,23 @@ const ProductDetails = () => {
         </div>
       </div>
 
+      {/* Desktop Message Box */}
+      <div className="hidden md:block max-w-6xl mx-auto bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6 my-8 hover:shadow-lg transition">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">
+          Message Seller
+        </h3>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={sending}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg flex items-center gap-2 shadow-md transition"
       {/* Floating Chat */}
       <div className="fixed bottom-6 right-6 z-50">
         {isChatOpen ? (
@@ -316,6 +339,26 @@ const ProductDetails = () => {
           >
             <MessageCircle className="w-6 h-6" />
           </button>
+        </div>
+      </div>
+
+      {/* Mobile Sticky Message Box */}
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-blur-sm p-4 border-t shadow-md flex items-center gap-2 z-50">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+        />
+        <button
+          onClick={handleSendMessage}
+          disabled={sending}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md transition"
+        >
+          <Send className="w-4 h-4" />
+          {sending ? "Sending..." : "Send"}
+        </button>
         )}
       </div>
     </div>

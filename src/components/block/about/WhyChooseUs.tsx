@@ -25,9 +25,9 @@ const cardData = [
 const WhyChooseUs = () => {
   return (
     <div>
-      <section id="whysection" className=" pb-25 pt-20 bg-[#30ac57] ">
+      <section id="whysection" className=" pb-25 pt-20 bg-[#f89216] ">
         <div className=" mb-10 text-center ">
-          <h1 className="text-[42px] text-[#fef6e1] font-bold max-[510px]:text-[35px] max-mobile:text-[25px]">
+          <h1 className="text-[35px] text-[#fef6e1] font-bold max-[510px]:text-[30px] max-mobile:text-[25px]">
             Why Choose TradeLink?
           </h1>
         </div>
@@ -43,7 +43,7 @@ const WhyChooseUs = () => {
                 className="w-[300px] p-8 bg-white rounded-3xl transform hover:border-1 hover:border-[#5e5e5e] hover:scale-105 hover:shadow-lg transition duration-300"
               >
                 <img
-                  className="h-[55px] mb-4 bg-[#f89216] p-2 rounded-full"
+                  className="h-[55px] mb-4 border-1 bg-[#f89216] p-2 rounded-full"
                   src={card.icon}
                   alt={card.title}
                 />

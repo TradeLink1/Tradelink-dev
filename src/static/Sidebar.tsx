@@ -11,18 +11,17 @@ const Sidebar = ({ handleToggle }: any) => {
   const [showDropdown, setShowDropwn] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null); // ✅ track user's name
+  const [userName, setUserName] = useState<string | null>(null);
 
   const toggleDropdown = () => {
     setShowDropwn(!showDropdown);
   };
 
-  // ✅ Check login state + role + name
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
       const storedRole = localStorage.getItem("role");
-      const storedName = localStorage.getItem("name"); // assuming you store user name
+      const storedName = localStorage.getItem("name");
       setIsLoggedIn(!!token);
       setRole(storedRole);
       setUserName(storedName);
@@ -30,11 +29,9 @@ const Sidebar = ({ handleToggle }: any) => {
 
     checkLogin();
     window.addEventListener("storage", checkLogin);
-
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
-  // ✅ Logout handler
   const handleLogout = async () => {
     try {
       await api.post("api/v1/auth/logout");
@@ -43,7 +40,7 @@ const Sidebar = ({ handleToggle }: any) => {
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      localStorage.removeItem("name"); // remove stored name
+      localStorage.removeItem("name");
       setIsLoggedIn(false);
       setRole(null);
       setUserName(null);
@@ -106,8 +103,8 @@ const Sidebar = ({ handleToggle }: any) => {
 
           {/* Other Links */}
           <Link to="/AboutUs" onClick={handleToggle}>
-            <nav className="hover:text-[#f89216] flex items-center gap-1 border-b pb-2 border-[#f89216]">
-              <MdOutlineSell /> About Us
+            <nav className="hover:text-[#f89216]  items-center gap-1 border-b pb-2 border-[#f89216]">
+              About Us
             </nav>
           </Link>
           <Link to="/Faq" onClick={handleToggle}>
@@ -121,11 +118,11 @@ const Sidebar = ({ handleToggle }: any) => {
             </nav>
           </Link>
 
-          {/* ✅ Auth buttons */}
+          {/* Auth buttons */}
           {isLoggedIn ? (
             <>
               {role === "seller" ? (
-                <a href="/Dashboard" rel="noopener noreferrer">
+                <a href="/Dashboard" onClick={handleToggle}>
                   <Button
                     name="Dashboard"
                     bgColor="#f89216"
@@ -134,7 +131,6 @@ const Sidebar = ({ handleToggle }: any) => {
                   />
                 </a>
               ) : (
-                // ✅ Buyer view: Welcome back + Sell With Us
                 <>
                   <Button
                     name={`Welcome back, ${userName || "User"}`}
@@ -142,7 +138,7 @@ const Sidebar = ({ handleToggle }: any) => {
                     hoverBgColor="#333333"
                     hoverTextColor="white"
                   />
-                  <a href="/SellWithUs" rel="noopener noreferrer">
+                  <a href="/SellWithUs" onClick={handleToggle}>
                     <Button
                       name="Sell With Us"
                       bgColor="#f89216"
@@ -153,7 +149,12 @@ const Sidebar = ({ handleToggle }: any) => {
                 </>
               )}
 
-              <button onClick={handleLogout}>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  handleToggle();
+                }}
+              >
                 <Button
                   name="Logout"
                   border="2px solid "
@@ -165,7 +166,7 @@ const Sidebar = ({ handleToggle }: any) => {
             </>
           ) : (
             <>
-              <a href="/Login" rel="noopener noreferrer">
+              <a href="/Login" onClick={handleToggle}>
                 <Button
                   name="Login"
                   border="2px solid "
@@ -174,7 +175,7 @@ const Sidebar = ({ handleToggle }: any) => {
                   hoverTextColor="white"
                 />
               </a>
-              <a href="/Register" rel="noopener noreferrer">
+              <a href="/Register" onClick={handleToggle}>
                 <Button
                   name="Register"
                   bgColor="#f89216"
@@ -182,14 +183,12 @@ const Sidebar = ({ handleToggle }: any) => {
                   hoverTextColor="white"
                 />
               </a>
-              <a href="/SellWithUs" rel="noopener noreferrer">
-                <Button
-                  name="Sell With Us"
-                  bgColor="#f89216"
-                  hoverBgColor="#333333"
-                  hoverTextColor="white"
-                />
-              </a>
+              <Link to="/SellWithUs" onClick={handleToggle}>
+                <nav className="hover:text-[#f89216] hover:transistion-colors hover:duration-500 hover:ease-in-out flex items-center gap-1">
+                  <MdOutlineSell />
+                  Sell With Us
+                </nav>
+              </Link>
             </>
           )}
         </section>

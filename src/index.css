@@ -107,6 +107,44 @@ button {
   background-position: center;
   background-repeat: no-repeat;
 }
+#aboutbg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#aboutbg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#readybg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#corebg {
+  background-image: url("/pat2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@keyframes bounceSoft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* small bounce up */
+  }
+}
+
+#bounce-soft {
+  animation: bounceSoft 2s ease-in-out infinite;
+}
 
 /* emoji wave */
 .wave {
@@ -146,4 +184,27 @@ html {
   scroll-behavior: smooth;
 }
 
-/* <<< ISHOLA CSS STYLES >>> */
+/* about us effect */
+.typing-text {
+  width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid #f89216;
+  animation: typing 4s steps(30, end) forwards, blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+/* about us effect */
