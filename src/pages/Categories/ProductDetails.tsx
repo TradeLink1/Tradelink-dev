@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Mail, Phone, MapPin, ArrowLeft, MessageCircle } from "lucide-react";
-import Messages from "../../components/reusable/Messages"; // ✅ Reusable chat
+import { Mail, Phone, MapPin, ArrowLeft, MessageCircle, Send, X } from "lucide-react";
 
 type Seller = {
   _id: string;
@@ -31,12 +30,30 @@ type Product = {
   sellerId: Seller;
 };
 
+type Message = {
+  _id: string;
+  conversationId: string;
+  senderId: string;
+  recipientId: string;
+  content: string;
+  isRead: boolean;
+};
+
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // --- chat state ---
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -53,6 +70,83 @@ const ProductDetails = () => {
     };
     fetchProduct();
   }, [id]);
+
+  // --- Messaging Functions ---
+  const fetchMessages = async () => {
+    if (!userId || !product?.sellerId._id) return;
+    try {
+      setLoadingMessages(true);
+      const res = await axios.get(
+        `https://tradelink-be.onrender.com/api/v1/messages/get/conversation/${userId}/${product.sellerId._id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessages(res.data?.messages || []);
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+    try {
+      setSending(true);
+      const res = await axios.post(
+        "https://tradelink-be.onrender.com/api/v1/messages/send",
+        {
+          recipientId: product?.sellerId._id,
+          content: newMessage,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data?.message) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            _id: res.data.message.id,
+            conversationId: res.data.message.conversationId || "",
+            senderId: userId || "",
+            recipientId: product?.sellerId._id!,
+            content: newMessage,
+            isRead: false,
+          },
+        ]);
+      }
+      setNewMessage("");
+    } catch (err) {
+      console.error("Error sending message:", err);
+      alert("Failed to send ❌");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const markAsRead = async (messageId: string) => {
+    try {
+      await axios.post(
+        `https://tradelink-be.onrender.com/api/v1/messages/read/${messageId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, isRead: true } : msg
+        )
+      );
+    } catch (err) {
+      console.error("Error marking message as read:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (isChatOpen) {
+      fetchMessages();
+      const interval = setInterval(fetchMessages, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isChatOpen, product?.sellerId._id]);
 
   if (loading) return <p className="p-6 text-center">Loading...</p>;
   if (!product) return <p className="p-6 text-center">Product not found.</p>;
@@ -122,12 +216,15 @@ const ProductDetails = () => {
             <div>
               <h2
                 className="text-lg font-semibold hover:text-orange-500"
-                onClick={() => navigate(`/seller-profile/${product.sellerId._id}`)}
+                onClick={() =>
+                  navigate(`/seller-profile/${product.sellerId._id}`)
+                }
               >
                 {product.sellerId?.storeName}
               </h2>
               <p className="text-sm text-gray-600">
-                {product.sellerId?.businessCategory} • {product.sellerId?.businessLevel}
+                {product.sellerId?.businessCategory} •{" "}
+                {product.sellerId?.businessLevel}
               </p>
               <p className="text-sm text-gray-600 flex items-center gap-1">
                 <MapPin className="w-4 h-4 text-gray-500" />
@@ -161,35 +258,66 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Floating Chat Icon */}
-      {!isChatOpen && (
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 bg-orange-500 text-white p-4 rounded-full shadow-lg hover:bg-orange-600 transition z-50"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </button>
-      )}
-
-      {/* Mini Chatbox */}
-      {isChatOpen && (
-        <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-xl shadow-lg z-50 flex flex-col">
-          <div className="flex justify-between items-center p-3 border-b">
-            <h3 className="font-semibold text-gray-800">
-              Chat with {product.sellerId?.storeName}
-            </h3>
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="text-gray-500 hover:text-red-500"
-            >
-              ✕
-            </button>
+      {/* Floating Chat */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {isChatOpen ? (
+          <div className="w-80 h-96 bg-white shadow-xl rounded-xl border flex flex-col">
+            <div className="flex justify-between items-center p-3 border-b bg-orange-500 text-white rounded-t-xl">
+              <h3 className="font-semibold">Chat with {product.sellerId.storeName}</h3>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="hover:text-red-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
+              {loadingMessages ? (
+                <p className="text-gray-500 text-center">Loading...</p>
+              ) : messages.length > 0 ? (
+                messages.map((msg) => (
+                  <div
+                    key={msg._id}
+                    className={`p-2 rounded-lg max-w-[80%] ${
+                      msg.senderId === userId
+                        ? "bg-orange-100 self-end ml-auto"
+                        : "bg-gray-200"
+                    }`}
+                    onClick={() => !msg.isRead && markAsRead(msg._id)}
+                  >
+                    {msg.content}
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-center">No messages yet</p>
+              )}
+            </div>
+            <div className="flex items-center border-t px-3 py-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 text-sm px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={sending}
+                className="ml-2 bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-3">
-            <Messages recipientId={product.sellerId._id} />
-          </div>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg"
+          >
+            <MessageCircle className="w-6 h-6" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
