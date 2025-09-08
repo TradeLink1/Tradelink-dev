@@ -101,7 +101,6 @@
 //   { headers: { Authorization: `Bearer ${token}` } }
 // );
 
-
 //     if (res.data?.data) {
 //       setStats((prev) =>
 //         prev ? { ...prev, reviewsCount: prev.reviewsCount + 1 } : prev
@@ -117,7 +116,6 @@
 //     setSendingReview(false);
 //   }
 // };
-
 
 //   // --- Messaging Functions ---
 //   const fetchMessages = async () => {
@@ -286,7 +284,6 @@
 //   </button>
 // </div>
 
-
 //           <div className="mt-6 w-full space-y-2 text-left border-t pt-4">
 //             {seller.email && (
 //               <p className="text-sm text-gray-700 break-all">📧 {seller.email}</p>
@@ -397,18 +394,10 @@
 
 // export default SellerProfile;
 
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  MapPin,
-  ArrowLeft,
-  MessageCircle,
-  Send,
-  X,
-  Star,
-} from "lucide-react";
+import { MapPin, ArrowLeft, MessageCircle, Send, X, Star } from "lucide-react";
 
 // ---------------- Types ----------------
 type Product = {
@@ -454,16 +443,16 @@ type Review = {
   createdAt: string;
 };
 
-type UserProfile = {
-  id: string;
-  name: string;
-  fullName: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  logo?: string;
-  avatarUrl?: string;
-};
+// type UserProfile = {
+//   id: string;
+//   name: string;
+//   fullName: string;
+//   email: string;
+//   phone?: string;
+//   address?: string;
+//   logo?: string;
+//   avatarUrl?: string;
+// };
 
 // ---------------- ReviewsPopup ----------------
 const ReviewsPopup = ({ reviews }: { reviews: Review[] }) => {
@@ -539,7 +528,7 @@ const SellerProfile = () => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
-   const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
   // --- chat state ---
@@ -693,214 +682,147 @@ const SellerProfile = () => {
   if (!seller) return <p className="p-6 text-center">Seller not found.</p>;
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
-      {/* Sidebar */}
-      <aside className="fixed md:sticky top-0 left-0 h-screen w-3/4 md:w-1/3 lg:w-1/4 bg-white p-6 shadow-md overflow-y-auto z-50">
-        <button
-          onClick={() => navigate(-1)}
-          className="hidden md:flex items-center gap-2 mb-4 text-gray-700 hover:text-orange-500"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
-      </div>
-
-
-<!--       {/* Seller Hero Section */}
-      <header className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl max-[510px]:max-w-110 shadow-xl max-w-6xl max-tablet:max-w-190 max-mobile:max-w-90 mx-auto p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
-        {/* Logo */}
-        {seller.storeLogo ? (
-          <img
-            src={seller.storeLogo}
-            alt={seller.storeName || "Seller"}
-            className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
-          />
-        ) : (
-          <div className="w-36 h-36 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-4xl shadow-lg">
-            {(seller.storeName?.[0] || "S").toUpperCase()}
-          </div>
-        )}
-
-        {/* Info */}
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl font-bold">{seller.storeName || "Seller"}</h1>
-          <p className="mt-2 text-lg"> -->
-
-        <div className="flex flex-col items-center gap-4">
-          {seller.storeLogo ? (
-            <img
-              src={seller.storeLogo}
-              alt={seller.storeName}
-              className="w-32 h-32 rounded-full object-cover border"
-            />
-          ) : (
-            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-2xl">
-              {(seller.storeName?.[0] || "S").toUpperCase()}
-            </div>
-          )}
-
-          <h1 className="text-2xl font-bold text-center">{seller.storeName}</h1>
-          <p className="text-sm text-gray-600 text-center">
-
-            {seller.businessCategory || "Category"} •{" "}
-            {seller.businessLevel || "Level"}
-          </p>
-          <p className="flex items-center justify-center md:justify-start gap-1 mt-2 text-sm">
-            <MapPin className="w-4 h-4" />
-            {seller.location
-              ? `${seller.location.city || ""}, ${seller.location.state || ""}`
-              : "Location not found"}
-          </p>
-          {seller.description && (
-<!--             <p className="mt-4 max-w-xl text-sm md:text-base">
-              {seller.description}
-            </p>
-          )}
-
-          {/* Contact Buttons */}
-          <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
-            {seller.email && (
-              <a
-                href={`mailto:${seller.email}`}
-                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
-              >
-                <Mail className="w-4 h-4" /> Email
-              </a>
+    <>
+      <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
+        {/* Sidebar */}
+        <aside className="fixed md:sticky top-0 left-0 h-screen w-3/4 md:w-1/3 lg:w-1/4 bg-white p-6 shadow-md overflow-y-auto z-50">
+          <button
+            onClick={() => navigate(-1)}
+            className="hidden md:flex items-center gap-2 mb-4 text-gray-700 hover:text-orange-500"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+          <div className="flex flex-col items-center gap-4">
+            {seller.storeLogo ? (
+              <img
+                src={seller.storeLogo}
+                alt={seller.storeName}
+                className="w-32 h-32 rounded-full object-cover border"
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-2xl">
+                {(seller.storeName?.[0] || "S").toUpperCase()}
+              </div>
             )}
-            {seller.phone && (
-              <a
-                href={`tel:${seller.phone}`}
-                className="flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition"
-              >
-                <Phone className="w-4 h-4" /> Call
-              </a> -->
 
-            <p className="text-sm text-gray-700 mt-2 text-center">
-              {seller.description}
+            <h1 className="text-2xl font-bold text-center">
+              {seller.storeName}
+            </h1>
+            <p className="text-sm text-gray-600 text-center">
+              {seller.businessCategory || "Category"} •{" "}
+              {seller.businessLevel || "Level"}
             </p>
-          )}
-
-          {stats && (
-            <div className="mt-6 grid grid-cols-2 gap-4 text-center">
-              <div>
-                <p className="font-bold">{stats.productsCount}</p>
-                <p className="text-xs text-gray-500">Products</p>
-              </div>
-              <div>
-                <p className="font-bold">{stats.reviewsCount}</p>
-                <p className="text-xs text-gray-500">Reviews</p>
-              </div>
-            </div>
-          )}
-
-          {/* --- Review Form with Stars --- */}
-          <div className="mt-4 w-full">
-            <div className="flex items-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setReviewRating(star)}
-                  className={`text-2xl ${
-                    star <= reviewRating ? "text-yellow-400" : "text-gray-300"
-                  }`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-
-            <textarea
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              placeholder="Write a review..."
-              className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-orange-500"
-            />
-
-            <button
-              onClick={handleSendReview}
-              disabled={sendingReview}
-              className="mt-2 w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 disabled:opacity-50"
-            >
-              {sendingReview ? "Sending..." : "Send Review"}
-            </button>
-          </div>
-
-          <div className="mt-6 w-full space-y-2 text-left border-t pt-4">
-            {seller.email && (
-              <p className="text-sm text-gray-700 break-all">
-                📧 {seller.email}
+            <p className="flex items-center justify-center md:justify-start gap-1 mt-2 text-sm">
+              <MapPin className="w-4 h-4" />
+              {seller.location
+                ? `${seller.location.city || ""}, ${
+                    seller.location.state || ""
+                  }`
+                : "Location not found"}
+            </p>
+            {seller.description && (
+              <p className="text-sm text-gray-700 mt-2 text-center">
+                {seller.description}
               </p>
             )}
-            {seller.phone && (
-              <p className="text-sm text-gray-700">📞 {seller.phone}</p>
-            )}
-          </div>
-        </div>
-      </header>
 
-
-      {/* Products Section */}
-      <main className="max-w-6xl mx-auto p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Products by {seller.storeName}
-        </h2>
-        {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => navigate(`/products/${product.id}`)}
-                className="bg-white shadow-md rounded-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition transform"
-              >
-                <img
-                  src={product.productImg}
-                  alt={product.name}
-                  className="h-52 w-full object-cover"
-                />
-                <div className="p-5">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">{product.category}</p>
-                  <p className="text-orange-600 font-bold mt-2 text-lg">
-                    ₦{product.price.toLocaleString()}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Qty: {product.quantity}
-                  </p>
+            {stats && (
+              <div className="mt-6 grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <p className="font-bold">{stats.productsCount}</p>
+                  <p className="text-xs text-gray-500">Products</p>
+                </div>
+                <div>
+                  <p className="font-bold">{stats.reviewsCount}</p>
+                  <p className="text-xs text-gray-500">Reviews</p>
                 </div>
               </div>
-            ))}
+            )}
+
+            {/* --- Review Form with Stars --- */}
+            <div className="mt-4 w-full">
+              <div className="flex items-center gap-1 mb-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewRating(star)}
+                    className={`text-2xl ${
+                      star <= reviewRating ? "text-yellow-400" : "text-gray-300"
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Write a review..."
+                className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-orange-500"
+              />
+
+              <button
+                onClick={handleSendReview}
+                disabled={sendingReview}
+                className="mt-2 w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 disabled:opacity-50"
+              >
+                {sendingReview ? "Sending..." : "Send Review"}
+              </button>
+            </div>
+
+            <div className="mt-6 w-full space-y-2 text-left border-t pt-4">
+              {seller.email && (
+                <p className="text-sm text-gray-700 break-all">
+                  📧 {seller.email}
+                </p>
+              )}
+              {seller.phone && (
+                <p className="text-sm text-gray-700">📞 {seller.phone}</p>
+              )}
+            </div>
           </div>
-        ) : (
-          <p className="text-center text-gray-500">No products available</p>
-        )}
-      </main>
+        </aside>
 
-
-<!--       {/* Floating Message Widget */}
-      <div className="fixed bottom-6 right-6 bg-white shadow-2xl rounded-2xl p-4 w-80 z-50 border border-orange-200">
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">
-          Message Seller
-        </h3>
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <button
-            type="button"
-            onClick={handleSendMessage}
-            disabled={sending}
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md text-sm font-medium"
-          >
-            <Send className="w-4 h-4" />
-            {sending ? "..." : "Send"}
-          </button>
-        </div> -->
+        {/* Products Section */}
+        <main className="max-w-6xl mx-auto p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Products by {seller.storeName}
+          </h2>
+          {products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => navigate(`/products/${product.id}`)}
+                  className="bg-white shadow-md rounded-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition transform"
+                >
+                  <img
+                    src={product.productImg}
+                    alt={product.name}
+                    className="h-52 w-full object-cover"
+                  />
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">{product.category}</p>
+                    <p className="text-orange-600 font-bold mt-2 text-lg">
+                      ₦{product.price.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Qty: {product.quantity}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">No products available</p>
+          )}
+        </main>
+      </div>
       {/* Floating Chat */}
       <div className="fixed bottom-6 right-6 z-50">
         {chatOpen ? (
@@ -961,11 +883,10 @@ const SellerProfile = () => {
           </button>
         )}
       </div>
-
       {/* Floating Reviews */}
       <ReviewsPopup reviews={reviews} /> {/* ✅ pass reviews directly */}
-    </div>
+    </>
   );
 };
 
-export default SellerProfile
+export default SellerProfile;

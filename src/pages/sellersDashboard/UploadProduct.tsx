@@ -39,8 +39,8 @@ const UploadProduct = () => {
   const [errors, setErrors] = useState<ErrorFields>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
+const [_products, setProducts] = useState<any[]>([]);
+const [_services, setServices] = useState<any[]>([]);
 
   const sellerId = localStorage.getItem("sellerId") || "";
   const fileInputRef = useRef<HTMLInputElement | null>(null);

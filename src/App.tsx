@@ -41,6 +41,7 @@ import Logout from "./pages/userContents/Logout";
 import UserLayout from "./pages/userContents/UserLayout";
 import UserSettings from "./pages/userContents/UserSettings";
 import ResetPassword from "./pages/Login/ResetPassword";
+import HelpCenter from "./pages/Resources/HelpCenter";
 
 const Layout = () => {
   const location = useLocation(); // ✅ Fix: now using the hook
@@ -124,6 +125,7 @@ const App = () => {
               </Route>
 
               <Route path="/logout" element={<Logout />} />
+              <Route path="/Resources/HelpCenter" element={<HelpCenter />} />
             </Routes>
           </SearchProvider>
         </BrowserRouter>
