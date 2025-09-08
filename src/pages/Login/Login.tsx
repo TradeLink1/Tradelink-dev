@@ -69,7 +69,7 @@ const Login: React.FC = () => {
     });
 
     try {
-      const res = await api.post("api/v1/auth/login", {
+      const res = await api.post("/api/v1/auth/login", {
         email,
         password,
       });
@@ -142,7 +142,7 @@ const Login: React.FC = () => {
       });
 
       try {
-        await api.post("api/v1/auth/forgot-password", {
+        await api.post("/api/v1/auth/forgot-password", {
           email,
         });
 

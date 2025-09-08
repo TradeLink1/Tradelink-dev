@@ -149,7 +149,7 @@ const [_services, setServices] = useState<any[]>([]);
 
       const endpoint =
         uploadType === "product"
-          ? "/api/v1/products/create"
+          ? "/api/v1/products/"
           : "/api/v1/services/create";
 
       const response = await api.post(endpoint, formDataToSend, {

@@ -42,6 +42,7 @@ import UserLayout from "./pages/userContents/UserLayout";
 import UserSettings from "./pages/userContents/UserSettings";
 import ResetPassword from "./pages/Login/ResetPassword";
 import HelpCenter from "./pages/Resources/HelpCenter";
+import ProtectRoute from "./components/routes/ProtectRoute.tsx";
 
 const Layout = () => {
   const location = useLocation(); // ✅ Fix: now using the hook
@@ -100,7 +101,7 @@ const App = () => {
               </Route>
 
               {/* Nested dashboard routes */}
-              <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<ProtectRoute><DashboardLayout /></ProtectRoute>}>
                 <Route index element={<Overview />} />
                 <Route path="upload" element={<UploadProduct />} />
                 <Route
