@@ -99,10 +99,8 @@ const Products = () => {
 
       <div className="flex">
         {/* Sidebar - Desktop */}
-        <div className="hidden lg:block w-1/4 bg-white/90 backdrop-blur-md shadow-md p-6 rounded-xl m-4">
-          <h2 className="text-lg font-semibold mb-4 text-gray-700">
-            Categories
-          </h2>
+        <div className="hidden lg:block w-1/4 bg-white/90 backdrop-blur-md shadow-md p-6  h-[calc(100vh-4rem)] sticky top-17 overflow-y-auto">
+          <h2 className="text-lg font-semibold  text-gray-700">Categories</h2>
           <ul className="space-y-3">
             <li
               onClick={() => setSelectedCategory(null)}

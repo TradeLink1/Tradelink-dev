@@ -65,12 +65,12 @@ const Footer = () => {
           <Link to="Resources/SellerGuide">
             <h4 className="text-[14px]  hover:text-[#f89216]">Seller Guide</h4>
           </Link>
-          <Link to="/PrivacyPolicy">
+          <Link to="Resources/PrivacyPolicy">
             <h4 className="text-[14px]  hover:text-[#f89216]">
               Privacy Policy
             </h4>
           </Link>
-          <Link to="/TermsOfService">
+          <Link to="Resources/TermsOfService">
             <h4 className="text-[14px]  hover:text-[#f89216]">
               Terms of Service
             </h4>
